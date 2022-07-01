@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"de.ukbonn.mwtek.utilities"},{"l":"de.ukbonn.mwtek.utilities.fhir.interfaces"},{"l":"de.ukbonn.mwtek.utilities.fhir.misc"},{"l":"de.ukbonn.mwtek.utilities.fhir.resources"},{"l":"de.ukbonn.mwtek.utilities.generic.interfaces"},{"l":"de.ukbonn.mwtek.utilities.generic.time"}];updateSearchResults();

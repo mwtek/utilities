@@ -15,21 +15,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.*;
 
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
@@ -38,6 +30,8 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
+
+import static de.ukbonn.mwtek.utilities.fhir.misc.FhirTools.getReference;
 
 public class Converter {
 
@@ -62,11 +56,12 @@ public class Converter {
   }
 
   // can't be instantiated
-  private Converter() {}
+  private Converter() {
+  }
 
   // list implementation
   public static List<? extends DomainResource> convert(List<? extends DomainResource> res,
-      boolean check) {
+          boolean check) {
     List<DomainResource> resources = new ArrayList<>();
     res.forEach((temp) -> {
       resources.add(convert(temp, check));
@@ -105,9 +100,7 @@ public class Converter {
     UkbKontaktGesundheitseinrichtung res = new UkbKontaktGesundheitseinrichtung();
 
     if (check) {
-      ExceptionTools.checkNull("Period", e.getStatusHistory()
-          .get(0)
-          .getPeriod());
+      ExceptionTools.checkNull("Period", e.getStatusHistory().get(0).getPeriod());
     }
 
     res.setIdentifier(e.getIdentifier());
@@ -135,22 +128,17 @@ public class Converter {
 
     // Extra
     res.setMeta(e.getMeta());
-    res.setId(e.getIdElement()
-        .getIdPart());
+    res.setId(e.getIdElement().getIdPart());
 
     // Eigene Attribute
     // CHECK
-    res.setPatientId(split(e.getSubject()
-        .getReference()));
+    res.setPatientId(getReferenceId(e.getSubject()));
 
 
     // store the ID of each location WITHOUT the resource type
-    e.getLocation()
-        .forEach(loc -> {
-          loc.getLocation()
-              .setIdElement(new StringType(split(loc.getLocation()
-                  .getReference())));
-        });
+    e.getLocation().forEach(loc -> {
+      loc.getLocation().setIdElement(new StringType(split(loc.getLocation().getReference())));
+    });
     res.setLocation(e.getLocation());
 
     return res;
@@ -185,8 +173,7 @@ public class Converter {
 
     // Extra
     res.setMeta(p.getMeta());
-    res.setId(p.getIdElement()
-        .getIdPart());
+    res.setId(p.getIdElement().getIdPart());
 
     return res;
   }
@@ -196,11 +183,9 @@ public class Converter {
 
     if (check) {
       // CHECK Patient = Subject
-      ExceptionTools.checkNull("patient", o.getSubject()
-          .getReference());
-      ExceptionTools.checkNullOrEmpty("patient.Identifier", o.getSubject()
-          .getIdentifier()
-          .toString());
+      ExceptionTools.checkNull("patient", o.getSubject().getReference());
+      ExceptionTools.checkNullOrEmpty("patient.Identifier",
+              o.getSubject().getIdentifier().toString());
     }
 
     res.setIdentifier(o.getIdentifier());
@@ -230,13 +215,10 @@ public class Converter {
 
     // Extra
     res.setMeta(o.getMeta());
-    res.setId(o.getIdElement()
-        .getIdPart());
+    res.setId(o.getIdElement().getIdPart());
 
-    res.setPatientId(split(o.getSubject()
-        .getReference()));
-    res.setCaseId(split(o.getEncounter()
-        .getReference()));
+    res.setPatientId(getReferenceId(o.getSubject()));
+    res.setCaseId(getReferenceId(o.getEncounter()));
     return res;
   }
 
@@ -245,8 +227,7 @@ public class Converter {
 
     if (check) {
       // CHECK Ref = ID
-      ExceptionTools.checkNullOrEmpty("patientId", p.getSubject()
-          .getReference());
+      ExceptionTools.checkNullOrEmpty("patientId", p.getSubject().getReference());
       ExceptionTools.checkNull("status", p.getStatus());
       ExceptionTools.checkNull("code", p.getCode());
       ExceptionTools.checkNull("performed", p.getPerformed());
@@ -283,13 +264,10 @@ public class Converter {
 
     // Extra
     res.setMeta(p.getMeta());
-    res.setId(p.getIdElement()
-        .getIdPart());
+    res.setId(p.getIdElement().getIdPart());
 
-    res.setPatientId(split(p.getSubject()
-        .getReference()));
-    res.setCaseId(split(p.getEncounter()
-        .getReference()));
+    res.setPatientId(getReferenceId(p.getSubject()));
+    res.setCaseId(getReferenceId(p.getEncounter()));
 
     return res;
   }
@@ -299,8 +277,7 @@ public class Converter {
 
     if (check) {
       // CHECK Ref = ID
-      ExceptionTools.checkNullOrEmpty("patientId", c.getSubject()
-          .getReference());
+      ExceptionTools.checkNullOrEmpty("patientId", c.getSubject().getReference());
       ExceptionTools.checkNull("clinicalStatus", c.getClinicalStatus());
       ExceptionTools.checkNull("code", c.getCode());
       ExceptionTools.checkNull("recordedDate", c.getRecordedDate());
@@ -326,14 +303,11 @@ public class Converter {
 
     // Extra
     res.setMeta(c.getMeta());
-    res.setId(c.getIdElement()
-        .getIdPart());
+    res.setId(c.getIdElement().getIdPart());
 
-    res.setPatientId(split(c.getSubject()
-        .getReference()));
+    res.setPatientId(getReferenceId(c.getSubject()));
 
-    res.setCaseId(split(c.getEncounter()
-        .getReference()));
+    res.setCaseId(getReferenceId(c.getEncounter()));
 
     return res;
   }
@@ -366,8 +340,7 @@ public class Converter {
 
     // Extra
     res.setMeta(l.getMeta());
-    res.setId(l.getIdElement()
-        .getIdPart());
+    res.setId(l.getIdElement().getIdPart());
 
     return res;
   }
@@ -375,5 +348,17 @@ public class Converter {
   private static String split(String s) {
     String[] parts = s.split("/");
     return parts[parts.length - 1];
+  }
+
+  /**
+   * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the resource type.
+   * @param reference FHIR reference as "Encounter/123"
+   * @return The plain id of the reference as "123"
+   */
+  private static String getReferenceId(Reference reference) {
+    if (reference.getReference() != null) {
+     return split(reference.getReference());
+    } else
+      return reference.getIdentifier().getValue();
   }
 }

@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
 import java.math.BigDecimal;
@@ -56,14 +55,14 @@ public class FhirTools {
 
     // retrieve and add the value
     String value = identifier.getValue();
-    if ((value != null)
-        && ((system == null) || (Compare.isEqual(system, identifier.getSystem())))) {
+    if ((value != null) && ((system == null) || (Compare.isEqual(system,
+            identifier.getSystem())))) {
       values.add(value);
     } // if
   }
 
   public static void addIdentifierValues(List<String> values, String system,
-      Collection<Identifier> identifiers) {
+          Collection<Identifier> identifiers) {
     if ((identifiers == null) || (identifiers.isEmpty())) {
       // nothing to do
       return;
@@ -89,7 +88,7 @@ public class FhirTools {
   }
 
   public static void addReferenceIdentifierValue(List<String> values, String system,
-      Reference reference) {
+          Reference reference) {
     if (reference == null) {
       // nothing to do
       return;
@@ -131,7 +130,7 @@ public class FhirTools {
   }
 
   public static long getEffectiveReferenceAsMicros(Type effective)
-      throws IllegalArgumentException, ArithmeticException {
+          throws IllegalArgumentException, ArithmeticException {
     // validate argument
     ExceptionTools.checkNull("effective", effective);
 
@@ -162,7 +161,7 @@ public class FhirTools {
   }
 
   public static Identifier getIdentifierBySystem(String system, List<Identifier> identifierList)
-      throws IllegalArgumentException {
+          throws IllegalArgumentException {
     ExceptionTools.checkNullOrEmpty("identifierList", identifierList);
     // if system is provided then return identifier for this system
     if (system != null) {
@@ -186,9 +185,9 @@ public class FhirTools {
   }
 
   public static MedicationAdministrationDosageComponent getMedicationAdministrationDosageComponent(
-      Dosage dosage) {
+          Dosage dosage) {
     MedicationAdministrationDosageComponent medicationAdministrationDosageComponent =
-        new MedicationAdministrationDosageComponent();
+            new MedicationAdministrationDosageComponent();
     medicationAdministrationDosageComponent.setText(dosage.getText());
     medicationAdministrationDosageComponent.setSite(dosage.getSite());
     medicationAdministrationDosageComponent.setRoute(dosage.getRoute());
@@ -249,7 +248,7 @@ public class FhirTools {
   }
 
   public static long getReferenceAsMicros(BaseDateTimeType dateTime)
-      throws IllegalArgumentException, ArithmeticException {
+          throws IllegalArgumentException, ArithmeticException {
     // validate argument
     ExceptionTools.checkNull("dateTime", dateTime);
 
@@ -280,8 +279,9 @@ public class FhirTools {
    * Convert the given Unix-time in milliseconds to microseconds by multiplying the value with 10^3.
    *
    * @param millis the milliseconds value to convert
+   * @return milliseconds to macroseconds
    * @throws ArithmeticException thrown if the converted value exceeds the range of
-   *           <code>long</code>
+   *                             <code>long</code>
    */
   public static long millisToMicros(long millis) throws ArithmeticException {
     // multiply with 10^3
@@ -292,9 +292,11 @@ public class FhirTools {
    * Convert the given Unix-time in milliseconds to seconds by dividing the value by 10^3.
    *
    * @param millis the milliseconds value to convert
+   * @return milliseconds to seconds
    */
   public static BigDecimal millisToSeconds(long millis) {
     // divide by 10^3
-    return BigDecimal.valueOf(millis).divide(BigDecimal.valueOf(1_000L), 3, RoundingMode.UNNECESSARY);
+    return BigDecimal.valueOf(millis)
+            .divide(BigDecimal.valueOf(1_000L), 3, RoundingMode.UNNECESSARY);
   }
 }

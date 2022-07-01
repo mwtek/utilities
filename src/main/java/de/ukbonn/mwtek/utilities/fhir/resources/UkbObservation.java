@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -37,9 +36,9 @@ import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
-@ResourceDef(name = "Observation")
-public class UkbObservation extends Observation implements UkbPatientProvider,
-    PatientIdentifierValueProvider, UkbVersorgungsfallProvider, CaseIdentifierValueProvider {
+@ResourceDef(name = "Observation") public class UkbObservation extends Observation
+        implements UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider,
+        CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
   protected UkbVersorgungsfall versorgungsfall;
@@ -48,15 +47,14 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
-   *             constructors for creating an instance of this resource.
+   * constructors for creating an instance of this resource.
    */
-  @Deprecated
-  public UkbObservation() {
+  @Deprecated public UkbObservation() {
     super();
   }
 
   public UkbObservation(String patientId, String caseId, Enumeration<ObservationStatus> status,
-      CodeableConcept code) throws IllegalArgumentException {
+          CodeableConcept code) throws IllegalArgumentException {
     super(status, code);
 
     // validate arguments
@@ -67,19 +65,20 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
     this.caseId = caseId;
 
     // set fhir content
-    this.setSubject(new Reference()
-        .setIdentifier(new Identifier().setSystem(StaticValueProvider.systemWithIdentifierPatient)
-            .setValue(patientId)));
+    this.setSubject(new Reference().setIdentifier(
+            new Identifier().setSystem(StaticValueProvider.systemWithIdentifierPatient)
+                    .setValue(patientId)));
     if (caseId != null) {
       // case id is optional
       this.setEncounter(new Reference().setIdentifier(
-          new Identifier().setSystem(StaticValueProvider.systemWithIdentifierEncounter)
-              .setValue(caseId)));
+              new Identifier().setSystem(StaticValueProvider.systemWithIdentifierEncounter)
+                      .setValue(caseId)));
     } // if
   }
 
   public UkbObservation(UkbPatient patient, UkbVersorgungsfall versorgungsfall,
-      Enumeration<ObservationStatus> status, CodeableConcept code) throws IllegalArgumentException {
+          Enumeration<ObservationStatus> status, CodeableConcept code)
+          throws IllegalArgumentException {
     super(status, code);
 
     // validate arguments
@@ -93,68 +92,61 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
     this.caseId = (versorgungsfall != null) ? versorgungsfall.getCaseId() : null;
 
     // set fhir content
-    this.setSubject(new Reference().setIdentifier(FhirTools.getIdentifierBySystem(
-        StaticValueProvider.systemWithIdentifierPatient, patient.getIdentifier())));
+    this.setSubject(new Reference().setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
+                    patient.getIdentifier())));
   }
 
   public UkbObservation(UkbVersorgungsfall versorgungsfall, Enumeration<ObservationStatus> status,
-      CodeableConcept code) throws IllegalArgumentException, MandatoryFieldNotInitializedException {
+          CodeableConcept code)
+          throws IllegalArgumentException, MandatoryFieldNotInitializedException {
     super(status, code);
 
     // validate arguments
     ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
     ExceptionTools.checkNull("versorgungsfall.patient", versorgungsfall.getUkbPatient());
     ExceptionTools.checkNullOrEmpty("versorgungsfall.patient.identifier",
-        versorgungsfall.getUkbPatient()
-            .getIdentifier());
+            versorgungsfall.getUkbPatient().getIdentifier());
 
     // set local variables
     this.patient = versorgungsfall.getUkbPatient();
-    this.patientId = versorgungsfall.getUkbPatient()
-        .getPatientId();
+    this.patientId = versorgungsfall.getUkbPatient().getPatientId();
     this.versorgungsfall = versorgungsfall;
     this.caseId = versorgungsfall.getCaseId();
 
     // set fhir content
-    this.setSubject(new Reference().setIdentifier(FhirTools.getIdentifierBySystem(
-        StaticValueProvider.systemWithIdentifierPatient, versorgungsfall.getUkbPatient()
-            .getIdentifier())));
+    this.setSubject(new Reference().setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
+                    versorgungsfall.getUkbPatient().getIdentifier())));
   }
 
-  @Override
-  public String getCaseId() {
+  @Override public String getCaseId() {
     return this.caseId;
   }
 
-  @Override
-  public String getCaseIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+  @Override public String getCaseIdentifierValue(String system)
+          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     if (Compare.isEqual(system, StaticValueProvider.systemWithIdentifierEncounter)) {
       return this.caseId;
     } // if
 
-    return this.getUkbVersorgungsfall()
-        .getCaseIdentifierValue(system);
+    return this.getUkbVersorgungsfall().getCaseIdentifierValue(system);
   }
 
-  @Override
-  public String getPatientId() {
+  @Override public String getPatientId() {
     return this.patientId;
   }
 
-  @Override
-  public String getPatientIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException {
+  @Override public String getPatientIdentifierValue(String system)
+          throws MandatoryFieldNotInitializedException {
     if (Compare.isEqual(system, StaticValueProvider.systemWithIdentifierPatient)) {
       return this.patientId;
     } // if
 
-    return this.getUkbPatient()
-        .getPatientIdentifierValue(system);
+    return this.getUkbPatient().getPatientIdentifierValue(system);
   }
 
-  @Override
-  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
+  @Override public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
 
     // the patient field is mandatory!
     if (this.patient == null) {
@@ -163,9 +155,8 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
     return this.patient;
   }
 
-  @Override
-  public UkbVersorgungsfall getUkbVersorgungsfall()
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+  @Override public UkbVersorgungsfall getUkbVersorgungsfall()
+          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
     if (this.versorgungsfall == null) {
       if (this.caseId == null) {
@@ -176,9 +167,8 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
     return this.versorgungsfall;
   }
 
-  @Override
-  public void initializeUkbPatient(UkbPatient patient)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
+  @Override public void initializeUkbPatient(UkbPatient patient)
+          throws IllegalArgumentException, FieldAlreadyInitializedException {
 
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
@@ -194,13 +184,13 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
     this.patientId = patient.getPatientId();
 
     // assign the patient to the fhir object
-    this.setSubject(new Reference().setIdentifier(FhirTools.getIdentifierBySystem(
-        StaticValueProvider.systemWithIdentifierPatient, patient.getIdentifier())));
+    this.setSubject(new Reference().setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
+                    patient.getIdentifier())));
   }
 
-  @Override
-  public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
+  @Override public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
+          throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
 
@@ -214,13 +204,11 @@ public class UkbObservation extends Observation implements UkbPatientProvider,
     this.caseId = versorgungsfall.getCaseId();
   }
 
-  @Override
-  public boolean isUkbPatientInitialized() {
+  @Override public boolean isUkbPatientInitialized() {
     return (this.patient != null);
   }
 
-  @Override
-  public boolean isUkbVersorgungsfallInitialized() {
+  @Override public boolean isUkbVersorgungsfallInitialized() {
     return (this.versorgungsfall != null);
   }
 

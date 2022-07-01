@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
 import java.util.List;
@@ -27,23 +26,21 @@ import org.hl7.fhir.r4.model.Location;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 
-@ResourceDef(name = "Location")
-public class UkbLocation extends Location {
+@ResourceDef(name = "Location") public class UkbLocation extends Location {
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
-   *             constructors for creating an instance of this resource.
+   * constructors for creating an instance of this resource.
    */
-  @Deprecated
-  public UkbLocation() {
+  @Deprecated public UkbLocation() {
     super();
   }
-  
+
   public UkbLocation(List<Identifier> identifier, CodeableConcept physicalType) {
-	  ExceptionTools.checkNullOrEmpty("Identifier", identifier);
-	  ExceptionTools.checkNull("PhysicalType", physicalType);
-	  
-	  this.setIdentifier(identifier);
-	  this.setPhysicalType(physicalType);
+    ExceptionTools.checkNullOrEmpty("Identifier", identifier);
+    ExceptionTools.checkNull("PhysicalType", physicalType);
+
+    this.setIdentifier(identifier);
+    this.setPhysicalType(physicalType);
   }
 }

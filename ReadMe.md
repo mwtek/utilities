@@ -1,14 +1,19 @@
 # Utilities library for the UKB Dashboard Processor project
 
-This project is a library project for the  [UKB Dashboard Processor Project](https://www.github.com/mwtek/dashboarddataprocessor).
+This project is a library project for
+the  [UKB Dashboard Processor Project](https://www.github.com/mwtek/dashboarddataprocessor).
 
-##Usage
-This Library contains some selected FHIR Resources and [utilities](https://www.github.com/mwtek/utilities), that are needed for the 
-[dashboardlogic](https://www.github.com/mwtek/dashboardlogic) and for the [dashboarddataprocessor](https://www.github.com/mwtek/dashboarddataprocessor) projects. You cannot run this library on its own. 
-This is merely a part of the dashboarddataprocessor and needs to be installed according to its
-installation guide.
+## Usage
+
+This Library contains some selected FHIR Resources
+and [utilities](https://www.github.com/mwtek/utilities), that are needed for the
+[dashboardlogic](https://www.github.com/mwtek/dashboardlogic) and for
+the [dashboarddataprocessor](https://www.github.com/mwtek/dashboarddataprocessor) projects. You
+cannot run this library on its own. This is merely a part of the dashboarddataprocessor and needs to
+be installed according to its installation guide.
 
 ## License
+
 This project is released under the terms of the [GPL version 3](LICENSE.md).
 
 ```
@@ -26,16 +31,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 
-
 ## Requirements
-<a id="requirements"></a>
+
 The code is platform independent and was tested on Linux and Windows environments.
 
 The following software must be available to execute the program:
 
-- Java 11 (JDK mandatory for compilation OpenJDK recommended)
+- Java 17 (JDK mandatory for compilation OpenJDK recommended)
 - Apache Maven (mandatory for compilation)
 
-It is recommended to have both programs installed in a way that the correct versions of *java* and *mvn* are found in the system path.
+It is recommended to have both programs installed in a way that the correct versions of *java* and *
+mvn* are found in the system path.
 
-In addition, at least 4 GB of free RAM, preferably 8 GB, should be available. The size depends on the number of resources that have to be retrieved from the FHIR server. In a test with ~ 500,000 resources, 4 GB was the lower limit. 
+In addition, at least 4 GB of free RAM, preferably 8 GB, should be available. The size depends on
+the number of resources that have to be retrieved from the FHIR server. In a test with ~ 500,000
+resources, 4 GB was the lower limit. 

@@ -28,34 +28,30 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utility class for functions concerning time measurements
- * 
- * @author <a href="mailto:david.meyers@ukbonn.de">David Meyers</a>
  *
+ * @author <a href="mailto:david.meyers@ukbonn.de">David Meyers</a>
  */
-@Slf4j
-public class TimerTools {
+@Slf4j public class TimerTools {
 
   /**
    * Calculation of the time interval between a specified time and the current time
-   * 
+   *
    * @param startTime start time (in UnixTime EPOCHSECOND) of the time to be compared
    * @return elapsed time in s
    */
   public static double calcTimeDifference(long startTime) {
-    return ((Instant.now()
-        .getEpochSecond() * 1000 - startTime) / 1000.0);
+    return ((Instant.now().getEpochSecond() * 1000 - startTime) / 1000.0);
   }
 
   /**
    * Calculation of the time interval between a specified time and the current time
-   * 
+   *
    * @param startTimeInEpochMillis start time (in UnixTime EPOCHMILLI) of the time to be compared
-   * @param scale scale of the {@code BigDecimal} value to be returned
+   * @param scale                  scale of the {@code BigDecimal} value to be returned
    * @return elapsed time in s
    */
   public static BigDecimal calcTimeDifference(long startTimeInEpochMillis, int scale) {
-    long actualTime = Instant.now()
-        .toEpochMilli();
+    long actualTime = Instant.now().toEpochMilli();
     // calculate to seconds
     double timeDifference = (actualTime - startTimeInEpochMillis) / 1000.0;
     BigDecimal returnSeconds = new BigDecimal(timeDifference);
@@ -66,7 +62,7 @@ public class TimerTools {
 
   /**
    * A comfortable way to log the execution time of a method
-   * 
+   *
    * @param <T>
    * @param block
    * @return
@@ -82,7 +78,7 @@ public class TimerTools {
 
   /**
    * Starting a timer
-   * 
+   *
    * @return current time in ms
    */
   public static Instant startTimer() {
@@ -91,7 +87,7 @@ public class TimerTools {
 
   /**
    * Calculates the difference of a start time and the current time
-   * 
+   *
    * @param startTime starting time in ms
    * @return the time that has passed in ms
    */
@@ -104,9 +100,9 @@ public class TimerTools {
 
   /**
    * Calculates the difference of a start time and the current time
-   * 
+   *
    * @param startTime starting time in ms
-   * @param taskDesc puts the task description to the output
+   * @param taskDesc  puts the task description to the output
    * @return the time that has passed in ms
    */
   public static long stopTimerAndLog(Instant startTime, String taskDesc) {

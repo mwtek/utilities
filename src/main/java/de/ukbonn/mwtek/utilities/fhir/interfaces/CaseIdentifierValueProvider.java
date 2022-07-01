@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.interfaces;
 
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
@@ -25,8 +24,7 @@ import de.ukbonn.mwtek.utilities.generic.interfaces.CaseIdProvider;
 
 public interface CaseIdentifierValueProvider extends CaseIdProvider {
 
-  @Override
-  default String getCaseId() {
+  @Override default String getCaseId() {
     try {
       return this.getCaseIdentifierValue(StaticValueProvider.systemWithIdentifierEncounter);
     } catch (Exception ex) {
@@ -35,5 +33,5 @@ public interface CaseIdentifierValueProvider extends CaseIdProvider {
   }
 
   public String getCaseIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 }

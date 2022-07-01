@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.interfaces;
 
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
@@ -26,10 +25,10 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbVersorgungsfall;
 public interface UkbVersorgungsfallProvider extends CaseIdentifierValueProvider {
 
   public UkbVersorgungsfall getUkbVersorgungsfall()
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
   public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-      throws IllegalArgumentException, FieldAlreadyInitializedException;
+          throws IllegalArgumentException, FieldAlreadyInitializedException;
 
   public boolean isUkbVersorgungsfallInitialized();
 }

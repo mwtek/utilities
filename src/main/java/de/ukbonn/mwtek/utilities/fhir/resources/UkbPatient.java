@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
 import java.util.Date;
@@ -33,16 +32,15 @@ import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
-@ResourceDef(name = "Patient")
-public class UkbPatient extends Patient implements PatientIdentifierValueProvider {
+@ResourceDef(name = "Patient") public class UkbPatient extends Patient
+        implements PatientIdentifierValueProvider {
 
-  @Deprecated
-  public UkbPatient() {
+  @Deprecated public UkbPatient() {
     super();
   }
 
   public UkbPatient(List<Identifier> identifier, List<HumanName> name, AdministrativeGender gender,
-      Date birthDate, List<Address> address) {
+          Date birthDate, List<Address> address) {
 
     ExceptionTools.checkNullOrEmpty("identifier", identifier);
     ExceptionTools.checkNullOrEmpty("name", name);
@@ -58,7 +56,7 @@ public class UkbPatient extends Patient implements PatientIdentifierValueProvide
   }
 
   public UkbPatient(List<Identifier> identifier, List<HumanName> name, AdministrativeGender gender,
-      List<Address> address) {
+          List<Address> address) {
 
     ExceptionTools.checkNullOrEmpty("identifier", identifier);
     ExceptionTools.checkNullOrEmpty("name", name);
@@ -71,8 +69,7 @@ public class UkbPatient extends Patient implements PatientIdentifierValueProvide
     this.setAddress(address);
   }
 
-  @Override
-  public String getPatientIdentifierValue(String system) {
+  @Override public String getPatientIdentifierValue(String system) {
     if (system == null) {
       system = StaticValueProvider.systemWithIdentifierPatient;
     }

@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
 import org.hl7.fhir.r4.model.Coding;
@@ -35,18 +34,16 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
-@ResourceDef(name = "Encounter")
-public class UkbEncounter extends Encounter
-    implements UkbPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
+@ResourceDef(name = "Encounter") public class UkbEncounter extends Encounter
+        implements UkbPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
   protected UkbPatient patient;
   protected String patientId;
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
-   *             constructors for creating an instance of this resource.
+   * constructors for creating an instance of this resource.
    */
-  @Deprecated
-  public UkbEncounter() {
+  @Deprecated public UkbEncounter() {
     super();
   }
 
@@ -55,12 +52,12 @@ public class UkbEncounter extends Encounter
    * assigned later using {@link #initializeUkbPatient(UkbPatient)}. The patient is mandatory,
    * therefore the <code>patientId</code> must be specified
    *
-   * @param patientId the default system id of the patient
+   * @param patientId       the default system id of the patient
    * @param encounterStatus {@link EncounterStatus} e.g. {@link EncounterStatus#INPROGRESS}
-   * @param encounterClass The EncounterClass e.g. "pre-stationary"
+   * @param encounterClass  The EncounterClass e.g. "pre-stationary"
    */
   public UkbEncounter(String patientId, Enumeration<EncounterStatus> encounterStatus,
-      Coding encounterClass) {
+          Coding encounterClass) {
     super(encounterStatus, encounterClass);
 
     // validate arguments
@@ -70,9 +67,8 @@ public class UkbEncounter extends Encounter
     this.patientId = patientId;
   }
 
-  @Deprecated
-  public UkbEncounter(UkbPatient patient, Enumeration<EncounterStatus> status,
-      Coding encounterClass) throws IllegalArgumentException {
+  @Deprecated public UkbEncounter(UkbPatient patient, Enumeration<EncounterStatus> status,
+          Coding encounterClass) throws IllegalArgumentException {
     super(status, encounterClass);
 
     // INFO: this constructor seems deprecated and isnt handling the parameters
@@ -87,8 +83,9 @@ public class UkbEncounter extends Encounter
     this.patientId = patient.getPatientId();
 
     // set fhir content
-    this.setSubject(new Reference().setIdentifier(FhirTools.getIdentifierBySystem(
-        StaticValueProvider.systemWithIdentifierPatient, patient.getIdentifier())));
+    this.setSubject(new Reference().setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
+                    patient.getIdentifier())));
 
     // set external id
     Identifier identifier = new Identifier();
@@ -97,8 +94,7 @@ public class UkbEncounter extends Encounter
     this.setSubject(new Reference().setIdentifier(identifier));
   }
 
-  @Override
-  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
+  @Override public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
 
     // the patient field is mandatory!
     if (this.patient == null) {
@@ -107,9 +103,8 @@ public class UkbEncounter extends Encounter
     return this.patient;
   }
 
-  @Override
-  public void initializeUkbPatient(UkbPatient patient)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
+  @Override public void initializeUkbPatient(UkbPatient patient)
+          throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
     ExceptionTools.checkNullOrEmpty("patient.Identifier", patient.getIdentifier());
@@ -124,8 +119,9 @@ public class UkbEncounter extends Encounter
     this.patientId = patient.getPatientId();
 
     // assign the patient to the fhir object
-    this.setSubject(new Reference().setIdentifier(FhirTools.getIdentifierBySystem(
-        StaticValueProvider.systemWithIdentifierPatient, patient.getIdentifier())));
+    this.setSubject(new Reference().setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
+                    patient.getIdentifier())));
 
     Identifier identifier = new Identifier();
     identifier.setSystem(StaticValueProvider.systemWithIdentifierPatient);
@@ -133,13 +129,11 @@ public class UkbEncounter extends Encounter
     this.setSubject(new Reference().setIdentifier(identifier));
   }
 
-  @Override
-  public boolean isUkbPatientInitialized() {
+  @Override public boolean isUkbPatientInitialized() {
     return (this.patient != null);
   }
 
-  @Override
-  public String getPatientId() {
+  @Override public String getPatientId() {
     return this.patientId;
   }
 
@@ -147,19 +141,16 @@ public class UkbEncounter extends Encounter
     this.patientId = patientId;
   }
 
-  @Override
-  public String getPatientIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException {
+  @Override public String getPatientIdentifierValue(String system)
+          throws MandatoryFieldNotInitializedException {
     if (Compare.isEqual(system, StaticValueProvider.systemWithIdentifierPatient)) {
       return this.patientId;
     } // if
 
-    return this.getUkbPatient()
-        .getPatientIdentifierValue(system);
+    return this.getUkbPatient().getPatientIdentifierValue(system);
   }
 
-  @Override
-  public String getCaseIdentifierValue(String system) {
+  @Override public String getCaseIdentifierValue(String system) {
     if (system == null) {
       system = StaticValueProvider.systemWithIdentifierEncounter;
     }
@@ -172,12 +163,10 @@ public class UkbEncounter extends Encounter
 
   /**
    * Encounter.period.start is a mandatory field in the kds profile.
-   * 
-   * @param encounter An instance of an {@link UkbEncounter} object
+   *
    * @return True if {@link UkbEncounter#getPeriod() Encounter.period.start} is not null
    */
   public boolean isPeriodStartExistent() {
-    return this.getPeriod() != null && this.getPeriod()
-        .getStart() != null;
+    return this.getPeriod() != null && this.getPeriod().getStart() != null;
   }
 }

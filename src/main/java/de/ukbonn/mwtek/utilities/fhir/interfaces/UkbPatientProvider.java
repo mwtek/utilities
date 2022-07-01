@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.interfaces;
 
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
@@ -26,10 +25,10 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 public interface UkbPatientProvider {
 
   public UkbPatient getUkbPatient()
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
   public void initializeUkbPatient(UkbPatient patient)
-      throws IllegalArgumentException, FieldAlreadyInitializedException;
+          throws IllegalArgumentException, FieldAlreadyInitializedException;
 
   public boolean isUkbPatientInitialized();
 }

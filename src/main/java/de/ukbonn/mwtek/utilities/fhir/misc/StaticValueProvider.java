@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
 public class StaticValueProvider {
@@ -26,18 +25,17 @@ public class StaticValueProvider {
   public static final String systemWithIdentifierEncounter = systemWithIdentifiersTag + "encounter";
   public static final String systemWithIdentifierLocation = systemWithIdentifiersTag + "location";
   public static final String systemWithIdentifierMedication =
-      systemWithIdentifiersTag + "medication";
+          systemWithIdentifiersTag + "medication";
   public static final String systemWithIdentifierObservation =
-      systemWithIdentifiersTag + "observation";
+          systemWithIdentifiersTag + "observation";
   public static final String systemWithIdentifierPatient = systemWithIdentifiersTag + "patient";
   public static final String systemWithIdentifierConsent = systemWithIdentifiersTag + "consent";
   public static final String systemWithIdentifierPractitioner =
-      systemWithIdentifiersTag + "practitioner";
+          systemWithIdentifiersTag + "practitioner";
   public static final String systemWithIdentifierProcedure = systemWithIdentifiersTag + "procedure";
   public static final String systemWithIdentifierResearchSubject =
-      systemWithIdentifiersTag + "researchSubject";
+          systemWithIdentifiersTag + "researchSubject";
   public static final String systemWithIdentifierServiceRequest =
-      systemWithIdentifiersTag + "serviceRequest";
-  public static final String systemWithIdentifierCondition = 
-      systemWithIdentifiersTag + "condition";
+          systemWithIdentifiersTag + "serviceRequest";
+  public static final String systemWithIdentifierCondition = systemWithIdentifiersTag + "condition";
 }

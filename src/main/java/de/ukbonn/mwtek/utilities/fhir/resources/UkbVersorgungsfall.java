@@ -15,7 +15,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
 import java.util.List;
@@ -28,16 +27,13 @@ import org.hl7.fhir.r4.model.Period;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 
-@Deprecated
-@ResourceDef(name = "Encounter")
-public class UkbVersorgungsfall extends UkbEncounter {
+@Deprecated @ResourceDef(name = "Encounter") public class UkbVersorgungsfall extends UkbEncounter {
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
-   *             constructors for creating an instance of this resource.
+   * constructors for creating an instance of this resource.
    */
-  @Deprecated
-  public UkbVersorgungsfall() {
+  @Deprecated public UkbVersorgungsfall() {
     super();
   }
 
@@ -46,23 +42,24 @@ public class UkbVersorgungsfall extends UkbEncounter {
    * assigned later using {@link #initializeUkbPatient(UkbPatient)}. The patient is mandatory,
    * therefore the <code>patientId</code> must be specified
    *
-   * @param status
-   * @param encounterClass
-   * @param patientId the default system id of the patient
-   * @param ukbVersorgungsfallIdentifierList
-   * @param period
-   * @param ukbVersorgungsfallDiagnosisList
+   * @param status                           status of the encounter
+   * @param encounterClass                   Classification of the encounter
+   * @param patientId                        the default system id of the patient
+   * @param ukbVersorgungsfallIdentifierList used for Identifier
+   * @param period                           Timespan of the Duration of the patient
+   * @param ukbVersorgungsfallDiagnosisList  The list of diagnosis relevant to this encounter.
    */
   public UkbVersorgungsfall(String patientId, Enumeration<EncounterStatus> status,
-      Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
-      List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList) throws IllegalArgumentException {
+          Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
+          List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
+          throws IllegalArgumentException {
     super(patientId, status, encounterClass);
 
     // validate arguments
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList",
-        ukbVersorgungsfallIdentifierList);
+            ukbVersorgungsfallIdentifierList);
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList",
-        ukbVersorgungsfallDiagnosisList);
+            ukbVersorgungsfallDiagnosisList);
     ExceptionTools.checkNull("period", period);
 
     // set fhir content
@@ -72,15 +69,16 @@ public class UkbVersorgungsfall extends UkbEncounter {
   }
 
   public UkbVersorgungsfall(UkbPatient patient, Enumeration<EncounterStatus> status,
-      Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
-      List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList) throws IllegalArgumentException {
+          Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
+          List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
+          throws IllegalArgumentException {
     super(patient, status, encounterClass);
 
     // validate arguments
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList",
-        ukbVersorgungsfallIdentifierList);
+            ukbVersorgungsfallIdentifierList);
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList",
-        ukbVersorgungsfallDiagnosisList);
+            ukbVersorgungsfallDiagnosisList);
     ExceptionTools.checkNull("period", period);
 
     // set fhir content
