@@ -31,8 +31,6 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
 
-import static de.ukbonn.mwtek.utilities.fhir.misc.FhirTools.getReference;
-
 public class Converter {
 
   // Test
@@ -64,7 +62,13 @@ public class Converter {
           boolean check) {
     List<DomainResource> resources = new ArrayList<>();
     res.forEach((temp) -> {
-      resources.add(convert(temp, check));
+      try {
+        resources.add(convert(temp, check));
+      }
+      catch(IllegalArgumentException ex)
+      {
+        System.out.println("Unable to convert ressource with id " + temp.getId() + " from type " + temp.fhirType() + ". Empty mandatory field: " + ex.getMessage());
+      }
     });
     return resources;
   }
@@ -100,7 +104,9 @@ public class Converter {
     UkbKontaktGesundheitseinrichtung res = new UkbKontaktGesundheitseinrichtung();
 
     if (check) {
-      ExceptionTools.checkNull("Period", e.getStatusHistory().get(0).getPeriod());
+      // e.getClass_() and e.getPeriod() got an auto create mechanism by default if class is empty.
+      ExceptionTools.checkNull("Period", e.getPeriod().getStart());
+      ExceptionTools.checkNull("Class", e.getClass_().getCode());
     }
 
     res.setIdentifier(e.getIdentifier());
@@ -132,12 +138,12 @@ public class Converter {
 
     // Eigene Attribute
     // CHECK
-    res.setPatientId(getReferenceId(e.getSubject()));
+    res.setPatientId(extractReferenceId(e.getSubject()));
 
 
     // store the ID of each location WITHOUT the resource type
     e.getLocation().forEach(loc -> {
-      loc.getLocation().setIdElement(new StringType(split(loc.getLocation().getReference())));
+      loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
     });
     res.setLocation(e.getLocation());
 
@@ -217,8 +223,8 @@ public class Converter {
     res.setMeta(o.getMeta());
     res.setId(o.getIdElement().getIdPart());
 
-    res.setPatientId(getReferenceId(o.getSubject()));
-    res.setCaseId(getReferenceId(o.getEncounter()));
+    res.setPatientId(extractReferenceId(o.getSubject()));
+    res.setCaseId(extractReferenceId(o.getEncounter()));
     return res;
   }
 
@@ -266,8 +272,8 @@ public class Converter {
     res.setMeta(p.getMeta());
     res.setId(p.getIdElement().getIdPart());
 
-    res.setPatientId(getReferenceId(p.getSubject()));
-    res.setCaseId(getReferenceId(p.getEncounter()));
+    res.setPatientId(extractReferenceId(p.getSubject()));
+    res.setCaseId(extractReferenceId(p.getEncounter()));
 
     return res;
   }
@@ -305,9 +311,8 @@ public class Converter {
     res.setMeta(c.getMeta());
     res.setId(c.getIdElement().getIdPart());
 
-    res.setPatientId(getReferenceId(c.getSubject()));
-
-    res.setCaseId(getReferenceId(c.getEncounter()));
+    res.setPatientId(extractReferenceId(c.getSubject()));
+    res.setCaseId(extractReferenceId(c.getEncounter()));
 
     return res;
   }
@@ -352,11 +357,13 @@ public class Converter {
 
   /**
    * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the resource type.
+   *
+   * If the reference object is <code>null</code> the identifier is read.
    * @param reference FHIR reference as "Encounter/123"
    * @return The plain id of the reference as "123"
    */
-  private static String getReferenceId(Reference reference) {
-    if (reference.getReference() != null) {
+  public static String extractReferenceId(Reference reference) {
+    if (reference.hasReference()) {
      return split(reference.getReference());
     } else
       return reference.getIdentifier().getValue();

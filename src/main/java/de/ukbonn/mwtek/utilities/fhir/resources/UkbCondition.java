@@ -19,6 +19,7 @@ package de.ukbonn.mwtek.utilities.fhir.resources;
 
 import java.util.Date;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Reference;
@@ -35,9 +36,9 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j @ResourceDef(name = "Condition") public class UkbCondition extends Condition
+@Slf4j
+@ResourceDef(name = "Condition") public class UkbCondition extends Condition
         implements UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider,
         CaseIdentifierValueProvider {
 
