@@ -40,7 +40,7 @@ public class FhirCodingTools {
    */
   public static String getCodeBySystem(List<Coding> codings, String system) {
     Coding coding = getCodingBySystem(codings, system);
-    return coding.hasCode() ? coding.getCode() : null;
+    return coding!= null && coding.hasCode() ? coding.getCode() : null;
   }
 
   /**
@@ -51,6 +51,15 @@ public class FhirCodingTools {
       String system) {
     return hasCodeBySystem(codings, system) && (codeSystemEntries.contains(
         getCodeBySystem(codings, system)));
+  }
+
+
+  /**
+   * Does the given fhir {@link Coding} contain a value that is part of the given code system.
+   * @return <code>True</code> is the code is not <code>null</code> and also part of the given code system.
+   */
+  public static boolean isCodeInCodesystem(String code, List<String> codeSystemEntries) {
+    return code!=null && codeSystemEntries.contains(code);
   }
 
   /**
