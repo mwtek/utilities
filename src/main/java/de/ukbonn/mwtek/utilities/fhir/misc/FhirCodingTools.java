@@ -18,6 +18,7 @@
 
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
+import java.util.Collection;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -30,7 +31,7 @@ public class FhirCodingTools {
    */
   public static Coding getCodingBySystem(List<Coding> codings, String system) {
     return codings.stream()
-        .filter(x -> x.getSystem().equals(system)).findFirst()
+        .filter(x -> x.hasSystem() && x.getSystem().equals(system)).findFirst()
         .orElse(null);
   }
 
@@ -124,5 +125,19 @@ public class FhirCodingTools {
       String referenceCode) {
     String code = getCodeOfFirstCodeableConcept(codeableConcepts);
     return code != null && code.equals(referenceCode);
+  }
+
+  /**
+   * This method checks whether a given set of {@link CodeableConcept} contains any of the {@link Coding#getCode() codes} in the given code system, to the given system.
+   */
+  public static boolean isCodeInCodeableConcepts(List<CodeableConcept> codeableConcepts,
+    String system,  List<String> referenceCodes) {
+    if(codeableConcepts!=null)
+     for(CodeableConcept concept : codeableConcepts)
+      {
+      if(isCodeInCodesystem(concept.getCoding(),referenceCodes,system))
+        return true;
+      }
+    return false;
   }
 }
