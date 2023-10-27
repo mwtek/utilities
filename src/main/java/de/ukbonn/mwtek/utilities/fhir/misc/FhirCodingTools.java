@@ -48,7 +48,7 @@ public class FhirCodingTools {
    * Does the given list of fhir {@link Coding}s contain a value that is part of the given code
    * system.
    */
-  public static boolean isCodeInCodesystem(List<Coding> codings, List<String> codeSystemEntries,
+  public static boolean isCodeInCodesystem(List<Coding> codings, Collection<String> codeSystemEntries,
       String system) {
     return hasCodeBySystem(codings, system) && (codeSystemEntries.contains(
         getCodeBySystem(codings, system)));
@@ -59,7 +59,7 @@ public class FhirCodingTools {
    * Does the given fhir {@link Coding} contain a value that is part of the given code system.
    * @return <code>True</code> is the code is not <code>null</code> and also part of the given code system.
    */
-  public static boolean isCodeInCodesystem(String code, List<String> codeSystemEntries) {
+  public static boolean isCodeInCodesystem(String code, Collection<String> codeSystemEntries) {
     return code!=null && codeSystemEntries.contains(code);
   }
 

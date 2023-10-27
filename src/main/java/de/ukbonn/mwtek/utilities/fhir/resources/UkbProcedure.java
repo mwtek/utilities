@@ -1,27 +1,21 @@
 /*
- * Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
- * modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
- * PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
- * OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
- * IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
- * YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
- * OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
- * COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
- * BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
- * ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
- * OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
- * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
- * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
+ *  Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
+ *  modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
+ *  PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+ *  OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+ *  IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ *  YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
+ *  OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
+ *  COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
+ *  BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
+ *  ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
+ *  OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
+ *  PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
+ *  OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with
+ *  this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
-
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Type;
 
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.Compare;
@@ -35,21 +29,29 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Type;
 
-@ResourceDef(name = "Procedure") public class UkbProcedure extends Procedure
-        implements UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider,
-        CaseIdentifierValueProvider {
+@ResourceDef(name = "Procedure")
+public class UkbProcedure extends Procedure
+    implements UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider,
+    CaseIdentifierValueProvider {
+
   protected UkbPatient patient;
   protected UkbVersorgungsfall versorgungsfall;
   protected String patientId;
   protected String caseId;
 
-  @Deprecated public UkbProcedure() {
+  @Deprecated
+  public UkbProcedure() {
     super();
   }
 
   public UkbProcedure(String patientId, String caseId, ProcedureStatus status, CodeableConcept code,
-          Type performed) {
+      Type performed) {
     super();
 
     // validate arguments
@@ -64,20 +66,20 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
     // set fhir content
     this.setSubject(new Reference().setType("Patient").setIdentifier(
-            new Identifier().setSystem(StaticValueProvider.systemWithIdentifierPatient)
-                    .setValue(patientId)));
+        new Identifier().setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)
+            .setValue(patientId)));
 
     this.setEncounter(new Reference().setType("Encounter").setIdentifier(
-            new Identifier().setSystem(StaticValueProvider.systemWithIdentifierEncounter)
-                    .setValue(caseId)));
+        new Identifier().setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)
+            .setValue(caseId)));
     this.setStatus(status);
     this.setCode(code);
     this.setPerformed(performed);
   }
 
   public UkbProcedure(UkbPatient patient, UkbVersorgungsfall versorgungsfall,
-          ProcedureStatus status, CodeableConcept code, Type performed)
-          throws IllegalArgumentException {
+      ProcedureStatus status, CodeableConcept code, Type performed)
+      throws IllegalArgumentException {
     super();
 
     // validate arguments
@@ -95,23 +97,23 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
     // set fhir content
     this.setSubject(new Reference().setIdentifier(
-            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
-                    patient.getIdentifier())));
+        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
+            patient.getIdentifier())));
     this.setStatus(status);
     this.setCode(code);
     this.setPerformed(performed);
   }
 
   public UkbProcedure(UkbVersorgungsfall versorgungsfall, ProcedureStatus status,
-          CodeableConcept code, Type performed)
-          throws IllegalArgumentException, MandatoryFieldNotInitializedException {
+      CodeableConcept code, Type performed)
+      throws IllegalArgumentException, MandatoryFieldNotInitializedException {
     super();
 
     // validate arguments
     ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
     ExceptionTools.checkNull("versorgungsfall.patient", versorgungsfall.getUkbPatient());
     ExceptionTools.checkNullOrEmpty("versorgungsfall.patient.identifier",
-            versorgungsfall.getUkbPatient().getIdentifier());
+        versorgungsfall.getUkbPatient().getIdentifier());
     ExceptionTools.checkNull("status", status);
     ExceptionTools.checkNull("code", code);
     ExceptionTools.checkNull("performed", performed);
@@ -124,14 +126,15 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
     // set fhir content
     this.setSubject(new Reference().setIdentifier(
-            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
-                    versorgungsfall.getUkbPatient().getIdentifier())));
+        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
+            versorgungsfall.getUkbPatient().getIdentifier())));
     this.setStatus(status);
     this.setCode(code);
     this.setPerformed(performed);
   }
 
-  @Override public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
+  @Override
+  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
@@ -139,8 +142,9 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
     return this.patient;
   }
 
-  @Override public void initializeUkbPatient(UkbPatient patient)
-          throws IllegalArgumentException, FieldAlreadyInitializedException {
+  @Override
+  public void initializeUkbPatient(UkbPatient patient)
+      throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
     ExceptionTools.checkNullOrEmpty("patient.Identifier", patient.getIdentifier());
@@ -156,15 +160,17 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 
     // assign the patient to the fhir object
     this.setSubject(new Reference().setIdentifier(
-            FhirTools.getIdentifierBySystem(StaticValueProvider.systemWithIdentifierPatient,
-                    patient.getIdentifier())));
+        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
+            patient.getIdentifier())));
   }
 
-  @Override public boolean isUkbPatientInitialized() {
+  @Override
+  public boolean isUkbPatientInitialized() {
     return (this.patient != null);
   }
 
-  @Override public String getCaseId() {
+  @Override
+  public String getCaseId() {
     return this.caseId;
   }
 
@@ -172,16 +178,18 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
     this.caseId = caseId;
   }
 
-  @Override public String getCaseIdentifierValue(String system)
-          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
-    if (Compare.isEqual(system, StaticValueProvider.systemWithIdentifierEncounter)) {
+  @Override
+  public String getCaseIdentifierValue(String system)
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+    if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)) {
       return this.caseId;
     }
 
     return this.getUkbVersorgungsfall().getCaseIdentifierValue(system);
   }
 
-  @Override public String getPatientId() {
+  @Override
+  public String getPatientId() {
     return this.patientId;
   }
 
@@ -189,17 +197,19 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
     this.patientId = patientId;
   }
 
-  @Override public String getPatientIdentifierValue(String system)
-          throws MandatoryFieldNotInitializedException {
-    if (Compare.isEqual(system, StaticValueProvider.systemWithIdentifierPatient)) {
+  @Override
+  public String getPatientIdentifierValue(String system)
+      throws MandatoryFieldNotInitializedException {
+    if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
       return this.patientId;
     }
 
     return this.getUkbPatient().getPatientIdentifierValue(system);
   }
 
-  @Override public UkbVersorgungsfall getUkbVersorgungsfall()
-          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+  @Override
+  public UkbVersorgungsfall getUkbVersorgungsfall()
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
     if (this.versorgungsfall == null) {
       if (this.caseId == null) {
@@ -210,8 +220,9 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
     return this.versorgungsfall;
   }
 
-  @Override public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-          throws IllegalArgumentException, FieldAlreadyInitializedException {
+  @Override
+  public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
+      throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
 
@@ -224,7 +235,8 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
     this.caseId = versorgungsfall.getCaseId();
   }
 
-  @Override public boolean isUkbVersorgungsfallInitialized() {
+  @Override
+  public boolean isUkbVersorgungsfallInitialized() {
     return (this.versorgungsfall != null);
   }
 }

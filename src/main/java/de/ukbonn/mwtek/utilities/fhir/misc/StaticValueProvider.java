@@ -1,41 +1,60 @@
 /*
- * Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
- * modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
- * PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
- * OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
- * IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
- * YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
- * OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
- * COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
- * BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
- * ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
- * OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
- * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
- * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
+ *  Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
+ *  modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
+ *  PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+ *  OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+ *  IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ *  YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
+ *  OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
+ *  COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
+ *  BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
+ *  ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
+ *  OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
+ *  PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
+ *  OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with
+ *  this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
 public class StaticValueProvider {
-  public static String system = "http://ukbonn.de";
-  // used as a identifier for the resource type which will be appended
-  public static final String systemWithIdentifiersTag = system + "/identifiers/";
 
-  public static final String systemWithIdentifierEncounter = systemWithIdentifiersTag + "encounter";
-  public static final String systemWithIdentifierLocation = systemWithIdentifiersTag + "location";
-  public static final String systemWithIdentifierMedication =
-          systemWithIdentifiersTag + "medication";
-  public static final String systemWithIdentifierObservation =
-          systemWithIdentifiersTag + "observation";
-  public static final String systemWithIdentifierPatient = systemWithIdentifiersTag + "patient";
-  public static final String systemWithIdentifierConsent = systemWithIdentifiersTag + "consent";
-  public static final String systemWithIdentifierPractitioner =
-          systemWithIdentifiersTag + "practitioner";
-  public static final String systemWithIdentifierProcedure = systemWithIdentifiersTag + "procedure";
-  public static final String systemWithIdentifierResearchSubject =
-          systemWithIdentifiersTag + "researchSubject";
-  public static final String systemWithIdentifierServiceRequest =
-          systemWithIdentifiersTag + "serviceRequest";
-  public static final String systemWithIdentifierCondition = systemWithIdentifiersTag + "condition";
+  public static final String SYSTEM = "http://localidentifier.com";
+  // used as an identifier for the resource type which will be appended
+  public static final String SYSTEM_WITH_IDENTIFIERS_TAG = SYSTEM + "/identifiers/";
+
+  public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "encounter";
+  // Encounter resources, consist of 3 identifiers instead of one.
+  public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER_TRANSFER_ID =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "encounter_transferid";
+  public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER_CONTACT_LEVEL =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "encounter_contactlevel";
+  public static final String SYSTEM_WITH_IDENTIFIER_LOCATION =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "location";
+  public static final String SYSTEM_WITH_IDENTIFIER_MEDICATION =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "medication";
+
+  public static final String SYSTEM_WITH_IDENTIFIER_MEDICATION_STATEMENT =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "medicationStatement";
+  public static final String SYSTEM_WITH_IDENTIFIER_OBSERVATION =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "observation";
+  public static final String SYSTEM_WITH_IDENTIFIER_PATIENT =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "patient";
+  public static final String SYSTEM_WITH_IDENTIFIER_CONSENT =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "consent";
+  public static final String SYSTEM_WITH_IDENTIFIER_PRACTITIONER =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "practitioner";
+  public static final String SYSTEM_WITH_IDENTIFIER_PROCEDURE =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "procedure";
+  public static final String SYSTEM_WITH_IDENTIFIER_RESEARCH_SUBJECT =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "researchSubject";
+  public static final String SYSTEM_WITH_IDENTIFIER_SERVICE_REQUEST =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "serviceRequest";
+  public static final String SYSTEM_WITH_IDENTIFIER_CONDITION =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "condition";
+
+  public static final String SYSTEM_WITH_IDENTIFIER_EPISODE_OF_CARE =
+      SYSTEM_WITH_IDENTIFIERS_TAG + "episodeOfCare";
 }
+

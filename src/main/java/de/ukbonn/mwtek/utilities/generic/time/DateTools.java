@@ -40,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j public class DateTools {
 
+  public static final ZoneId timeZoneEuropeBerlin = ZoneId.of("Europe/Berlin");
+
   /**
    * Merging a date and a time (necessary because of weird database design where date and time are )
    * <p>
@@ -264,9 +266,9 @@ import lombok.extern.slf4j.Slf4j;
       Instant upperLocalDate = Instant.ofEpochMilli(upperDate.getTime());
 
       ZonedDateTime lowerZonedDateTime =
-              ZonedDateTime.ofInstant(lowerLocalDate, ZoneId.of("Europe/Berlin"));
+              ZonedDateTime.ofInstant(lowerLocalDate, timeZoneEuropeBerlin);
       ZonedDateTime upperZonedDateTime =
-              ZonedDateTime.ofInstant(upperLocalDate, ZoneId.of("Europe/Berlin"));
+              ZonedDateTime.ofInstant(upperLocalDate, timeZoneEuropeBerlin);
 
       // truncate to days cause we need to sum the calendar days
       daysBetween = ChronoUnit.DAYS.between(lowerZonedDateTime.truncatedTo(ChronoUnit.DAYS),
@@ -286,5 +288,35 @@ import lombok.extern.slf4j.Slf4j;
       return (double) seconds / 60 / 60 / 24;
     else
       return TimeUnit.SECONDS.toDays(seconds);
+  }
+
+  public static boolean isSameCalendarDay(Date date1, Date date2) {
+    LocalDate localDate1 = date1.toInstant().atZone(timeZoneEuropeBerlin).toLocalDate();
+    LocalDate localDate2 = date2.toInstant().atZone(timeZoneEuropeBerlin).toLocalDate();
+    return localDate1.isEqual(localDate2);
+  }
+
+  /**
+   * Determines whether the difference between two dates is more than one day.
+   *
+   * @param youngerDate The date that is younger than the other date
+   * @param olderDate The date that is older than the other date
+   * @return <code>true</code> if the difference between the two dates is more than one day, <code>false</code> otherwise
+   */
+  public static boolean isMoreThanOneDayOlder(Date youngerDate, Date olderDate) {
+    return isMoreThanXDaysOlder(youngerDate,olderDate,1);
+  }
+
+  /**
+   * Determines whether the difference between two dates is more than a given amount of day(s).
+   *
+   * @param youngerDate The date that is younger than the other date
+   * @param olderDate The date that is older than the other date
+   * @param daysDifference The number of days that should be at least between the two dates
+   * @return <code>true</code> if the difference between the two dates is more than one day, <code>false</code> otherwise
+   */
+  public static boolean isMoreThanXDaysOlder(Date youngerDate, Date olderDate, int daysDifference) {
+    long timeDifference = youngerDate.getTime() - olderDate.getTime();
+    return timeDifference > TimeUnit.DAYS.toMillis(daysDifference);
   }
 }
