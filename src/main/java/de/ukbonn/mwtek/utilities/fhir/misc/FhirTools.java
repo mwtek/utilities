@@ -1,22 +1,24 @@
 /*
- * Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
- * modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
- * PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
- * OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
- * IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
- * YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
- * OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
- * COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
- * BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
- * ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
- * OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
- * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
- * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
+ *  Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
+ *  modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
+ *  PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+ *  OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+ *  IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ *  YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
+ *  OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
+ *  COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
+ *  BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
+ *  ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
+ *  OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
+ *  PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
+ *  OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with
+ *  this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
+import de.ukbonn.mwtek.utilities.Compare;
+import de.ukbonn.mwtek.utilities.ExceptionTools;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -25,7 +27,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.hl7.fhir.r4.model.BaseDateTimeType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -42,9 +43,6 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Type;
 
-import de.ukbonn.mwtek.utilities.Compare;
-import de.ukbonn.mwtek.utilities.ExceptionTools;
-
 public class FhirTools {
 
   public static void addIdentifierValue(List<String> values, String system, Identifier identifier) {
@@ -56,13 +54,13 @@ public class FhirTools {
     // retrieve and add the value
     String value = identifier.getValue();
     if ((value != null) && ((system == null) || (Compare.isEqual(system,
-            identifier.getSystem())))) {
+        identifier.getSystem())))) {
       values.add(value);
     } // if
   }
 
   public static void addIdentifierValues(List<String> values, String system,
-          Collection<Identifier> identifiers) {
+      Collection<Identifier> identifiers) {
     if ((identifiers == null) || (identifiers.isEmpty())) {
       // nothing to do
       return;
@@ -88,7 +86,7 @@ public class FhirTools {
   }
 
   public static void addReferenceIdentifierValue(List<String> values, String system,
-          Reference reference) {
+      Reference reference) {
     if (reference == null) {
       // nothing to do
       return;
@@ -130,7 +128,7 @@ public class FhirTools {
   }
 
   public static long getEffectiveReferenceAsMicros(Type effective)
-          throws IllegalArgumentException, ArithmeticException {
+      throws IllegalArgumentException, ArithmeticException {
     // validate argument
     ExceptionTools.checkNull("effective", effective);
 
@@ -161,7 +159,7 @@ public class FhirTools {
   }
 
   public static Identifier getIdentifierBySystem(String system, List<Identifier> identifierList)
-          throws IllegalArgumentException {
+      throws IllegalArgumentException {
     ExceptionTools.checkNullOrEmpty("identifierList", identifierList);
     // if system is provided then return identifier for this system
     if (system != null) {
@@ -173,7 +171,7 @@ public class FhirTools {
     } // if
     // if system is not provided then return identifier for default system
     else {
-      system = StaticValueProvider.system;
+      system = StaticValueProvider.SYSTEM;
       for (Identifier identifier : identifierList) {
         if (identifier != null && Compare.isEqual(system, identifier.getSystem())) {
           return identifier;
@@ -185,9 +183,9 @@ public class FhirTools {
   }
 
   public static MedicationAdministrationDosageComponent getMedicationAdministrationDosageComponent(
-          Dosage dosage) {
+      Dosage dosage) {
     MedicationAdministrationDosageComponent medicationAdministrationDosageComponent =
-            new MedicationAdministrationDosageComponent();
+        new MedicationAdministrationDosageComponent();
     medicationAdministrationDosageComponent.setText(dosage.getText());
     medicationAdministrationDosageComponent.setSite(dosage.getSite());
     medicationAdministrationDosageComponent.setRoute(dosage.getRoute());
@@ -248,7 +246,7 @@ public class FhirTools {
   }
 
   public static long getReferenceAsMicros(BaseDateTimeType dateTime)
-          throws IllegalArgumentException, ArithmeticException {
+      throws IllegalArgumentException, ArithmeticException {
     // validate argument
     ExceptionTools.checkNull("dateTime", dateTime);
 
@@ -276,7 +274,8 @@ public class FhirTools {
 
 
   /**
-   * Convert the given Unix-time in milliseconds to microseconds by multiplying the value with 10^3.
+   * Convert the given Unix-time in milliseconds to microseconds by multiplying the value with
+   * 10^3.
    *
    * @param millis the milliseconds value to convert
    * @return milliseconds to macroseconds
@@ -297,6 +296,6 @@ public class FhirTools {
   public static BigDecimal millisToSeconds(long millis) {
     // divide by 10^3
     return BigDecimal.valueOf(millis)
-            .divide(BigDecimal.valueOf(1_000L), 3, RoundingMode.UNNECESSARY);
+        .divide(BigDecimal.valueOf(1_000L), 3, RoundingMode.UNNECESSARY);
   }
 }
