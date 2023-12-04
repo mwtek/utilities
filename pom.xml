@@ -22,7 +22,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ukbonn.mwtek</groupId>
   <artifactId>utilities</artifactId>
+<<<<<<< HEAD
   <version>0.5.0-alpha1</version>
+=======
+  <version>0.5.0</version>
+>>>>>>> c572def61c724d9f1416ca8a8f225037d95fec47
   <name>utilities</name>
   <description>Utilities</description>
   <properties>
