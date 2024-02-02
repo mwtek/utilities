@@ -1,19 +1,19 @@
 /*
- *  Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
- *  modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
- *  PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
- *  OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
- *  IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
- *  YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
- *  OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
- *  COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
- *  BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
- *  ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
- *  OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
- *  PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
- *  OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with
- *  this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
+ * Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
+ * modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
+ * PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+ * OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+ * IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ * YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
+ * OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
+ * COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
+ * BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
+ * ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
+ * OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
+ * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
+ * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
 
 package de.ukbonn.mwtek.utilities.generic.time;
@@ -83,7 +83,7 @@ public class DateTools {
   }
 
   /**
-   * Transformation of a Unix time (micros) in a date with truncating of the time data
+   * Transformation a unixtime (micros) in a date with truncating of the time data
    *
    * @param unixTimeInMicros UnixTime in microseconds
    * @param timeZone         Optional: {@link TimeZone} of the date (default: GMT)
@@ -129,7 +129,7 @@ public class DateTools {
    */
   public static Date unixTimeMicrosToDate(long unixTimeInMicros) {
     Date date = new Date();
-    date.setTime((long) unixTimeInMicros / 1000);
+    date.setTime(unixTimeInMicros / 1000);
     return date;
   }
 
@@ -142,7 +142,7 @@ public class DateTools {
    */
   public static Date unixTimeMillisToDate(long unixTimeInMillis) {
     Date date = new Date();
-    date.setTime((long) unixTimeInMillis);
+    date.setTime(unixTimeInMillis);
     return date;
   }
 
@@ -150,11 +150,11 @@ public class DateTools {
    * Conversion of a Unix time in seconds into a Java {@link java.util.Date#getDate() date} object
    *
    * @param unixTimeInSeconds unix time in seconds
-   * @return A {@link Date} object initialised with the given Unix time
+   * @return A {@link Date} object initialised with the given Unixtime
    */
   public static Date unixTimeSecondsToDate(long unixTimeInSeconds) {
     Date date = new Date();
-    date.setTime((long) unixTimeInSeconds * 1000);
+    date.setTime(unixTimeInSeconds * 1000);
     return date;
   }
 
@@ -162,7 +162,7 @@ public class DateTools {
    * Conversion of a Unix time in microseconds into a Java {@link Instant} object
    *
    * @param unixTimeInMicros unix time in microseconds
-   * @return A {@link Instant} object initialized with the given Unix time
+   * @return A {@link Instant} object initialized with the given unixtime
    */
   public static Instant unixTimeToInstant(long unixTimeInMicros) {
     return Instant.ofEpochSecond(unixTimeInMicros);
@@ -172,7 +172,7 @@ public class DateTools {
    * Converting a {@link Date} object into a numeric Unix time value
    *
    * @param date A {@link Date} object
-   * @return Unix time in seconds
+   * @return Unixtime in seconds
    */
   public static Long dateToUnixTime(Date date) {
     if (date != null) {

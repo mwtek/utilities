@@ -1,21 +1,27 @@
 /*
- *  Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
- *  modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
- *  PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
- *  OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
- *  IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
- *  YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
- *  OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
- *  COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
- *  BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
- *  ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
- *  OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
- *  PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
- *  OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with
- *  this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
+ * Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
+ * modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
+ * PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+ * OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+ * IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ * YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
+ * OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
+ * COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
+ * BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
+ * ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
+ * OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
+ * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
+ * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
 package de.ukbonn.mwtek.utilities.fhir.misc;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.hl7.fhir.r4.model.*;
 
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
@@ -24,21 +30,7 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Procedure;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.StringType;
 
-@Slf4j
 public class Converter {
 
   // Test
@@ -67,15 +59,15 @@ public class Converter {
 
   // list implementation
   public static List<? extends DomainResource> convert(List<? extends DomainResource> res,
-      boolean check) {
+          boolean check) {
     List<DomainResource> resources = new ArrayList<>();
     res.forEach((temp) -> {
       try {
         resources.add(convert(temp, check));
-      } catch (IllegalArgumentException ex) {
-        log.warn(
-            "Unable to convert ressource with id " + temp.getId() + " from type " + temp.fhirType()
-                + ". Empty mandatory field: " + ex.getMessage());
+      }
+      catch(IllegalArgumentException ex)
+      {
+        System.out.println("Unable to convert ressource with id " + temp.getId() + " from type " + temp.fhirType() + ". Empty mandatory field: " + ex.getMessage());
       }
     });
     return resources;
@@ -87,15 +79,21 @@ public class Converter {
 
   // single conversion
   public static DomainResource convert(DomainResource res, boolean check) {
-    return switch (res.fhirType()) {
-      case "Encounter" -> convertEncounter((Encounter) res, check);
-      case "Patient" -> convertPatient((Patient) res, check);
-      case "Observation" -> convertObservation((Observation) res, check);
-      case "Procedure" -> convertProcedure((Procedure) res, check);
-      case "Condition" -> convertCondition((Condition) res, check);
-      case "Location" -> convertLocation((Location) res, check);
-      default -> res;
-    };
+    switch (res.fhirType()) {
+      case "Encounter":
+        return convertEncounter((Encounter) res, check);
+      case "Patient":
+        return convertPatient((Patient) res, check);
+      case "Observation":
+        return convertObservation((Observation) res, check);
+      case "Procedure":
+        return convertProcedure((Procedure) res, check);
+      case "Condition":
+        return convertCondition((Condition) res, check);
+      case "Location":
+        return convertLocation((Location) res, check);
+    }
+    return res;
   }
 
   public static DomainResource convert(DomainResource res) {
@@ -141,6 +139,7 @@ public class Converter {
     // Eigene Attribute
     // CHECK
     res.setPatientId(extractReferenceId(e.getSubject()));
+
 
     // store the ID of each location WITHOUT the resource type
     e.getLocation().forEach(loc -> {
@@ -192,7 +191,7 @@ public class Converter {
       // CHECK Patient = Subject
       ExceptionTools.checkNull("patient", o.getSubject().getReference());
       ExceptionTools.checkNullOrEmpty("patient.Identifier",
-          o.getSubject().getIdentifier().toString());
+              o.getSubject().getIdentifier().toString());
     }
 
     res.setIdentifier(o.getIdentifier());
@@ -357,19 +356,16 @@ public class Converter {
   }
 
   /**
-   * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the
-   * resource type.
-   * <p>
-   * If the reference object is <code>null</code> the identifier is read.
+   * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the resource type.
    *
+   * If the reference object is <code>null</code> the identifier is read.
    * @param reference FHIR reference as "Encounter/123"
    * @return The plain id of the reference as "123"
    */
   public static String extractReferenceId(Reference reference) {
     if (reference.hasReference()) {
-      return split(reference.getReference());
-    } else {
+     return split(reference.getReference());
+    } else
       return reference.getIdentifier().getValue();
-    }
   }
 }
