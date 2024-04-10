@@ -1,19 +1,19 @@
 /*
- *  Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
- *  modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
- *  PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
- *  OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
- *  IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
- *  YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
- *  OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
- *  COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
- *  BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
- *  ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
- *  OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
- *  PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
- *  OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with
- *  this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
+ * Copyright (C) 2021 University Hospital Bonn - All Rights Reserved You may use, distribute and
+ * modify this code under the GPL 3 license. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT
+ * PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+ * OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+ * IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ * YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR
+ * OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
+ * COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE,
+ * BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES
+ * ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA
+ * OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
+ * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
+ * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
@@ -27,6 +27,9 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
+import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Enumeration;
@@ -39,6 +42,9 @@ public class UkbEncounter extends Encounter
 
   protected UkbPatient patient;
   protected String patientId;
+  @Getter
+  @Setter
+  protected String facilityContactId;
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
@@ -170,6 +176,42 @@ public class UkbEncounter extends Encounter
     return null;
   }
 
+  public String getOfficialIdentifierValue() {
+    if (this.hasIdentifier()) {
+      Identifier officialIdentifier = FhirTools.getOfficialIdentifier(this.getIdentifier(), false);
+      if (officialIdentifier != null && officialIdentifier.hasValue()) {
+        return officialIdentifier.getValue();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Auxiliary function to return the textual value of the visit number.
+   */
+  public String getVisitNumberIdentifierValue() {
+    if (this.hasIdentifier()) {
+      Identifier visitNumberIdentifier = FhirTools.getVisitNumberIdentifier(this.getIdentifier(),
+          false);
+      if (visitNumberIdentifier != null && visitNumberIdentifier.hasValue()) {
+        return visitNumberIdentifier.getValue();
+      }
+    }
+    return null;
+  }
+
+  public boolean isIcuCase(Collection<String> icuLocationIds) {
+    // Look for matches in the location attribute if there is at least one icu location.
+    return this.getLocation().stream()
+        .anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
+  }
+
+  public boolean isCurrentlyOnIcuWard(Collection<String> icuLocationIds) {
+    // Look for active icu locations
+    return this.getLocation().stream().filter(x -> x.hasPeriod() && !x.getPeriod().hasEnd())
+        .anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
+  }
+
   /**
    * Encounter.period.start is a mandatory field in the kds profile.
    *
@@ -178,4 +220,5 @@ public class UkbEncounter extends Encounter
   public boolean isPeriodStartExistent() {
     return this.getPeriod() != null && this.getPeriod().getStart() != null;
   }
+
 }

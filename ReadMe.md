@@ -45,4 +45,4 @@ It is recommended to have both programs installed in a way that the correct vers
 
 In addition, at least 4 GB of free RAM, preferably 8 GB, should be available. The size depends on
 the number of resources that have to be retrieved from the FHIR server. In a test with ~ 500,000
-resources, 4 GB was the lower limit. 
+resources, 4 GB was the lower limit.

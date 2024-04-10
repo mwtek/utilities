@@ -23,7 +23,6 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.function.Consumer;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,7 +30,8 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author <a href="mailto:david.meyers@ukbonn.de">David Meyers</a>
  */
-@Slf4j public class TimerTools {
+@Slf4j
+public class TimerTools {
 
   /**
    * Calculation of the time interval between a specified time and the current time

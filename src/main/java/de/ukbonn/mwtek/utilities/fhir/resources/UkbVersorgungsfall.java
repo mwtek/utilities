@@ -17,23 +17,24 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
+import ca.uhn.fhir.model.api.annotation.ResourceDef;
+import de.ukbonn.mwtek.utilities.ExceptionTools;
 import java.util.List;
-
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Period;
 
-import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import de.ukbonn.mwtek.utilities.ExceptionTools;
-
-@Deprecated @ResourceDef(name = "Encounter") public class UkbVersorgungsfall extends UkbEncounter {
+@Deprecated
+@ResourceDef(name = "Encounter")
+public class UkbVersorgungsfall extends UkbEncounter {
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
    * constructors for creating an instance of this resource.
    */
-  @Deprecated public UkbVersorgungsfall() {
+  @Deprecated
+  public UkbVersorgungsfall() {
     super();
   }
 
@@ -50,16 +51,16 @@ import de.ukbonn.mwtek.utilities.ExceptionTools;
    * @param ukbVersorgungsfallDiagnosisList  The list of diagnosis relevant to this encounter.
    */
   public UkbVersorgungsfall(String patientId, Enumeration<EncounterStatus> status,
-          Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
-          List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
-          throws IllegalArgumentException {
+      Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
+      List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
+      throws IllegalArgumentException {
     super(patientId, status, encounterClass);
 
     // validate arguments
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList",
-            ukbVersorgungsfallIdentifierList);
+        ukbVersorgungsfallIdentifierList);
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList",
-            ukbVersorgungsfallDiagnosisList);
+        ukbVersorgungsfallDiagnosisList);
     ExceptionTools.checkNull("period", period);
 
     // set fhir content
@@ -69,16 +70,16 @@ import de.ukbonn.mwtek.utilities.ExceptionTools;
   }
 
   public UkbVersorgungsfall(UkbPatient patient, Enumeration<EncounterStatus> status,
-          Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
-          List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
-          throws IllegalArgumentException {
+      Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
+      List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
+      throws IllegalArgumentException {
     super(patient, status, encounterClass);
 
     // validate arguments
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList",
-            ukbVersorgungsfallIdentifierList);
+        ukbVersorgungsfallIdentifierList);
     ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList",
-            ukbVersorgungsfallDiagnosisList);
+        ukbVersorgungsfallDiagnosisList);
     ExceptionTools.checkNull("period", period);
 
     // set fhir content

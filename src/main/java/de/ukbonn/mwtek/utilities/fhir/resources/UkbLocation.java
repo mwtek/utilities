@@ -17,22 +17,22 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
+import ca.uhn.fhir.model.api.annotation.ResourceDef;
+import de.ukbonn.mwtek.utilities.ExceptionTools;
 import java.util.List;
-
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Location;
 
-import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import de.ukbonn.mwtek.utilities.ExceptionTools;
-
-@ResourceDef(name = "Location") public class UkbLocation extends Location {
+@ResourceDef(name = "Location")
+public class UkbLocation extends Location {
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
    * constructors for creating an instance of this resource.
    */
-  @Deprecated public UkbLocation() {
+  @Deprecated
+  public UkbLocation() {
     super();
   }
 

@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ukbonn.mwtek</groupId>
   <artifactId>utilities</artifactId>
-  <version>0.5.0-alpha2</version>
+  <version>0.5.2-pre</version>
   <name>utilities</name>
   <description>Utilities</description>
   <properties>
@@ -71,4 +71,17 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <id>gitlab-maven-deploy</id>
+      <name>MWTek GitLab Maven Repo</name>
+      <url>${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/maven</url>
+    </repository>
+    <snapshotRepository>
+      <id>gitlab-maven-deploy</id>
+      <name>MWTek GitLab Maven Repo</name>
+      <url>${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/maven</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 </project>

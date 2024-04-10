@@ -17,22 +17,22 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
+import ca.uhn.fhir.model.api.annotation.ResourceDef;
+import de.ukbonn.mwtek.utilities.ExceptionTools;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.Period;
 
-import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import de.ukbonn.mwtek.utilities.ExceptionTools;
-
-@ResourceDef(name = "Encounter") public class UkbKontaktGesundheitseinrichtung
-        extends UkbEncounter {
+@ResourceDef(name = "Encounter")
+public class UkbKontaktGesundheitseinrichtung
+    extends UkbEncounter {
 
   public UkbKontaktGesundheitseinrichtung() {
     super();
   }
 
   public UkbKontaktGesundheitseinrichtung(String patientId,
-          Enumeration<EncounterStatus> encounterStatus, Coding class_, Period period) {
+      Enumeration<EncounterStatus> encounterStatus, Coding class_, Period period) {
     super(patientId, encounterStatus, class_);
     ExceptionTools.checkNull("Period", period);
 
@@ -40,7 +40,7 @@ import de.ukbonn.mwtek.utilities.ExceptionTools;
   }
 
   public UkbKontaktGesundheitseinrichtung(UkbPatient patient, Enumeration<EncounterStatus> status,
-          Coding class_, Period period) {
+      Coding class_, Period period) {
     super(patient, status, class_);
 
     ExceptionTools.checkNull("Period", period);

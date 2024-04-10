@@ -20,3 +20,4 @@ package de.ukbonn.mwtek.utilities.fhir.misc;
 public class FieldAlreadyInitializedException extends Exception {
 
 }
+

@@ -17,12 +17,6 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.hl7.fhir.r4.model.*;
-
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbKontaktGesundheitseinrichtung;
@@ -30,6 +24,18 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.StringType;
 
 public class Converter {
 
@@ -59,15 +65,15 @@ public class Converter {
 
   // list implementation
   public static List<? extends DomainResource> convert(List<? extends DomainResource> res,
-          boolean check) {
+      boolean check) {
     List<DomainResource> resources = new ArrayList<>();
     res.forEach((temp) -> {
       try {
         resources.add(convert(temp, check));
-      }
-      catch(IllegalArgumentException ex)
-      {
-        System.out.println("Unable to convert ressource with id " + temp.getId() + " from type " + temp.fhirType() + ". Empty mandatory field: " + ex.getMessage());
+      } catch (IllegalArgumentException ex) {
+        System.out.println(
+            "Unable to convert ressource with id " + temp.getId() + " from type " + temp.fhirType()
+                + ". Empty mandatory field: " + ex.getMessage());
       }
     });
     return resources;
@@ -140,7 +146,6 @@ public class Converter {
     // CHECK
     res.setPatientId(extractReferenceId(e.getSubject()));
 
-
     // store the ID of each location WITHOUT the resource type
     e.getLocation().forEach(loc -> {
       loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
@@ -191,7 +196,7 @@ public class Converter {
       // CHECK Patient = Subject
       ExceptionTools.checkNull("patient", o.getSubject().getReference());
       ExceptionTools.checkNullOrEmpty("patient.Identifier",
-              o.getSubject().getIdentifier().toString());
+          o.getSubject().getIdentifier().toString());
     }
 
     res.setIdentifier(o.getIdentifier());
@@ -356,16 +361,19 @@ public class Converter {
   }
 
   /**
-   * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the resource type.
-   *
+   * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the
+   * resource type.
+   * <p>
    * If the reference object is <code>null</code> the identifier is read.
+   *
    * @param reference FHIR reference as "Encounter/123"
    * @return The plain id of the reference as "123"
    */
   public static String extractReferenceId(Reference reference) {
     if (reference.hasReference()) {
-     return split(reference.getReference());
-    } else
+      return split(reference.getReference());
+    } else {
       return reference.getIdentifier().getValue();
+    }
   }
 }
