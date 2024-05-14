@@ -25,6 +25,7 @@ public class TerminologySystems {
 
   public static String ICD = "http://fhir.de/CodeSystem/bfarm/icd-10-gm";
   public static String SNOMED = "http://snomed.info/sct";
+  public static String OPS = "http://fhir.de/CodeSystem/bfarm/ops";
   public static String EDQM = "http://standardterms.edqm.eu";
   public static String MISSING = "http://ukbonn.de";
 }

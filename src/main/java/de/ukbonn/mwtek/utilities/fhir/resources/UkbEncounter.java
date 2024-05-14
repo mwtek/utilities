@@ -17,9 +17,24 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
+import static de.ukbonn.mwtek.utilities.enums.EncounterContactLevel.DEPARTMENT_CONTACT;
+import static de.ukbonn.mwtek.utilities.enums.EncounterContactLevel.FACILITY_CONTACT;
+import static de.ukbonn.mwtek.utilities.enums.EncounterContactLevel.SUPPLY_CONTACT;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_CONTACT_ART_SYSTEM;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_POSTSTATIONARY;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_PRESTATIONARY;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.DEATH_CODE;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.DISCHARGE_DISPOSITION_EXT_URL;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_EXT_URL;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_SYSTEM;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_INPATIENT_CODES;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_OUTPATIENT_CODES;
+import static de.ukbonn.mwtek.utilities.fhir.misc.FhirCodingTools.isCodeInCodesystem;
+
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
+import de.ukbonn.mwtek.utilities.enums.EncounterContactLevel;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
@@ -28,21 +43,26 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import java.util.Collection;
-import lombok.Getter;
+import java.util.List;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Enumeration;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Reference;
 
 @ResourceDef(name = "Encounter")
-public class UkbEncounter extends Encounter
-    implements UkbPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
+@Slf4j
+public class UkbEncounter
+  extends Encounter
+  implements UkbPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
   protected String patientId;
-  @Getter
+
   @Setter
   protected String facilityContactId;
 
@@ -64,10 +84,8 @@ public class UkbEncounter extends Encounter
    * @param encounterStatus {@link EncounterStatus} e.g. {@link EncounterStatus#INPROGRESS}
    * @param encounterClass  The EncounterClass e.g. "pre-stationary"
    */
-  public UkbEncounter(String patientId, Enumeration<EncounterStatus> encounterStatus,
-      Coding encounterClass) {
+  public UkbEncounter(String patientId, Enumeration<EncounterStatus> encounterStatus, Coding encounterClass) {
     super(encounterStatus, encounterClass);
-
     // validate arguments
     ExceptionTools.checkNullOrEmpty("patientId", patientId);
 
@@ -76,10 +94,9 @@ public class UkbEncounter extends Encounter
   }
 
   @Deprecated
-  public UkbEncounter(UkbPatient patient, Enumeration<EncounterStatus> status,
-      Coding encounterClass) throws IllegalArgumentException {
+  public UkbEncounter(UkbPatient patient, Enumeration<EncounterStatus> status, Coding encounterClass)
+    throws IllegalArgumentException {
     super(status, encounterClass);
-
     // INFO: this constructor seems deprecated and isnt handling the parameters
     // u could just replace the body with initializePatient at the moment for the same output
 
@@ -92,9 +109,12 @@ public class UkbEncounter extends Encounter
     this.patientId = patient.getPatientId();
 
     // set fhir content
-    this.setSubject(new Reference().setIdentifier(
-        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-            patient.getIdentifier())));
+    this.setSubject(
+        new Reference()
+          .setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())
+          )
+      );
 
     // set external id
     Identifier identifier = new Identifier();
@@ -105,7 +125,6 @@ public class UkbEncounter extends Encounter
 
   @Override
   public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
-
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
@@ -115,7 +134,7 @@ public class UkbEncounter extends Encounter
 
   @Override
   public void initializeUkbPatient(UkbPatient patient)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
+    throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
     ExceptionTools.checkNullOrEmpty("patient.Identifier", patient.getIdentifier());
@@ -130,9 +149,12 @@ public class UkbEncounter extends Encounter
     this.patientId = patient.getPatientId();
 
     // assign the patient to the fhir object
-    this.setSubject(new Reference().setIdentifier(
-        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-            patient.getIdentifier())));
+    this.setSubject(
+        new Reference()
+          .setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())
+          )
+      );
 
     Identifier identifier = new Identifier();
     identifier.setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT);
@@ -155,8 +177,7 @@ public class UkbEncounter extends Encounter
   }
 
   @Override
-  public String getPatientIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException {
+  public String getPatientIdentifierValue(String system) throws MandatoryFieldNotInitializedException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
       return this.patientId;
     } // if
@@ -191,8 +212,7 @@ public class UkbEncounter extends Encounter
    */
   public String getVisitNumberIdentifierValue() {
     if (this.hasIdentifier()) {
-      Identifier visitNumberIdentifier = FhirTools.getVisitNumberIdentifier(this.getIdentifier(),
-          false);
+      Identifier visitNumberIdentifier = FhirTools.getVisitNumberIdentifier(this.getIdentifier(), false);
       if (visitNumberIdentifier != null && visitNumberIdentifier.hasValue()) {
         return visitNumberIdentifier.getValue();
       }
@@ -202,14 +222,15 @@ public class UkbEncounter extends Encounter
 
   public boolean isIcuCase(Collection<String> icuLocationIds) {
     // Look for matches in the location attribute if there is at least one icu location.
-    return this.getLocation().stream()
-        .anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
+    return this.getLocation().stream().anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
   }
 
   public boolean isCurrentlyOnIcuWard(Collection<String> icuLocationIds) {
     // Look for active icu locations
-    return this.getLocation().stream().filter(x -> x.hasPeriod() && !x.getPeriod().hasEnd())
-        .anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
+    return this.getLocation()
+      .stream()
+      .filter(x -> x.hasPeriod() && !x.getPeriod().hasEnd())
+      .anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
   }
 
   /**
@@ -221,4 +242,204 @@ public class UkbEncounter extends Encounter
     return this.getPeriod() != null && this.getPeriod().getStart() != null;
   }
 
+  public String getFacilityContactId() {
+    if (facilityContactId != null) {
+      return facilityContactId;
+    } else {
+      if (this.isFacilityContact()) {
+        return getId();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Determines whether the passed encounter type is a facility contact ("Einrichtungskontakt"). To
+   * ensure backwards compatibility, any missing type is considered as a facility contact as well.
+   *
+   * @return True if the encounter is a facility contact, otherwise false.
+   */
+  public boolean isFacilityContact() {
+    return isContactType(this, FACILITY_CONTACT.getCode());
+  }
+
+  /**
+   * Determines whether the passed encounter instance is in-progress.
+   */
+  public boolean isActive() {
+    return this.hasStatus() && this.getStatus() == EncounterStatus.INPROGRESS;
+  }
+
+  /**
+   * Determines whether the passed encounter type is a supply contact
+   * ("Versorgungsstellenkontakt").
+   *
+   * @return True if the encounter is a supply contact, otherwise false.
+   */
+  public boolean isSupplyContact() {
+    return isContactType(this, SUPPLY_CONTACT.getCode());
+  }
+
+  /**
+   * Determines whether the passed encounter type is a department contact ("Abteilungskontakt").
+   *
+   * @return True if the encounter is a department contact, otherwise false.
+   */
+  public boolean isDepartmentContact() {
+    return isContactType(this, DEPARTMENT_CONTACT.getCode());
+  }
+
+  /**
+   * Internal method to determine whether the passed encounter type matches the specified contact
+   * level code.
+   *
+   * @param encounter        The encounter to be checked.
+   * @param contactLevelCode The contact level code to match.
+   * @return True if the encounter matches the specified contact level code, otherwise false.
+   */
+  public static boolean isContactType(UkbEncounter encounter, String contactLevelCode) {
+    // If there is no type specified in the encounter, it's considered as the specified contact
+    // type.
+    if (!encounter.hasType()) {
+      return true;
+    }
+
+    // Check if any type in the encounter matches the specified contact level code.
+    return encounter
+      .getType()
+      .stream()
+      .flatMap(x -> x.getCoding().stream())
+      .filter(Coding::hasSystem)
+      .filter(x -> x.getSystem().equals(EncounterContactLevel.SYSTEM))
+      .anyMatch(contactLevelType -> contactLevelType.getCode().equals(contactLevelCode));
+  }
+
+  /**
+   * A simple check if the given contact type got the value "prestationary".
+   *
+   * @return <code>True</code> if the case type equals "prestationary".
+   */
+  public boolean isCaseTypePreStationary() {
+    String contactType = getContactType(this.getType());
+    return contactType != null && contactType.equals(CASETYPE_PRESTATIONARY);
+  }
+
+  /**
+   * A simple check if the given contact type got the value "prestationary".
+   *
+   * @return <code>True</code> if the case type equals "prestationary".
+   */
+  public boolean isCaseTypePostStationary() {
+    String contactType = getContactType(this.getType());
+    return contactType != null && contactType.equals(CASETYPE_POSTSTATIONARY);
+  }
+
+  /**
+   * Is the case class counted as "inpatient" regarding the json data specification (without
+   * pre-stationary and post-stationary cases)?
+   *
+   * @return <code>True</code>, if the case class of the encounter is "inpatient"
+   */
+  public boolean isCaseClassInpatient() {
+    return this.hasClass_() && isCodeInCodesystem(this.getClass_().getCode(), ENCOUNTER_CLASS_INPATIENT_CODES);
+  }
+
+  /**
+   * is the case class counted as "outpatient" regarding the json data specification (plus
+   * pre-stationary + post-stationary cases that are counted as "outpatient" logic-wise in the
+   * workflow aswell)
+   *
+   * @return <code>True</code>, if the case class of the encounter is "outpatient".
+   */
+  public boolean isCaseClassOutpatient() {
+    return this.hasClass_() && isCodeInCodesystem(this.getClass_().getCode(), ENCOUNTER_CLASS_OUTPATIENT_CODES);
+  }
+
+  /**
+   * Retrieval of the value that is part of a slice in {@link Encounter#getType() Encounter.type}.
+   *
+   * @param listType List of {@link Encounter#getType() Encounter.types}.
+   * @return The contact-type of a german value set (e.g. "vorstationär").
+   */
+  private static String getContactType(List<CodeableConcept> listType) {
+    StringBuilder contactType = new StringBuilder();
+    listType.forEach(ccType ->
+      ccType
+        .getCoding()
+        .forEach(codingType -> {
+          if (codingType.hasSystem() && codingType.getSystem().equals(CASETYPE_CONTACT_ART_SYSTEM)) {
+            contactType.append(codingType.getCode());
+          }
+        }));
+
+    return !contactType.isEmpty() ? contactType.toString() : null;
+  }
+
+  /**
+   * Checks whether the given encounter is currently in an ICU location or not.
+   *
+   * @param icuLocationIds The list of ICU location IDs to check against. If its empty it will
+   *                       return {@code False}.
+   * @return {@code True}  if the encounter is currently in an ICU location; otherwise,
+   * {@code False}.
+   */
+  public boolean isCurrentlyOnIcu(List<String> icuLocationIds) {
+    if (icuLocationIds == null || icuLocationIds.isEmpty()) {
+      return false;
+    }
+
+    // Find the active transfer and if one can be found, check if it's an icu location.
+    return this.getLocation()
+      .stream()
+      .filter(x -> x.hasPeriod() && !x.getPeriod().hasEnd())
+      .anyMatch(x -> icuLocationIds.contains(x.getLocation().getIdBase()));
+  }
+
+  /**
+   * Determine via the discharge disposition which is part of
+   * {@link UkbEncounter#getHospitalization()} whether the patient is deceased within the scope of
+   * the case under review.
+   *
+   * @return <code>false</code>, if no valid discharge disposition can be found in the {@link
+   * UkbEncounter#getHospitalization()} instance and <code>true</code> if the discharge code ("07")
+   * was found
+   */
+  public boolean isPatientDeceased() {
+    Encounter.EncounterHospitalizationComponent hospComp = this.getHospitalization();
+    // check if encounter resource got a discharge disposition with a certain extension url
+    if (
+      hospComp != null &&
+      hospComp.hasDischargeDisposition() &&
+      hospComp.getDischargeDisposition().hasExtension(DISCHARGE_DISPOSITION_EXT_URL)
+    ) {
+      Extension extDischargeDisp = hospComp.getDischargeDisposition().getExtensionByUrl(DISCHARGE_DISPOSITION_EXT_URL);
+      Extension extPosFirstAndSec = extDischargeDisp.getExtensionByUrl(
+        DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_EXT_URL
+      );
+      if (extPosFirstAndSec != null) {
+        // the extension always contains a coding as value
+        try {
+          Coding coding = (Coding) extPosFirstAndSec.getValue();
+          // If the system is valid, check the code right after
+          if (coding.hasSystem() && coding.getSystem().equals(DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_SYSTEM)) {
+            // the code must be "07" (Death)
+            if (coding.hasCode() && coding.getCode().equals(DEATH_CODE)) {
+              return true;
+            }
+          } else {
+            return false;
+          }
+        } catch (ClassCastException cce) {
+          log.error(
+            "Encounter.hospitalization.dischargeDisposition" +
+            ".EntlassungsgrundErsteUndZweiteStelle.value must be from type Coding but " +
+            "found: " +
+            extPosFirstAndSec.getValue().getClass()
+          );
+        }
+      }
+    }
+
+    return false;
+  }
 }

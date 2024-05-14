@@ -23,7 +23,6 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import de.ukbonn.mwtek.utilities.generic.interfaces.CaseIdProvider;
 
 public interface CaseIdentifierValueProvider extends CaseIdProvider {
-
   @Override
   default String getCaseId() {
     try {
@@ -34,6 +33,5 @@ public interface CaseIdentifierValueProvider extends CaseIdProvider {
   }
 
   public String getCaseIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
-
+    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 }

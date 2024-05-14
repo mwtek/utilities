@@ -20,9 +20,9 @@ package de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets;
 public class KdsDiagnosisFixedValues {
 
   public static String EXTENSION_DIAGNOSIS_RELIABILITY =
-      "http://fhir.de/StructureDefinition/icd-10-gm-diagnosesicherheit";
+    "http://fhir.de/StructureDefinition/icd-10-gm-diagnosesicherheit";
   public static String EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM =
-      "https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_ICD_DIAGNOSESICHERHEIT";
+    "https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_ICD_DIAGNOSESICHERHEIT";
 
   public static class DiagnosisReliability {
 

@@ -23,12 +23,11 @@ import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbVersorgungsfall;
 
 public interface UkbVersorgungsfallProvider extends CaseIdentifierValueProvider {
-
   public UkbVersorgungsfall getUkbVersorgungsfall()
-          throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
   public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-          throws IllegalArgumentException, FieldAlreadyInitializedException;
+    throws IllegalArgumentException, FieldAlreadyInitializedException;
 
   public boolean isUkbVersorgungsfallInitialized();
 }

@@ -15,13 +15,29 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-package de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets;
 
-public class KdsEncounterFixedValues {
+package de.ukbonn.mwtek.utilities.enums;
 
-  public final static String IDENTIFIER_VN_TYPE_SYSTEM = "http://terminology.hl7"
-      + ".org/CodeSystem/v2-0203";
-  public final static String IDENTIFIER_VN_TYPE_CODE = "VN";
+import lombok.Getter;
 
+@Getter
+public enum EncounterContactLevel {
+  FACILITY_CONTACT("einrichtungskontakt", "Einrichtungskontakt", "Beschreibt den Kontakt zur Einrichtung."),
+  DEPARTMENT_CONTACT("abteilungskontakt", "Abteilungskontakt", "Beschreibt den Kontakt zur Abteilung."),
+  SUPPLY_CONTACT(
+    "versorgungsstellenkontakt",
+    "Versorgungsstellenkontakt",
+    "Beschreibt den Kontakt zur Versorgungsstelle."
+  );
 
+  private final String code;
+  private final String display;
+  private final String definition;
+  public static final String SYSTEM = "http://fhir.de/CodeSystem/Kontaktebene";
+
+  private EncounterContactLevel(String code, String display, String definition) {
+    this.code = code;
+    this.display = display;
+    this.definition = definition;
+  }
 }

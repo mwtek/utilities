@@ -15,9 +15,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
+package de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets;
 
-package de.ukbonn.mwtek.utilities.generic.interfaces;
+public class LocationFixedValues {
 
-public interface PatientIdProvider {
-  public String getPatientId();
+  // PhysicalType(s)
+  public static final String WARD = "wa";
+  public static final String ICU = "ICU";
 }

@@ -17,6 +17,4 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
-public class MandatoryFieldNotInitializedException extends Exception {
-
-}
+public class MandatoryFieldNotInitializedException extends Exception {}

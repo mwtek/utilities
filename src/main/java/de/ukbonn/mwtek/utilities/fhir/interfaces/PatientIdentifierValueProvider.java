@@ -22,7 +22,6 @@ import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import de.ukbonn.mwtek.utilities.generic.interfaces.PatientIdProvider;
 
 public interface PatientIdentifierValueProvider extends PatientIdProvider {
-
   @Override
   default String getPatientId() {
     try {
@@ -32,6 +31,5 @@ public interface PatientIdentifierValueProvider extends PatientIdProvider {
     } // try
   }
 
-  public String getPatientIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException;
+  public String getPatientIdentifierValue(String system) throws MandatoryFieldNotInitializedException;
 }

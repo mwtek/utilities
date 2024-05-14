@@ -55,7 +55,6 @@ public class DateTools {
    * time.
    */
   public static Date mergeToDateTime(Date date, Date time, Boolean nullifyMilliseconds) {
-
     // Set DefaultValues
     ExceptionTools.checkNull("date", date);
     ExceptionTools.checkNull("time", time);
@@ -89,9 +88,7 @@ public class DateTools {
    * @param timeZone         Optional: {@link TimeZone} of the date (default: GMT)
    * @return A {@link Date} object without time information
    */
-  public static Date unixTimeMicrosToDateExtinguishedTime(long unixTimeInMicros,
-      TimeZone timeZone) {
-
+  public static Date unixTimeMicrosToDateExtinguishedTime(long unixTimeInMicros, TimeZone timeZone) {
     if (timeZone == null) {
       timeZone = TimeZone.getTimeZone("GMT");
     }
@@ -112,8 +109,7 @@ public class DateTools {
    * @param timeZone          Optional: {@link TimeZone} of the date (default: GMT)
    * @return A {@link Date} object without time information
    */
-  public static Date unixTimeSecondsToDateExtinguishedTime(long unixTimeInSeconds,
-      TimeZone timeZone) {
+  public static Date unixTimeSecondsToDateExtinguishedTime(long unixTimeInSeconds, TimeZone timeZone) {
     if (timeZone == null) {
       timeZone = TimeZone.getTimeZone("GMT");
     }
@@ -192,7 +188,6 @@ public class DateTools {
    * @return difference of the dates in the given timeUnit
    */
   public static double calcDiffBetweenDates(Date lowerDate, Date upperDate, TimeUnit timeUnit) {
-
     if (timeUnit == null) {
       timeUnit = TimeUnit.MINUTES;
     }
@@ -214,7 +209,6 @@ public class DateTools {
     }
 
     return timeUnit.convert(diffInSeconds, TimeUnit.SECONDS);
-
   }
 
   /**
@@ -244,11 +238,9 @@ public class DateTools {
    */
   public static int getAge(Date birthDate) {
     long birthDateInSec = dateToUnixTime(birthDate);
-    LocalDate birthDateLocal =
-        Instant.ofEpochSecond(birthDateInSec).atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate birthDateLocal = Instant.ofEpochSecond(birthDateInSec).atZone(ZoneId.systemDefault()).toLocalDate();
     return Period.between(birthDateLocal, LocalDate.now()).getYears();
   }
-
 
   /**
    * Calculating the sum of all intersected calendar days between two dates
@@ -258,7 +250,6 @@ public class DateTools {
    * @return Time difference (in whole days) between two date objects
    */
   public static Long calcWholeDaysBetweenDates(Date lowerDate, Date upperDate) {
-
     // take the current time if the upperDate is null
     if (upperDate == null) {
       upperDate = DateTools.getCurrentDateTime();
@@ -268,23 +259,20 @@ public class DateTools {
       // timezone operations (take the system zone -> case 1530302 (26.03. -> 27.03. 00:40 (GMT))
       // should be
       // count as 2 days not 1 day (26.03. -> 26.04. 23:40 in UTC)
-      Instant lowerLocalDate =
-          Instant.ofEpochMilli(lowerDate.getTime()).atZone(ZoneOffset.systemDefault())
-              .toInstant();
+      Instant lowerLocalDate = Instant.ofEpochMilli(lowerDate.getTime()).atZone(ZoneOffset.systemDefault()).toInstant();
       Instant upperLocalDate = Instant.ofEpochMilli(upperDate.getTime());
 
-      ZonedDateTime lowerZonedDateTime =
-          ZonedDateTime.ofInstant(lowerLocalDate, timeZoneEuropeBerlin);
-      ZonedDateTime upperZonedDateTime =
-          ZonedDateTime.ofInstant(upperLocalDate, timeZoneEuropeBerlin);
+      ZonedDateTime lowerZonedDateTime = ZonedDateTime.ofInstant(lowerLocalDate, timeZoneEuropeBerlin);
+      ZonedDateTime upperZonedDateTime = ZonedDateTime.ofInstant(upperLocalDate, timeZoneEuropeBerlin);
 
       // truncate to days cause we need to sum the calendar days
-      daysBetween = ChronoUnit.DAYS.between(lowerZonedDateTime.truncatedTo(ChronoUnit.DAYS),
-          upperZonedDateTime.truncatedTo(ChronoUnit.DAYS)) + 1;
+      daysBetween = ChronoUnit.DAYS.between(
+        lowerZonedDateTime.truncatedTo(ChronoUnit.DAYS),
+        upperZonedDateTime.truncatedTo(ChronoUnit.DAYS)
+      ) +
+      1;
     } catch (Exception ex) {
-      log.debug(
-          "unable to calculate the differences between dates (lowerDate maybe null) "
-              + ex.getMessage());
+      log.debug("unable to calculate the differences between dates (lowerDate maybe null) " + ex.getMessage());
     }
     return daysBetween;
   }

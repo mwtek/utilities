@@ -37,9 +37,10 @@ import org.hl7.fhir.r4.model.Reference;
 
 @Slf4j
 @ResourceDef(name = "Condition")
-public class UkbCondition extends Condition
-    implements UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider,
-    CaseIdentifierValueProvider {
+public class UkbCondition
+  extends Condition
+  implements
+    UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider, CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
   protected UkbVersorgungsfall versorgungsfall;
@@ -70,9 +71,13 @@ public class UkbCondition extends Condition
    * @param code           identification of the condition
    * @param recordedDate   recorded Date
    */
-  public UkbCondition(String patientId, String caseId, CodeableConcept clinicalStatus,
-      CodeableConcept code, Date recordedDate) {
-
+  public UkbCondition(
+    String patientId,
+    String caseId,
+    CodeableConcept clinicalStatus,
+    CodeableConcept code,
+    Date recordedDate
+  ) {
     // validate arguments
     if (patientId == null) {
       log.debug("pid is null -> mb person is canceled");
@@ -92,9 +97,13 @@ public class UkbCondition extends Condition
     this.setRecordedDate(recordedDate);
   }
 
-  public UkbCondition(UkbPatient patient, UkbVersorgungsfall versorgungsfall,
-      CodeableConcept clinicalStatus, CodeableConcept code, Date recordedDate) {
-
+  public UkbCondition(
+    UkbPatient patient,
+    UkbVersorgungsfall versorgungsfall,
+    CodeableConcept clinicalStatus,
+    CodeableConcept code,
+    Date recordedDate
+  ) {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
     ExceptionTools.checkNullOrEmpty("patient.identifier", patient.getIdentifier());
@@ -109,22 +118,30 @@ public class UkbCondition extends Condition
     this.caseId = (versorgungsfall != null) ? versorgungsfall.getCaseId() : null;
 
     // set fhir content
-    this.setSubject(new Reference().setIdentifier(
-        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-            patient.getIdentifier())));
+    this.setSubject(
+        new Reference()
+          .setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())
+          )
+      );
     this.setClinicalStatus(clinicalStatus);
     this.setCode(code);
     this.setRecordedDate(recordedDate);
   }
 
-  public UkbCondition(UkbVersorgungsfall versorgungsfall, CodeableConcept clinicalStatus,
-      CodeableConcept code, Date recordedDate) throws MandatoryFieldNotInitializedException {
-
+  public UkbCondition(
+    UkbVersorgungsfall versorgungsfall,
+    CodeableConcept clinicalStatus,
+    CodeableConcept code,
+    Date recordedDate
+  ) throws MandatoryFieldNotInitializedException {
     // validate arguments
     ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
     ExceptionTools.checkNull("versorgungsfall.patient", versorgungsfall.getUkbPatient());
-    ExceptionTools.checkNullOrEmpty("versorgungsfall.patient.identifier",
-        versorgungsfall.getUkbPatient().getIdentifier());
+    ExceptionTools.checkNullOrEmpty(
+      "versorgungsfall.patient.identifier",
+      versorgungsfall.getUkbPatient().getIdentifier()
+    );
     ExceptionTools.checkNull("clinicalStatus", clinicalStatus);
     ExceptionTools.checkNull("code", code);
     ExceptionTools.checkNull("recordedDate", recordedDate);
@@ -136,9 +153,15 @@ public class UkbCondition extends Condition
     this.caseId = versorgungsfall.getCaseId();
 
     // set fhir content
-    this.setSubject(new Reference().setIdentifier(
-        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-            versorgungsfall.getUkbPatient().getIdentifier())));
+    this.setSubject(
+        new Reference()
+          .setIdentifier(
+            FhirTools.getIdentifierBySystem(
+              StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
+              versorgungsfall.getUkbPatient().getIdentifier()
+            )
+          )
+      );
     this.setClinicalStatus(clinicalStatus);
     this.setCode(code);
     this.setRecordedDate(recordedDate);
@@ -155,7 +178,7 @@ public class UkbCondition extends Condition
 
   @Override
   public String getCaseIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
       return this.caseId;
     }
@@ -173,8 +196,7 @@ public class UkbCondition extends Condition
   }
 
   @Override
-  public String getPatientIdentifierValue(String system)
-      throws MandatoryFieldNotInitializedException {
+  public String getPatientIdentifierValue(String system) throws MandatoryFieldNotInitializedException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
       return this.patientId;
     }
@@ -184,7 +206,6 @@ public class UkbCondition extends Condition
 
   @Override
   public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
-
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
@@ -194,7 +215,7 @@ public class UkbCondition extends Condition
 
   @Override
   public UkbVersorgungsfall getUkbVersorgungsfall()
-      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
     if (this.versorgungsfall == null) {
       if (this.caseId == null) {
@@ -207,7 +228,7 @@ public class UkbCondition extends Condition
 
   @Override
   public void initializeUkbPatient(UkbPatient patient)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
+    throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
     ExceptionTools.checkNullOrEmpty("patient.identifier", patient.getIdentifier());
@@ -222,14 +243,17 @@ public class UkbCondition extends Condition
     this.patientId = patient.getPatientId();
 
     // assign the patient to the fhir object
-    this.setSubject(new Reference().setIdentifier(
-        FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-            patient.getIdentifier())));
+    this.setSubject(
+        new Reference()
+          .setIdentifier(
+            FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())
+          )
+      );
   }
 
   @Override
   public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
+    throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
 

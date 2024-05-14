@@ -20,6 +20,7 @@ package de.ukbonn.mwtek.utilities;
 import java.util.Objects;
 
 public class Compare {
+
   /**
    * Compares two <code>String</code> values and returns <code>true</code> if both are equal.
    * <p>

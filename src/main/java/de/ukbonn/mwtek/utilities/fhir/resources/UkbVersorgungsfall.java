@@ -50,17 +50,18 @@ public class UkbVersorgungsfall extends UkbEncounter {
    * @param period                           Timespan of the Duration of the patient
    * @param ukbVersorgungsfallDiagnosisList  The list of diagnosis relevant to this encounter.
    */
-  public UkbVersorgungsfall(String patientId, Enumeration<EncounterStatus> status,
-      Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
-      List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
-      throws IllegalArgumentException {
+  public UkbVersorgungsfall(
+    String patientId,
+    Enumeration<EncounterStatus> status,
+    Coding encounterClass,
+    List<Identifier> ukbVersorgungsfallIdentifierList,
+    Period period,
+    List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList
+  ) throws IllegalArgumentException {
     super(patientId, status, encounterClass);
-
     // validate arguments
-    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList",
-        ukbVersorgungsfallIdentifierList);
-    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList",
-        ukbVersorgungsfallDiagnosisList);
+    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList", ukbVersorgungsfallIdentifierList);
+    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList", ukbVersorgungsfallDiagnosisList);
     ExceptionTools.checkNull("period", period);
 
     // set fhir content
@@ -69,17 +70,18 @@ public class UkbVersorgungsfall extends UkbEncounter {
     this.setDiagnosis(ukbVersorgungsfallDiagnosisList);
   }
 
-  public UkbVersorgungsfall(UkbPatient patient, Enumeration<EncounterStatus> status,
-      Coding encounterClass, List<Identifier> ukbVersorgungsfallIdentifierList, Period period,
-      List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList)
-      throws IllegalArgumentException {
+  public UkbVersorgungsfall(
+    UkbPatient patient,
+    Enumeration<EncounterStatus> status,
+    Coding encounterClass,
+    List<Identifier> ukbVersorgungsfallIdentifierList,
+    Period period,
+    List<DiagnosisComponent> ukbVersorgungsfallDiagnosisList
+  ) throws IllegalArgumentException {
     super(patient, status, encounterClass);
-
     // validate arguments
-    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList",
-        ukbVersorgungsfallIdentifierList);
-    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList",
-        ukbVersorgungsfallDiagnosisList);
+    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallIdentifierList", ukbVersorgungsfallIdentifierList);
+    ExceptionTools.checkNullOrEmpty("ukbVersorgungsfallDiagnosisList", ukbVersorgungsfallDiagnosisList);
     ExceptionTools.checkNull("period", period);
 
     // set fhir content

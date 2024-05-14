@@ -30,8 +30,7 @@ import org.hl7.fhir.r4.model.Extension;
 
 public class FhirConditionTools {
 
-  public static Set<String> getEncounterIdsByIcdCodes(Collection<UkbCondition> ukbConditions,
-      String icdCode) {
+  public static Set<String> getEncounterIdsByIcdCodes(Collection<UkbCondition> ukbConditions, String icdCode) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null) {
       ukbConditions.forEach(condition -> {
@@ -54,16 +53,17 @@ public class FhirConditionTools {
    * @return A Set of unique case IDs found within the UkbConditions that have matching ICD codes.
    * @throws NullPointerException if either ukbConditions or icdCodes is null.
    */
-  public static Set<String> getEncounterIdsByIcdCodes(Collection<UkbCondition> ukbConditions,
-      Collection<String> icdCodes) {
+  public static Set<String> getEncounterIdsByIcdCodes(
+    Collection<UkbCondition> ukbConditions,
+    Collection<String> icdCodes
+  ) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
       for (UkbCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
-            if (coding.hasSystem() && coding.getSystem().equals(ICD) && icdCodes.contains(
-                coding.getCode())) {
+            if (coding.hasSystem() && coding.getSystem().equals(ICD) && icdCodes.contains(coding.getCode())) {
               caseIds.add(condition.getCaseId());
               break;
             }
@@ -74,24 +74,26 @@ public class FhirConditionTools {
     return caseIds;
   }
 
-  public static Set<String> getCaseIdsWithIcdCodeReliability(Collection<UkbCondition> ukbConditions,
-      Collection<String> icdCodes, String reliability) {
+  public static Set<String> getCaseIdsWithIcdCodeReliability(
+    Collection<UkbCondition> ukbConditions,
+    Collection<String> icdCodes,
+    String reliability
+  ) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
       for (UkbCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
-            if (coding.hasSystem() && coding.getSystem().equals(ICD) && icdCodes.contains(
-                coding.getCode())) {
+            if (coding.hasSystem() && coding.getSystem().equals(ICD) && icdCodes.contains(coding.getCode())) {
               // Detect the diagnosis reliability which is part of an extension
               if (coding.hasExtension(EXTENSION_DIAGNOSIS_RELIABILITY)) {
-                Extension extDiagReliability = coding.getExtensionByUrl(
-                    EXTENSION_DIAGNOSIS_RELIABILITY);
+                Extension extDiagReliability = coding.getExtensionByUrl(EXTENSION_DIAGNOSIS_RELIABILITY);
                 if (extDiagReliability.getValue() instanceof Coding codingExtDiagReliability) {
-                  if (codingExtDiagReliability.getSystem()
-                      .equals(EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM)
-                      && codingExtDiagReliability.hasCode()) {
+                  if (
+                    codingExtDiagReliability.getSystem().equals(EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM) &&
+                    codingExtDiagReliability.hasCode()
+                  ) {
                     // check if ICD diagnosis reliability code (usually a letter) is available
                     if (reliability.equals(codingExtDiagReliability.getCode())) {
                       caseIds.add(condition.getCaseId());

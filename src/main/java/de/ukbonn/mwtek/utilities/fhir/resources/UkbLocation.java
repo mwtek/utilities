@@ -17,6 +17,10 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
+import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.ICU;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.WARD;
+import static de.ukbonn.mwtek.utilities.fhir.misc.FhirCodingTools.isCodeInAnyCodeableConcepts;
+
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import java.util.List;
@@ -42,5 +46,31 @@ public class UkbLocation extends Location {
 
     this.setIdentifier(identifier);
     this.setPhysicalType(physicalType);
+  }
+
+  /**
+   * Is the given {@link UkbLocation location} of ICU type?
+   *
+   * @return <code>True</code> if the given location describes an intensive care unit.
+   */
+  public boolean isLocationIcu() {
+    if (this.hasType()) {
+      return isCodeInAnyCodeableConcepts(this.getType(), List.of(ICU));
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Does the passed {@link UkbLocation location} resource describe a ward/station?
+   *
+   * @return <code>True</code> if the given location describes a ward.
+   */
+  public boolean isLocationWard() {
+    if (this.hasPhysicalType()) {
+      return isCodeInAnyCodeableConcepts(this.getPhysicalType(), List.of(WARD));
+    } else {
+      return false;
+    }
   }
 }

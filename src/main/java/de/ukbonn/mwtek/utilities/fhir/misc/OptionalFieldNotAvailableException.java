@@ -17,6 +17,4 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
-public class OptionalFieldNotAvailableException extends Exception {
-
-}
+public class OptionalFieldNotAvailableException extends Exception {}

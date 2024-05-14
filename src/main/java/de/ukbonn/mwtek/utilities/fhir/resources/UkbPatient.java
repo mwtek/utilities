@@ -31,17 +31,20 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 
 @ResourceDef(name = "Patient")
-public class UkbPatient extends Patient
-    implements PatientIdentifierValueProvider {
+public class UkbPatient extends Patient implements PatientIdentifierValueProvider {
 
   @Deprecated
   public UkbPatient() {
     super();
   }
 
-  public UkbPatient(List<Identifier> identifier, List<HumanName> name, AdministrativeGender gender,
-      Date birthDate, List<Address> address) {
-
+  public UkbPatient(
+    List<Identifier> identifier,
+    List<HumanName> name,
+    AdministrativeGender gender,
+    Date birthDate,
+    List<Address> address
+  ) {
     ExceptionTools.checkNullOrEmpty("identifier", identifier);
     ExceptionTools.checkNullOrEmpty("name", name);
     ExceptionTools.checkNull("gender", gender);
@@ -55,9 +58,12 @@ public class UkbPatient extends Patient
     this.setAddress(address);
   }
 
-  public UkbPatient(List<Identifier> identifier, List<HumanName> name, AdministrativeGender gender,
-      List<Address> address) {
-
+  public UkbPatient(
+    List<Identifier> identifier,
+    List<HumanName> name,
+    AdministrativeGender gender,
+    List<Address> address
+  ) {
     ExceptionTools.checkNullOrEmpty("identifier", identifier);
     ExceptionTools.checkNullOrEmpty("name", name);
     ExceptionTools.checkNull("gender", gender);

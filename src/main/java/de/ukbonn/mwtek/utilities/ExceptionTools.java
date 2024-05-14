@@ -21,24 +21,22 @@ import java.util.Collection;
 
 public class ExceptionTools {
 
-  public static <T extends Object> T checkNull(String parameterName, T argumentValue)
-          throws IllegalArgumentException {
+  public static <T extends Object> T checkNull(String parameterName, T argumentValue) throws IllegalArgumentException {
     if (argumentValue == null) {
       throw new IllegalArgumentException(parameterName);
     }
     return argumentValue;
   }
 
-  public static String checkNullOrEmpty(String parameterName, String argumentValue)
-          throws IllegalArgumentException {
+  public static String checkNullOrEmpty(String parameterName, String argumentValue) throws IllegalArgumentException {
     if (argumentValue == null || argumentValue.isEmpty()) {
       throw new IllegalArgumentException(parameterName);
     }
     return argumentValue;
   }
 
-  public static <T extends Collection<?>> T checkNullOrEmpty(String parameterName,
-          T argumentValue) throws IllegalArgumentException {
+  public static <T extends Collection<?>> T checkNullOrEmpty(String parameterName, T argumentValue)
+    throws IllegalArgumentException {
     if (argumentValue == null || argumentValue.isEmpty()) {
       throw new IllegalArgumentException(parameterName);
     }

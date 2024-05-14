@@ -60,20 +60,23 @@ public class Converter {
   }
 
   // can't be instantiated
-  private Converter() {
-  }
+  private Converter() {}
 
   // list implementation
-  public static List<? extends DomainResource> convert(List<? extends DomainResource> res,
-      boolean check) {
+  public static List<? extends DomainResource> convert(List<? extends DomainResource> res, boolean check) {
     List<DomainResource> resources = new ArrayList<>();
-    res.forEach((temp) -> {
+    res.forEach(temp -> {
       try {
         resources.add(convert(temp, check));
       } catch (IllegalArgumentException ex) {
         System.out.println(
-            "Unable to convert ressource with id " + temp.getId() + " from type " + temp.fhirType()
-                + ". Empty mandatory field: " + ex.getMessage());
+          "Unable to convert ressource with id " +
+          temp.getId() +
+          " from type " +
+          temp.fhirType() +
+          ". Empty mandatory field: " +
+          ex.getMessage()
+        );
       }
     });
     return resources;
@@ -147,9 +150,11 @@ public class Converter {
     res.setPatientId(extractReferenceId(e.getSubject()));
 
     // store the ID of each location WITHOUT the resource type
-    e.getLocation().forEach(loc -> {
-      loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
-    });
+    e
+      .getLocation()
+      .forEach(loc -> {
+        loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
+      });
     res.setLocation(e.getLocation());
 
     return res;
@@ -195,8 +200,7 @@ public class Converter {
     if (check) {
       // CHECK Patient = Subject
       ExceptionTools.checkNull("patient", o.getSubject().getReference());
-      ExceptionTools.checkNullOrEmpty("patient.Identifier",
-          o.getSubject().getIdentifier().toString());
+      ExceptionTools.checkNullOrEmpty("patient.Identifier", o.getSubject().getIdentifier().toString());
     }
 
     res.setIdentifier(o.getIdentifier());

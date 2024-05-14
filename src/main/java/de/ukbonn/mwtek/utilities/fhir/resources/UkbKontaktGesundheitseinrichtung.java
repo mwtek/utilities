@@ -24,25 +24,31 @@ import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.Period;
 
 @ResourceDef(name = "Encounter")
-public class UkbKontaktGesundheitseinrichtung
-    extends UkbEncounter {
+public class UkbKontaktGesundheitseinrichtung extends UkbEncounter {
 
   public UkbKontaktGesundheitseinrichtung() {
     super();
   }
 
-  public UkbKontaktGesundheitseinrichtung(String patientId,
-      Enumeration<EncounterStatus> encounterStatus, Coding class_, Period period) {
+  public UkbKontaktGesundheitseinrichtung(
+    String patientId,
+    Enumeration<EncounterStatus> encounterStatus,
+    Coding class_,
+    Period period
+  ) {
     super(patientId, encounterStatus, class_);
     ExceptionTools.checkNull("Period", period);
 
     this.setPeriod(period);
   }
 
-  public UkbKontaktGesundheitseinrichtung(UkbPatient patient, Enumeration<EncounterStatus> status,
-      Coding class_, Period period) {
+  public UkbKontaktGesundheitseinrichtung(
+    UkbPatient patient,
+    Enumeration<EncounterStatus> status,
+    Coding class_,
+    Period period
+  ) {
     super(patient, status, class_);
-
     ExceptionTools.checkNull("Period", period);
 
     this.setPeriod(period);

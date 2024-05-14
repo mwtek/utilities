@@ -23,38 +23,25 @@ public class StaticValueProvider {
   // used as an identifier for the resource type which will be appended
   public static final String SYSTEM_WITH_IDENTIFIERS_TAG = SYSTEM + "/identifiers/";
 
-  public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "encounter";
+  public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER = SYSTEM_WITH_IDENTIFIERS_TAG + "encounter";
   // Encounter resources, consist of 3 identifiers instead of one.
   public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER_TRANSFER_ID =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "encounter_transferid";
+    SYSTEM_WITH_IDENTIFIERS_TAG + "encounter_transferid";
   public static final String SYSTEM_WITH_IDENTIFIER_ENCOUNTER_CONTACT_LEVEL =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "encounter_contactlevel";
-  public static final String SYSTEM_WITH_IDENTIFIER_LOCATION =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "location";
-  public static final String SYSTEM_WITH_IDENTIFIER_MEDICATION =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "medication";
+    SYSTEM_WITH_IDENTIFIERS_TAG + "encounter_contactlevel";
+  public static final String SYSTEM_WITH_IDENTIFIER_LOCATION = SYSTEM_WITH_IDENTIFIERS_TAG + "location";
+  public static final String SYSTEM_WITH_IDENTIFIER_MEDICATION = SYSTEM_WITH_IDENTIFIERS_TAG + "medication";
 
   public static final String SYSTEM_WITH_IDENTIFIER_MEDICATION_STATEMENT =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "medicationStatement";
-  public static final String SYSTEM_WITH_IDENTIFIER_OBSERVATION =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "observation";
-  public static final String SYSTEM_WITH_IDENTIFIER_PATIENT =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "patient";
-  public static final String SYSTEM_WITH_IDENTIFIER_CONSENT =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "consent";
-  public static final String SYSTEM_WITH_IDENTIFIER_PRACTITIONER =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "practitioner";
-  public static final String SYSTEM_WITH_IDENTIFIER_PROCEDURE =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "procedure";
-  public static final String SYSTEM_WITH_IDENTIFIER_RESEARCH_SUBJECT =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "researchSubject";
-  public static final String SYSTEM_WITH_IDENTIFIER_SERVICE_REQUEST =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "serviceRequest";
-  public static final String SYSTEM_WITH_IDENTIFIER_CONDITION =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "condition";
+    SYSTEM_WITH_IDENTIFIERS_TAG + "medicationStatement";
+  public static final String SYSTEM_WITH_IDENTIFIER_OBSERVATION = SYSTEM_WITH_IDENTIFIERS_TAG + "observation";
+  public static final String SYSTEM_WITH_IDENTIFIER_PATIENT = SYSTEM_WITH_IDENTIFIERS_TAG + "patient";
+  public static final String SYSTEM_WITH_IDENTIFIER_CONSENT = SYSTEM_WITH_IDENTIFIERS_TAG + "consent";
+  public static final String SYSTEM_WITH_IDENTIFIER_PRACTITIONER = SYSTEM_WITH_IDENTIFIERS_TAG + "practitioner";
+  public static final String SYSTEM_WITH_IDENTIFIER_PROCEDURE = SYSTEM_WITH_IDENTIFIERS_TAG + "procedure";
+  public static final String SYSTEM_WITH_IDENTIFIER_RESEARCH_SUBJECT = SYSTEM_WITH_IDENTIFIERS_TAG + "researchSubject";
+  public static final String SYSTEM_WITH_IDENTIFIER_SERVICE_REQUEST = SYSTEM_WITH_IDENTIFIERS_TAG + "serviceRequest";
+  public static final String SYSTEM_WITH_IDENTIFIER_CONDITION = SYSTEM_WITH_IDENTIFIERS_TAG + "condition";
 
-  public static final String SYSTEM_WITH_IDENTIFIER_EPISODE_OF_CARE =
-      SYSTEM_WITH_IDENTIFIERS_TAG + "episodeOfCare";
+  public static final String SYSTEM_WITH_IDENTIFIER_EPISODE_OF_CARE = SYSTEM_WITH_IDENTIFIERS_TAG + "episodeOfCare";
 }
-
