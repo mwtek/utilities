@@ -19,13 +19,13 @@ package de.ukbonn.mwtek.utilities.fhir.misc;
 
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbKontaktGesundheitseinrichtung;
+import de.ukbonn.mwtek.utilities.fhir.resources.UkbContactHealthFacility;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DomainResource;
@@ -35,32 +35,13 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 
-public class Converter {
-
-  // Test
-  public static void main(String[] args) {
-    Patient p = new Patient();
-    Encounter e = new Encounter();
-    Observation o = new Observation();
-    Procedure pr = new Procedure();
-    Condition c = new Condition();
-    Location l = new Location();
-
-    DomainResource np = convert(p);
-    DomainResource ne = convert(e);
-    DomainResource no = convert(o);
-    DomainResource npr = convert(pr);
-    DomainResource nc = convert(c);
-    DomainResource nl = convert(l);
-
-    List<DomainResource> list = Arrays.asList(p, e, o, pr, c, l);
-    convert(list);
-  }
+public class ResourceConverter {
 
   // can't be instantiated
-  private Converter() {}
+  private ResourceConverter() {}
 
   // list implementation
   public static List<? extends DomainResource> convert(List<? extends DomainResource> res, boolean check) {
@@ -88,29 +69,23 @@ public class Converter {
 
   // single conversion
   public static DomainResource convert(DomainResource res, boolean check) {
-    switch (res.fhirType()) {
-      case "Encounter":
-        return convertEncounter((Encounter) res, check);
-      case "Patient":
-        return convertPatient((Patient) res, check);
-      case "Observation":
-        return convertObservation((Observation) res, check);
-      case "Procedure":
-        return convertProcedure((Procedure) res, check);
-      case "Condition":
-        return convertCondition((Condition) res, check);
-      case "Location":
-        return convertLocation((Location) res, check);
-    }
-    return res;
+    return switch (res.fhirType()) {
+      case "Encounter" -> convertEncounter((Encounter) res, check);
+      case "Patient" -> convertPatient((Patient) res, check);
+      case "Observation" -> convertObservation((Observation) res, check);
+      case "Procedure" -> convertProcedure((Procedure) res, check);
+      case "Condition" -> convertCondition((Condition) res, check);
+      case "Location" -> convertLocation((Location) res, check);
+      default -> res;
+    };
   }
 
   public static DomainResource convert(DomainResource res) {
     return convert(res, false);
   }
 
-  private static UkbKontaktGesundheitseinrichtung convertEncounter(Encounter e, boolean check) {
-    UkbKontaktGesundheitseinrichtung res = new UkbKontaktGesundheitseinrichtung();
+  private static UkbContactHealthFacility convertEncounter(Encounter e, boolean check) {
+    UkbContactHealthFacility res = new UkbContactHealthFacility();
 
     if (check) {
       // e.getClass_() and e.getPeriod() got an auto create mechanism by default if class is empty.
@@ -144,10 +119,10 @@ public class Converter {
     // Extra
     res.setMeta(e.getMeta());
     res.setId(e.getIdElement().getIdPart());
-
-    // Eigene Attribute
-    // CHECK
     res.setPatientId(extractReferenceId(e.getSubject()));
+    // res.setPatientId(split(e.getSubject().getReference()));
+    // res.setSubject(new Reference(split(e.getSubject().getReference())));
+    // res.setLocationId();
 
     // store the ID of each location WITHOUT the resource type
     e
@@ -379,5 +354,36 @@ public class Converter {
     } else {
       return reference.getIdentifier().getValue();
     }
+  }
+
+  /**
+   * Converts a given textual FHIR ResourceType into a FHIR Enumeration (e.g.
+   * {@link ResourceType#Medication}).
+   *
+   * @param listResourceTypesPrimitive List with plain resource type names (e.g. "Medication").
+   * @return List with FHIR {@link ResourceType} entries.
+   */
+  public static List<ResourceType> convertResourceTypesInObject(Collection<String> listResourceTypesPrimitive) {
+    List<ResourceType> listResourceTypeOutput = new ArrayList<>();
+    listResourceTypesPrimitive.forEach(resourceType -> {
+      switch (resourceType.toLowerCase()) {
+        case "condition" -> listResourceTypeOutput.add(ResourceType.Condition);
+        case "consent" -> listResourceTypeOutput.add(ResourceType.Consent);
+        case "diagnosticreport" -> listResourceTypeOutput.add(ResourceType.DiagnosticReport);
+        case "encounter" -> listResourceTypeOutput.add(ResourceType.Encounter);
+        case "location" -> listResourceTypeOutput.add(ResourceType.Location);
+        case "list" -> listResourceTypeOutput.add(ResourceType.List);
+        case "medication" -> listResourceTypeOutput.add(ResourceType.Medication);
+        case "medicationstatement" -> listResourceTypeOutput.add(ResourceType.MedicationAdministration);
+        case "medicationadministration" -> listResourceTypeOutput.add(ResourceType.MedicationStatement);
+        case "medicationrequest" -> listResourceTypeOutput.add(ResourceType.MedicationRequest);
+        case "observation" -> listResourceTypeOutput.add(ResourceType.Observation);
+        case "patient" -> listResourceTypeOutput.add(ResourceType.Patient);
+        case "procedure" -> listResourceTypeOutput.add(ResourceType.Procedure);
+        case "servicerequest" -> listResourceTypeOutput.add(ResourceType.ServiceRequest);
+        case "specimen" -> listResourceTypeOutput.add(ResourceType.Specimen);
+      }
+    });
+    return listResourceTypeOutput;
   }
 }

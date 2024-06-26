@@ -15,42 +15,20 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-package de.ukbonn.mwtek.utilities.fhir.resources;
 
-import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import de.ukbonn.mwtek.utilities.ExceptionTools;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Enumeration;
-import org.hl7.fhir.r4.model.Period;
+package de.ukbonn.mwtek.utilities.fhir.interfaces;
 
-@ResourceDef(name = "Encounter")
-public class UkbKontaktGesundheitseinrichtung extends UkbEncounter {
+import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
+import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
+import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
+import de.ukbonn.mwtek.utilities.fhir.resources.UkbContactHealthFacility;
 
-  public UkbKontaktGesundheitseinrichtung() {
-    super();
-  }
+public interface UkbContactHealthFacilityProvider extends CaseIdentifierValueProvider {
+  public UkbContactHealthFacility getUkbContactHealthFacility()
+    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
-  public UkbKontaktGesundheitseinrichtung(
-    String patientId,
-    Enumeration<EncounterStatus> encounterStatus,
-    Coding class_,
-    Period period
-  ) {
-    super(patientId, encounterStatus, class_);
-    ExceptionTools.checkNull("Period", period);
+  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
+    throws IllegalArgumentException, FieldAlreadyInitializedException;
 
-    this.setPeriod(period);
-  }
-
-  public UkbKontaktGesundheitseinrichtung(
-    UkbPatient patient,
-    Enumeration<EncounterStatus> status,
-    Coding class_,
-    Period period
-  ) {
-    super(patient, status, class_);
-    ExceptionTools.checkNull("Period", period);
-
-    this.setPeriod(period);
-  }
+  public boolean isUkbContactHealthFacilityInitialized();
 }

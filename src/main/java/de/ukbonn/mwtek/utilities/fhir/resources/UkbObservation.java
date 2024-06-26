@@ -22,8 +22,8 @@ import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbContactHealthFacilityProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbVersorgungsfallProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
@@ -39,10 +39,10 @@ import org.hl7.fhir.r4.model.Reference;
 public class UkbObservation
   extends Observation
   implements
-    UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider, CaseIdentifierValueProvider {
+    UkbPatientProvider, PatientIdentifierValueProvider, UkbContactHealthFacilityProvider, CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
-  protected UkbVersorgungsfall versorgungsfall;
+  protected UkbContactHealthFacility encounter;
   protected String patientId;
   protected String caseId;
 
@@ -83,9 +83,25 @@ public class UkbObservation
     } // if
   }
 
+  @Override
+  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
+    throws IllegalArgumentException, FieldAlreadyInitializedException {
+    // validate arguments
+    ExceptionTools.checkNull("encounter", encounter);
+
+    // must not be initialized more than once!
+    if (this.encounter != null) {
+      throw new FieldAlreadyInitializedException();
+    } // if
+
+    // assign the patient to the local fields (only, no fhir assignment)
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
+  }
+
   public UkbObservation(
     UkbPatient patient,
-    UkbVersorgungsfall versorgungsfall,
+    UkbContactHealthFacility encounter,
     Enumeration<ObservationStatus> status,
     CodeableConcept code
   ) throws IllegalArgumentException {
@@ -97,8 +113,8 @@ public class UkbObservation
     // set local variables
     this.patient = patient;
     this.patientId = patient.getPatientId();
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = (versorgungsfall != null) ? versorgungsfall.getCaseId() : null;
+    this.encounter = encounter;
+    this.caseId = (encounter != null) ? encounter.getCaseId() : null;
 
     // set fhir content
     this.setSubject(
@@ -110,24 +126,21 @@ public class UkbObservation
   }
 
   public UkbObservation(
-    UkbVersorgungsfall versorgungsfall,
+    UkbContactHealthFacility encounter,
     Enumeration<ObservationStatus> status,
     CodeableConcept code
   ) throws IllegalArgumentException, MandatoryFieldNotInitializedException {
     super(status, code);
     // validate arguments
-    ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
-    ExceptionTools.checkNull("versorgungsfall.patient", versorgungsfall.getUkbPatient());
-    ExceptionTools.checkNullOrEmpty(
-      "versorgungsfall.patient.identifier",
-      versorgungsfall.getUkbPatient().getIdentifier()
-    );
+    ExceptionTools.checkNull("encounter", encounter);
+    ExceptionTools.checkNull("encounter.patient", encounter.getUkbPatient());
+    ExceptionTools.checkNullOrEmpty("encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
 
     // set local variables
-    this.patient = versorgungsfall.getUkbPatient();
-    this.patientId = versorgungsfall.getUkbPatient().getPatientId();
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = versorgungsfall.getCaseId();
+    this.patient = encounter.getUkbPatient();
+    this.patientId = encounter.getUkbPatient().getPatientId();
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
 
     // set fhir content
     this.setSubject(
@@ -135,7 +148,7 @@ public class UkbObservation
           .setIdentifier(
             FhirTools.getIdentifierBySystem(
               StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-              versorgungsfall.getUkbPatient().getIdentifier()
+              encounter.getUkbPatient().getIdentifier()
             )
           )
       );
@@ -153,7 +166,7 @@ public class UkbObservation
       return this.caseId;
     } // if
 
-    return this.getUkbVersorgungsfall().getCaseIdentifierValue(system);
+    return this.getUkbContactHealthFacility().getCaseIdentifierValue(system);
   }
 
   @Override
@@ -180,16 +193,16 @@ public class UkbObservation
   }
 
   @Override
-  public UkbVersorgungsfall getUkbVersorgungsfall()
+  public UkbContactHealthFacility getUkbContactHealthFacility()
     throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
-    if (this.versorgungsfall == null) {
+    if (this.encounter == null) {
       if (this.caseId == null) {
         throw new OptionalFieldNotAvailableException();
       } // if
       throw new MandatoryFieldNotInitializedException();
     } // if
-    return this.versorgungsfall;
+    return this.encounter;
   }
 
   @Override
@@ -218,29 +231,13 @@ public class UkbObservation
   }
 
   @Override
-  public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-    throws IllegalArgumentException, FieldAlreadyInitializedException {
-    // validate arguments
-    ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
-
-    // must not be initialized more than once!
-    if (this.versorgungsfall != null) {
-      throw new FieldAlreadyInitializedException();
-    }
-
-    // assign the patient to the local fields (only, no fhir assignment)
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = versorgungsfall.getCaseId();
-  }
-
-  @Override
   public boolean isUkbPatientInitialized() {
     return (this.patient != null);
   }
 
   @Override
-  public boolean isUkbVersorgungsfallInitialized() {
-    return (this.versorgungsfall != null);
+  public boolean isUkbContactHealthFacilityInitialized() {
+    return (this.encounter != null);
   }
 
   public void setCaseId(String caseId) {

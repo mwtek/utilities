@@ -22,8 +22,8 @@ import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbContactHealthFacilityProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbVersorgungsfallProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
@@ -40,10 +40,10 @@ import org.hl7.fhir.r4.model.Reference;
 public class UkbCondition
   extends Condition
   implements
-    UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider, CaseIdentifierValueProvider {
+    UkbPatientProvider, PatientIdentifierValueProvider, UkbContactHealthFacilityProvider, CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
-  protected UkbVersorgungsfall versorgungsfall;
+  protected UkbContactHealthFacility encounter;
   protected String patientId;
   protected String caseId;
 
@@ -58,18 +58,18 @@ public class UkbCondition
 
   /**
    * Creates a new condition object without defined {@link UkbPatient} and
-   * {@link UkbVersorgungsfall} objects, these objects may be assigned later using
+   * {@link UkbContactHealthFacility} objects, these objects may be assigned later using
    * {@link #initializeUkbPatient(UkbPatient)} or
-   * {@link #initializeVersorgungsfall(UkbVersorgungsfall)}. The patient is mandatory, therefore
-   * the
+   * {@link #initializeUkbContactHealthFacility(UkbContactHealthFacility)}. The patient is
+   * mandatory, therefore the
    * <code>patientId</code> must be specified, the case is optional.
    *
    * @param patientId      the default system id of the patient
-   * @param caseId         the default system id of the case (effectively "Versorgungsfall", may be
+   * @param caseId         the default system id of the case (effectively "encounter", may be
    *                       <code>null</code>)
-   * @param clinicalStatus the clinical status of the patient
-   * @param code           identification of the condition
-   * @param recordedDate   recorded Date
+   * @param clinicalStatus
+   * @param code
+   * @param recordedDate
    */
   public UkbCondition(
     String patientId,
@@ -80,7 +80,7 @@ public class UkbCondition
   ) {
     // validate arguments
     if (patientId == null) {
-      log.debug("pid is null -> mb person is canceled");
+      log.warn("pid is null -> the patient might be canceled");
     }
     ExceptionTools.checkNullOrEmpty("patientId", patientId);
     ExceptionTools.checkNull("clinicalStatus", clinicalStatus);
@@ -99,7 +99,7 @@ public class UkbCondition
 
   public UkbCondition(
     UkbPatient patient,
-    UkbVersorgungsfall versorgungsfall,
+    UkbContactHealthFacility encounter,
     CodeableConcept clinicalStatus,
     CodeableConcept code,
     Date recordedDate
@@ -114,8 +114,8 @@ public class UkbCondition
     // set local variables
     this.patient = patient;
     this.patientId = patient.getPatientId();
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = (versorgungsfall != null) ? versorgungsfall.getCaseId() : null;
+    this.encounter = encounter;
+    this.caseId = (encounter != null) ? encounter.getCaseId() : null;
 
     // set fhir content
     this.setSubject(
@@ -130,27 +130,24 @@ public class UkbCondition
   }
 
   public UkbCondition(
-    UkbVersorgungsfall versorgungsfall,
+    UkbContactHealthFacility encounter,
     CodeableConcept clinicalStatus,
     CodeableConcept code,
     Date recordedDate
   ) throws MandatoryFieldNotInitializedException {
     // validate arguments
-    ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
-    ExceptionTools.checkNull("versorgungsfall.patient", versorgungsfall.getUkbPatient());
-    ExceptionTools.checkNullOrEmpty(
-      "versorgungsfall.patient.identifier",
-      versorgungsfall.getUkbPatient().getIdentifier()
-    );
+    ExceptionTools.checkNull("encounter", encounter);
+    ExceptionTools.checkNull("encounter.patient", encounter.getUkbPatient());
+    ExceptionTools.checkNullOrEmpty("encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
     ExceptionTools.checkNull("clinicalStatus", clinicalStatus);
     ExceptionTools.checkNull("code", code);
     ExceptionTools.checkNull("recordedDate", recordedDate);
 
     // set local variables
-    this.patient = versorgungsfall.getUkbPatient();
-    this.patientId = versorgungsfall.getUkbPatient().getPatientId();
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = versorgungsfall.getCaseId();
+    this.patient = encounter.getUkbPatient();
+    this.patientId = encounter.getUkbPatient().getPatientId();
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
 
     // set fhir content
     this.setSubject(
@@ -158,7 +155,7 @@ public class UkbCondition
           .setIdentifier(
             FhirTools.getIdentifierBySystem(
               StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-              versorgungsfall.getUkbPatient().getIdentifier()
+              encounter.getUkbPatient().getIdentifier()
             )
           )
       );
@@ -179,11 +176,11 @@ public class UkbCondition
   @Override
   public String getCaseIdentifierValue(String system)
     throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
-    if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
+    if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)) {
       return this.caseId;
-    }
+    } // if
 
-    return this.getUkbVersorgungsfall().getCaseIdentifierValue(system);
+    return this.getUkbContactHealthFacility().getCaseIdentifierValue(system);
   }
 
   @Override
@@ -199,7 +196,7 @@ public class UkbCondition
   public String getPatientIdentifierValue(String system) throws MandatoryFieldNotInitializedException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
       return this.patientId;
-    }
+    } // if
 
     return this.getUkbPatient().getPatientIdentifierValue(system);
   }
@@ -209,21 +206,21 @@ public class UkbCondition
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
-    }
+    } // if
     return this.patient;
   }
 
   @Override
-  public UkbVersorgungsfall getUkbVersorgungsfall()
+  public UkbContactHealthFacility getUkbContactHealthFacility()
     throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
-    if (this.versorgungsfall == null) {
+    if (this.encounter == null) {
       if (this.caseId == null) {
         throw new OptionalFieldNotAvailableException();
-      }
+      } // if
       throw new MandatoryFieldNotInitializedException();
-    }
-    return this.versorgungsfall;
+    } // if
+    return this.encounter;
   }
 
   @Override
@@ -236,7 +233,7 @@ public class UkbCondition
     // must not be initialized more than once!
     if (this.patient != null) {
       throw new FieldAlreadyInitializedException();
-    }
+    } // if
 
     // assign the patient to the local fields
     this.patient = patient;
@@ -252,19 +249,19 @@ public class UkbCondition
   }
 
   @Override
-  public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
+  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
     throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
-    ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
+    ExceptionTools.checkNull("encounter", encounter);
 
     // must not be initialized more than once!
-    if (this.versorgungsfall != null) {
+    if (this.encounter != null) {
       throw new FieldAlreadyInitializedException();
-    }
+    } // if
 
     // assign the patient to the local fields (only, no fhir assignment)
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = versorgungsfall.getCaseId();
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
   }
 
   @Override
@@ -273,7 +270,7 @@ public class UkbCondition
   }
 
   @Override
-  public boolean isUkbVersorgungsfallInitialized() {
-    return (this.versorgungsfall != null);
+  public boolean isUkbContactHealthFacilityInitialized() {
+    return (this.encounter != null);
   }
 }

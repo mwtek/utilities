@@ -30,8 +30,7 @@ public class FhirCodingTools {
    * {@link Coding#getSystem()}.
    */
   public static Coding getCodingBySystem(List<Coding> codings, String system) {
-    return codings.stream().filter(x -> x.hasSystem() && x.getSystem().equals(system)).findFirst()
-        .orElse(null);
+    return codings.stream().filter(x -> x.hasSystem() && x.getSystem().equals(system)).findFirst().orElse(null);
   }
 
   /**
@@ -47,10 +46,8 @@ public class FhirCodingTools {
    * Does the given list of fhir {@link Coding}s contain a value that is part of the given code
    * system.
    */
-  public static boolean isCodeInCodesystem(List<Coding> codings,
-      Collection<String> codeSystemEntries, String system) {
-    return hasCodeBySystem(codings, system) && (codeSystemEntries.contains(
-        getCodeBySystem(codings, system)));
+  public static boolean isCodeInCodesystem(List<Coding> codings, Collection<String> codeSystemEntries, String system) {
+    return hasCodeBySystem(codings, system) && (codeSystemEntries.contains(getCodeBySystem(codings, system)));
   }
 
   /**
@@ -122,8 +119,8 @@ public class FhirCodingTools {
    * if it matches the passed reference code.
    */
   public static boolean isCodeOfFirstCodeableConceptEquals(
-      List<CodeableConcept> codeableConcepts,
-      String referenceCode
+    List<CodeableConcept> codeableConcepts,
+    String referenceCode
   ) {
     String code = getCodeOfFirstCodeableConcept(codeableConcepts);
     return code != null && code.equals(referenceCode);
@@ -134,9 +131,9 @@ public class FhirCodingTools {
    * {@link Coding#getCode() codes} in the given code system, to the given system.
    */
   public static boolean isCodeInCodeableConcepts(
-      List<CodeableConcept> codeableConcepts,
-      String system,
-      List<String> referenceCodes
+    List<CodeableConcept> codeableConcepts,
+    String system,
+    List<String> referenceCodes
   ) {
     if (codeableConcepts != null) {
       for (CodeableConcept concept : codeableConcepts) {
@@ -153,24 +150,20 @@ public class FhirCodingTools {
    * {@link Coding#getCode() codes} without checking the {@link Coding#getSystem()} entry.
    */
   public static boolean isCodeInAnyCodeableConcepts(
-      List<CodeableConcept> codeableConcepts,
-      List<String> referenceCodes
+    List<CodeableConcept> codeableConcepts,
+    List<String> referenceCodes
   ) {
     if (codeableConcepts != null) {
       for (CodeableConcept concept : codeableConcepts) {
         if (concept.hasCoding()) {
-          return concept.getCoding().stream()
-              .anyMatch(coding -> referenceCodes.contains(coding.getCode()));
+          return concept.getCoding().stream().anyMatch(coding -> referenceCodes.contains(coding.getCode()));
         }
       }
     }
     return false;
   }
 
-  public static boolean isCodeInAnyCodeableConcepts(
-      CodeableConcept codeableConcept,
-      List<String> referenceCodes
-  ) {
+  public static boolean isCodeInAnyCodeableConcepts(CodeableConcept codeableConcept, List<String> referenceCodes) {
     return isCodeInAnyCodeableConcepts(List.of(codeableConcept), referenceCodes);
   }
 }

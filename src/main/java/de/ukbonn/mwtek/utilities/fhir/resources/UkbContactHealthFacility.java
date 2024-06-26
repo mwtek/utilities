@@ -15,19 +15,52 @@
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
  */
-package de.ukbonn.mwtek.utilities.fhir.interfaces;
 
-import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
-import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
-import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbVersorgungsfall;
+package de.ukbonn.mwtek.utilities.fhir.resources;
 
-public interface UkbVersorgungsfallProvider extends CaseIdentifierValueProvider {
-  public UkbVersorgungsfall getUkbVersorgungsfall()
-    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+import ca.uhn.fhir.model.api.annotation.ResourceDef;
+import de.ukbonn.mwtek.utilities.ExceptionTools;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Enumeration;
+import org.hl7.fhir.r4.model.Period;
 
-  public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
-    throws IllegalArgumentException, FieldAlreadyInitializedException;
+/*
+This model represents an instance of a {@link UkbEncounter} resource that is based on {@link
+https://simplifier.net/medizininformatikinitiative-modulfall/kontaktgesundheitseinrichtung the
+'Kontakt mit einer Gesundheitseinrichtung' profile}.
+ */
+@ResourceDef(name = "Encounter")
+public class UkbContactHealthFacility extends UkbEncounter {
 
-  public boolean isUkbVersorgungsfallInitialized();
+  public UkbContactHealthFacility() {
+    super();
+  }
+
+  public UkbContactHealthFacility(
+    String patientId,
+    Enumeration<EncounterStatus> encounterStatus,
+    Coding class_,
+    Period period
+  ) {
+    super(patientId, encounterStatus, class_);
+    ExceptionTools.checkNull("Period", period);
+
+    this.setPeriod(period);
+  }
+
+  public UkbContactHealthFacility(
+    UkbPatient patient,
+    Enumeration<EncounterStatus> status,
+    Coding class_,
+    Period period
+  ) {
+    super(patient, status, class_);
+    ExceptionTools.checkNull("Period", period);
+
+    this.setPeriod(period);
+  }
+
+  public UkbContactHealthFacility(String patientId, Enumeration<EncounterStatus> encounterStatus, Coding class_) {
+    super(patientId, encounterStatus, class_);
+  }
 }

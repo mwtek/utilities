@@ -22,7 +22,6 @@ public class TerminologySystems {
 
   public static String UCUM = "http://unitsofmeasure.org";
   public static String LOINC = "http://loinc.org";
-
   public static String ICD = "http://fhir.de/CodeSystem/bfarm/icd-10-gm";
   public static String SNOMED = "http://snomed.info/sct";
   public static String OPS = "http://fhir.de/CodeSystem/bfarm/ops";

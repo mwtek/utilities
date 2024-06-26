@@ -27,8 +27,8 @@ import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.enums.TerminologySystems;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbContactHealthFacilityProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbVersorgungsfallProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
@@ -45,10 +45,10 @@ import org.hl7.fhir.r4.model.Type;
 public class UkbProcedure
   extends Procedure
   implements
-    UkbPatientProvider, PatientIdentifierValueProvider, UkbVersorgungsfallProvider, CaseIdentifierValueProvider {
+    UkbPatientProvider, PatientIdentifierValueProvider, UkbContactHealthFacilityProvider, CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
-  protected UkbVersorgungsfall versorgungsfall;
+  protected UkbContactHealthFacility encounter;
   protected String patientId;
   protected String caseId;
 
@@ -92,7 +92,7 @@ public class UkbProcedure
 
   public UkbProcedure(
     UkbPatient patient,
-    UkbVersorgungsfall versorgungsfall,
+    UkbContactHealthFacility facilityContact,
     ProcedureStatus status,
     CodeableConcept code,
     Type performed
@@ -108,8 +108,8 @@ public class UkbProcedure
     // set local variables
     this.patient = patient;
     this.patientId = patient.getPatientId();
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = (versorgungsfall != null) ? versorgungsfall.getCaseId() : null;
+    this.encounter = facilityContact;
+    this.caseId = (facilityContact != null) ? facilityContact.getCaseId() : null;
 
     // set fhir content
     this.setSubject(
@@ -123,36 +123,25 @@ public class UkbProcedure
     this.setPerformed(performed);
   }
 
-  public UkbProcedure(UkbVersorgungsfall versorgungsfall, ProcedureStatus status, CodeableConcept code, Type performed)
+  public UkbProcedure(UkbContactHealthFacility encounter, ProcedureStatus status, CodeableConcept code, Type performed)
     throws IllegalArgumentException, MandatoryFieldNotInitializedException {
     super();
     // validate arguments
-    ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
-    ExceptionTools.checkNull("versorgungsfall.patient", versorgungsfall.getUkbPatient());
-    ExceptionTools.checkNullOrEmpty(
-      "versorgungsfall.patient.identifier",
-      versorgungsfall.getUkbPatient().getIdentifier()
-    );
+    ExceptionTools.checkNull("encounter", encounter);
+    ExceptionTools.checkNull("encounter.patient", encounter.getUkbPatient());
+    ExceptionTools.checkNullOrEmpty("encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
     ExceptionTools.checkNull("status", status);
     ExceptionTools.checkNull("code", code);
     ExceptionTools.checkNull("performed", performed);
 
     // set local variables
-    this.patient = versorgungsfall.getUkbPatient();
-    this.patientId = versorgungsfall.getUkbPatient().getPatientId();
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = versorgungsfall.getCaseId();
+    this.patient = encounter.getUkbPatient();
+    this.patientId = encounter.getUkbPatient().getPatientId();
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
 
     // set fhir content
-    this.setSubject(
-        new Reference()
-          .setIdentifier(
-            FhirTools.getIdentifierBySystem(
-              StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-              versorgungsfall.getUkbPatient().getIdentifier()
-            )
-          )
-      );
+
     this.setStatus(status);
     this.setCode(code);
     this.setPerformed(performed);
@@ -213,7 +202,7 @@ public class UkbProcedure
       return this.caseId;
     }
 
-    return this.getUkbVersorgungsfall().getCaseIdentifierValue(system);
+    return this.getUkbContactHealthFacility().getCaseIdentifierValue(system);
   }
 
   @Override
@@ -235,36 +224,36 @@ public class UkbProcedure
   }
 
   @Override
-  public UkbVersorgungsfall getUkbVersorgungsfall()
+  public UkbContactHealthFacility getUkbContactHealthFacility()
     throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
-    if (this.versorgungsfall == null) {
+    if (this.encounter == null) {
       if (this.caseId == null) {
         throw new OptionalFieldNotAvailableException();
-      }
+      } // if
       throw new MandatoryFieldNotInitializedException();
-    }
-    return this.versorgungsfall;
+    } // if
+    return this.encounter;
   }
 
   @Override
-  public void initializeVersorgungsfall(UkbVersorgungsfall versorgungsfall)
+  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
     throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
-    ExceptionTools.checkNull("versorgungsfall", versorgungsfall);
+    ExceptionTools.checkNull("encounter", encounter);
 
     // must not be initialized more than once!
-    if (this.versorgungsfall != null) {
+    if (this.encounter != null) {
       throw new FieldAlreadyInitializedException();
-    }
+    } // if
 
-    this.versorgungsfall = versorgungsfall;
-    this.caseId = versorgungsfall.getCaseId();
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
   }
 
   @Override
-  public boolean isUkbVersorgungsfallInitialized() {
-    return (this.versorgungsfall != null);
+  public boolean isUkbContactHealthFacilityInitialized() {
+    return (this.encounter != null);
   }
 
   public boolean isCodeExistingInFirstCoding(Collection<String> codes) {
