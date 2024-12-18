@@ -64,12 +64,14 @@ public class FhirTools {
 
     // retrieve and add the value
     String value = identifier.getValue();
-    if ((value != null) && ((system == null) || (Compare.isEqual(system, identifier.getSystem())))) {
+    if ((value != null)
+        && ((system == null) || (Compare.isEqual(system, identifier.getSystem())))) {
       values.add(value);
     } // if
   }
 
-  public static void addIdentifierValues(List<String> values, String system, Collection<Identifier> identifiers) {
+  public static void addIdentifierValues(
+      List<String> values, String system, Collection<Identifier> identifiers) {
     if ((identifiers == null) || (identifiers.isEmpty())) {
       // nothing to do
       return;
@@ -94,7 +96,8 @@ public class FhirTools {
     } // if
   }
 
-  public static void addReferenceIdentifierValue(List<String> values, String system, Reference reference) {
+  public static void addReferenceIdentifierValue(
+      List<String> values, String system, Reference reference) {
     if (reference == null) {
       // nothing to do
       return;
@@ -136,7 +139,7 @@ public class FhirTools {
   }
 
   public static long getEffectiveReferenceAsMicros(Type effective)
-    throws IllegalArgumentException, ArithmeticException {
+      throws IllegalArgumentException, ArithmeticException {
     // validate argument
     ExceptionTools.checkNull("effective", effective);
 
@@ -167,7 +170,7 @@ public class FhirTools {
   }
 
   public static Identifier getIdentifierBySystem(String system, List<Identifier> identifierList)
-    throws IllegalArgumentException {
+      throws IllegalArgumentException {
     ExceptionTools.checkNullOrEmpty("identifierList", identifierList);
     // if system is provided then return identifier for this system
     if (system != null) {
@@ -191,13 +194,14 @@ public class FhirTools {
   }
 
   public static Identifier getOfficialIdentifier(
-    List<Identifier> identifierList,
-    boolean useFirstIdentifierFoundIfOfficialIsMissing
-  ) throws IllegalArgumentException {
+      List<Identifier> identifierList, boolean useFirstIdentifierFoundIfOfficialIsMissing)
+      throws IllegalArgumentException {
     ExceptionTools.checkNullOrEmpty("identifierList", identifierList);
     // if the identifier use is 'official' return this identifier
     for (Identifier identifier : identifierList) {
-      if (identifier != null && identifier.hasUse() && identifier.getUse() == IdentifierUse.OFFICIAL) {
+      if (identifier != null
+          && identifier.hasUse()
+          && identifier.getUse() == IdentifierUse.OFFICIAL) {
         return identifier;
       } // if
     } // for
@@ -217,17 +221,15 @@ public class FhirTools {
   /**
    * Retrieves the visit number identifier from the given list of identifiers.
    *
-   * @param identifierList                                The list of identifiers to search.
+   * @param identifierList The list of identifiers to search.
    * @param useFirstIdentifierFoundIfVisitNumberIsMissing If true, returns the first identifier from
-   *                                                      the list if no visit number slice was
-   *                                                      found.
+   *     the list if no visit number slice was found.
    * @return The visit number identifier if found, otherwise null.
    * @throws IllegalArgumentException If the identifierList is null or empty.
    */
   public static Identifier getVisitNumberIdentifier(
-    List<Identifier> identifierList,
-    boolean useFirstIdentifierFoundIfVisitNumberIsMissing
-  ) throws IllegalArgumentException {
+      List<Identifier> identifierList, boolean useFirstIdentifierFoundIfVisitNumberIsMissing)
+      throws IllegalArgumentException {
     // Check for null or empty identifier list
     ExceptionTools.checkNullOrEmpty("identifierList", identifierList);
 
@@ -253,34 +255,30 @@ public class FhirTools {
     return null;
   }
 
-  public static Set<String> getOfficialIdentifiers(Set<String> positiveEncounterIds, List<UkbEncounter> ukbEncounters) {
-    Set<UkbEncounter> encountersWithIdentifier = ukbEncounters
-      .parallelStream()
-      .filter(Encounter::hasIdentifier)
-      .collect(Collectors.toSet());
+  public static Set<String> getOfficialIdentifiers(
+      Set<String> positiveEncounterIds, List<UkbEncounter> ukbEncounters) {
+    Set<UkbEncounter> encountersWithIdentifier =
+        ukbEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
     if (encountersWithIdentifier.size() != ukbEncounters.size()) {
       log.warn(
-        "Found: " +
-        ukbEncounters.size() +
-        " encounter resources but only " +
-        encountersWithIdentifier.size() +
-        " got an identifier!"
-      );
+          "Found: "
+              + ukbEncounters.size()
+              + " encounter resources but only "
+              + encountersWithIdentifier.size()
+              + " got an identifier!");
     }
     if (!encountersWithIdentifier.isEmpty()) {
-      Set<String> ukbEncounterWithOfficialIdentifier = new HashSet<>(
-        ukbEncounters
-          .stream()
-          .filter(x -> positiveEncounterIds.contains(x.getId()))
-          .map(UkbEncounter::getOfficialIdentifierValue)
-          .toList()
-      );
+      Set<String> ukbEncounterWithOfficialIdentifier =
+          new HashSet<>(
+              ukbEncounters.stream()
+                  .filter(x -> positiveEncounterIds.contains(x.getId()))
+                  .map(UkbEncounter::getOfficialIdentifierValue)
+                  .toList());
       if (ukbEncounterWithOfficialIdentifier.isEmpty()) {
         log.error(
-          "Not a single encounter with an identifier of type 'official' was found. No " +
-          "hierarchical determination from supply contact -> facility contact is " +
-          "possible!"
-        );
+            "Not a single encounter with an identifier of type 'official' was found. No "
+                + "hierarchical determination from supply contact -> facility contact is "
+                + "possible!");
       }
       return ukbEncounterWithOfficialIdentifier;
     } else {
@@ -289,36 +287,29 @@ public class FhirTools {
   }
 
   public static Set<String> getVisitNumberIdentifiers(
-    Set<String> positiveEncounterIds,
-    List<UkbEncounter> ukbEncounters
-  ) {
-    Set<UkbEncounter> encountersWithIdentifier = ukbEncounters
-      .parallelStream()
-      .filter(Encounter::hasIdentifier)
-      .collect(Collectors.toSet());
+      Set<String> positiveEncounterIds, List<UkbEncounter> ukbEncounters) {
+    Set<UkbEncounter> encountersWithIdentifier =
+        ukbEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
     if (encountersWithIdentifier.size() != ukbEncounters.size()) {
       log.warn(
-        "Found: " +
-        ukbEncounters.size() +
-        " encounter resources but only " +
-        encountersWithIdentifier.size() +
-        " are using the 'Aufnahmenummer' slice."
-      );
+          "Found: "
+              + ukbEncounters.size()
+              + " encounter resources but only "
+              + encountersWithIdentifier.size()
+              + " are using the 'Aufnahmenummer' slice.");
     }
     if (!encountersWithIdentifier.isEmpty()) {
-      Set<String> encountersVisitNumbers = new HashSet<>(
-        ukbEncounters
-          .stream()
-          .filter(x -> positiveEncounterIds.contains(x.getId()))
-          .map(UkbEncounter::getVisitNumberIdentifierValue)
-          .toList()
-      );
+      Set<String> encountersVisitNumbers =
+          new HashSet<>(
+              ukbEncounters.stream()
+                  .filter(x -> positiveEncounterIds.contains(x.getId()))
+                  .map(UkbEncounter::getVisitNumberIdentifierValue)
+                  .toList());
       if (encountersVisitNumbers.isEmpty()) {
         log.error(
-          "Not a single encounter with an identifier of slice type 'Aufnahmenummer' was found. " +
-          "No hierarchical determination from supply contact -> facility contact is " +
-          "possible!"
-        );
+            "Not a single encounter with an identifier of slice type 'Aufnahmenummer' was found. "
+                + "No hierarchical determination from supply contact -> facility contact is "
+                + "possible!");
       }
       return encountersVisitNumbers;
     } else {
@@ -331,28 +322,24 @@ public class FhirTools {
    * given extension to each filtered encounter.
    *
    * @param visitNumberIdentifierValues A set of official identifier values to filter the
-   *                                    UkbEncounter objects independent fr
-   * @param ukbEncounters               A list of UkbEncounter objects to be filtered.
-   * @param flag                        The extension to be added to the filtered UkbEncounter
-   *                                    objects.
+   *     UkbEncounter objects independent fr
+   * @param ukbEncounters A list of UkbEncounter objects to be filtered.
+   * @param flag The extension to be added to the filtered UkbEncounter objects.
    * @return A set of UkbEncounter objects filtered by the official identifier values with the
-   * specified extension added.
+   *     specified extension added.
    */
   public static Set<UkbEncounter> flagEncountersByIdentifierValue(
-    Set<String> visitNumberIdentifierValues,
-    List<UkbEncounter> ukbEncounters,
-    Extension flag
-  ) {
-    return ukbEncounters
-      .stream()
-      .filter(x -> visitNumberIdentifierValues.contains(x.getVisitNumberIdentifierValue()))
-      .peek(x -> x.addExtension(flag))
-      .collect(Collectors.toSet());
+      Set<String> visitNumberIdentifierValues, List<UkbEncounter> ukbEncounters, Extension flag) {
+    return ukbEncounters.stream()
+        .filter(x -> visitNumberIdentifierValues.contains(x.getVisitNumberIdentifierValue()))
+        .peek(x -> x.addExtension(flag))
+        .collect(Collectors.toSet());
   }
 
-  public static MedicationAdministrationDosageComponent getMedicationAdministrationDosageComponent(Dosage dosage) {
+  public static MedicationAdministrationDosageComponent getMedicationAdministrationDosageComponent(
+      Dosage dosage) {
     MedicationAdministrationDosageComponent medicationAdministrationDosageComponent =
-      new MedicationAdministrationDosageComponent();
+        new MedicationAdministrationDosageComponent();
     medicationAdministrationDosageComponent.setText(dosage.getText());
     medicationAdministrationDosageComponent.setSite(dosage.getSite());
     medicationAdministrationDosageComponent.setRoute(dosage.getRoute());
@@ -413,7 +400,7 @@ public class FhirTools {
   }
 
   public static long getReferenceAsMicros(BaseDateTimeType dateTime)
-    throws IllegalArgumentException, ArithmeticException {
+      throws IllegalArgumentException, ArithmeticException {
     // validate argument
     ExceptionTools.checkNull("dateTime", dateTime);
 
@@ -440,13 +427,12 @@ public class FhirTools {
   }
 
   /**
-   * Convert the given Unix-time in milliseconds to microseconds by multiplying the value with
-   * 10^3.
+   * Convert the given Unix-time in milliseconds to microseconds by multiplying the value with 10^3.
    *
    * @param millis the milliseconds value to convert
    * @return milliseconds to macroseconds
-   * @throws ArithmeticException thrown if the converted value exceeds the range of
-   *                             <code>long</code>
+   * @throws ArithmeticException thrown if the converted value exceeds the range of <code>long
+   *     </code>
    */
   public static long millisToMicros(long millis) throws ArithmeticException {
     // multiply with 10^3
@@ -461,6 +447,7 @@ public class FhirTools {
    */
   public static BigDecimal millisToSeconds(long millis) {
     // divide by 10^3
-    return BigDecimal.valueOf(millis).divide(BigDecimal.valueOf(1_000L), 3, RoundingMode.UNNECESSARY);
+    return BigDecimal.valueOf(millis)
+        .divide(BigDecimal.valueOf(1_000L), 3, RoundingMode.UNNECESSARY);
   }
 }

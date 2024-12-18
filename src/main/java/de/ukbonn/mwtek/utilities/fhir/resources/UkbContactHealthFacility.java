@@ -37,11 +37,10 @@ public class UkbContactHealthFacility extends UkbEncounter {
   }
 
   public UkbContactHealthFacility(
-    String patientId,
-    Enumeration<EncounterStatus> encounterStatus,
-    Coding class_,
-    Period period
-  ) {
+      String patientId,
+      Enumeration<EncounterStatus> encounterStatus,
+      Coding class_,
+      Period period) {
     super(patientId, encounterStatus, class_);
     ExceptionTools.checkNull("Period", period);
 
@@ -49,18 +48,15 @@ public class UkbContactHealthFacility extends UkbEncounter {
   }
 
   public UkbContactHealthFacility(
-    UkbPatient patient,
-    Enumeration<EncounterStatus> status,
-    Coding class_,
-    Period period
-  ) {
+      UkbPatient patient, Enumeration<EncounterStatus> status, Coding class_, Period period) {
     super(patient, status, class_);
     ExceptionTools.checkNull("Period", period);
 
     this.setPeriod(period);
   }
 
-  public UkbContactHealthFacility(String patientId, Enumeration<EncounterStatus> encounterStatus, Coding class_) {
+  public UkbContactHealthFacility(
+      String patientId, Enumeration<EncounterStatus> encounterStatus, Coding class_) {
     super(patientId, encounterStatus, class_);
   }
 }

@@ -14,34 +14,36 @@
  * PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGES. You should have received a copy of the GPL 3 license with *
  * this file. If not, visit http://www.gnu.de/documents/gpl-3.0.en.html
- */
-package de.ukbonn.mwtek.utilities;
+ */ package de.ukbonn.mwtek.utilities.fhir.misc;
 
-import java.util.Collection;
+import org.hl7.fhir.r4.model.Address;
 
-public class ExceptionTools {
+public class FhirPatientTools {
 
-  public static <T extends Object> T checkNull(String parameterName, T argumentValue)
-      throws IllegalArgumentException {
-    if (argumentValue == null) {
-      throw new IllegalArgumentException(parameterName);
-    }
-    return argumentValue;
-  }
-
-  public static String checkNullOrEmpty(String parameterName, String argumentValue)
-      throws IllegalArgumentException {
-    if (argumentValue == null || argumentValue.isEmpty()) {
-      throw new IllegalArgumentException(parameterName);
-    }
-    return argumentValue;
-  }
-
-  public static <T extends Collection<?>> T checkNullOrEmpty(String parameterName, T argumentValue)
-      throws IllegalArgumentException {
-    if (argumentValue == null || argumentValue.isEmpty()) {
-      throw new IllegalArgumentException(parameterName);
-    }
-    return argumentValue;
+  /**
+   * Checks if the given {@link Address} contains a specified country code.
+   *
+   * <p>The method verifies the following conditions:
+   *
+   * <ul>
+   *   <li>The {@code firstAddress} is not {@code null}.
+   *   <li>The {@code firstAddress} has a postal code.
+   *   <li>The {@code firstAddress} has a country specified.
+   *   <li>The {@code firstAddress} has a country element of type string and does not just hold an
+   *       data absent reason extension.
+   *   <li>The country value in {@code firstAddress} matches the given {@code countryCode}.
+   * </ul>
+   *
+   * @param firstAddress the {@link Address} object to check.
+   * @param countryCode the country code to compare with.
+   * @return {@code true} if all the conditions are met and the country code matches; otherwise,
+   *     {@code false}.
+   */
+  public static boolean isAddressContainingCountyCode(Address firstAddress, String countryCode) {
+    return firstAddress != null
+        && firstAddress.hasPostalCode()
+        && firstAddress.hasCountry()
+        && firstAddress.getCountryElement().hasValue()
+        && firstAddress.getCountry().equals(countryCode);
   }
 }

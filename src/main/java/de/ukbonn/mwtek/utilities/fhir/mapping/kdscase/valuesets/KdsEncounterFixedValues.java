@@ -24,10 +24,12 @@ import org.hl7.fhir.r4.model.Coding;
 
 public class KdsEncounterFixedValues {
 
-  public static final String IDENTIFIER_VN_TYPE_SYSTEM = "http://terminology.hl7" + ".org/CodeSystem/v2-0203";
+  public static final String IDENTIFIER_VN_TYPE_SYSTEM =
+      "http://terminology.hl7" + ".org/CodeSystem/v2-0203";
   public static final String IDENTIFIER_VN_TYPE_CODE = "VN";
-  public static final CodeableConcept IDENTIFIER_TYPE_VISIT_NUMBER_CC = new CodeableConcept()
-    .addCoding(new Coding(IDENTIFIER_VN_TYPE_SYSTEM, IDENTIFIER_VN_TYPE_CODE, null));
+  public static final CodeableConcept IDENTIFIER_TYPE_VISIT_NUMBER_CC =
+      new CodeableConcept()
+          .addCoding(new Coding(IDENTIFIER_VN_TYPE_SYSTEM, IDENTIFIER_VN_TYPE_CODE, null));
 
   // Encounter.case.type.kontaktart (new fhir profile ->
   // https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397801)
@@ -36,7 +38,8 @@ public class KdsEncounterFixedValues {
   public static final String CASETYPE_PARTSTATIONARY = "teilstationaer";
   public static final String CASETYPE_NORMALSTATIONARY = "normalstationaer";
   public static final String CASETYPE_INTENSIVESTATIONARY = "intensivstationaer";
-  public static final String CASETYPE_CONTACT_ART_SYSTEM = "http://fhir.de/CodeSystem/kontaktart" + "-de";
+  public static final String CASETYPE_CONTACT_ART_SYSTEM =
+      "http://fhir.de/CodeSystem/kontaktart-de";
 
   /**
    * List of valid {@link UkbEncounter#getClass_() encounter.class.code} codes for inpatient
@@ -44,7 +47,8 @@ public class KdsEncounterFixedValues {
    * href="https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397957">The value set of
    * version 2.0 can be found here.</a>.
    */
-  public static final ImmutableList<String> ENCOUNTER_CLASS_INPATIENT_CODES = ImmutableList.of("IMP", "stationaer");
+  public static final ImmutableList<String> ENCOUNTER_CLASS_INPATIENT_CODES =
+      ImmutableList.of("IMP", "stationaer");
 
   /**
    * List of valid {@link UkbEncounter#getClass_() encounter.class.code} codes for outpatient
@@ -52,12 +56,15 @@ public class KdsEncounterFixedValues {
    * href="https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397957">The value set of
    * version 2.0 can be found here.</a>.
    */
-  public static final ImmutableList<String> ENCOUNTER_CLASS_OUTPATIENT_CODES = ImmutableList.of("AMB", "ambulant");
+  public static final ImmutableList<String> ENCOUNTER_CLASS_OUTPATIENT_CODES =
+      ImmutableList.of("AMB", "ambulant");
 
   // dischargeCoding [FHIR Value Set]
-  public static final String DISCHARGE_DISPOSITION_EXT_URL = "http://fhir.de/StructureDefinition" + "/Entlassungsgrund";
-  public static final String DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_EXT_URL = "ErsteUndZweiteStelle";
+  public static final String DISCHARGE_DISPOSITION_EXT_URL =
+      "http://fhir.de/StructureDefinition" + "/Entlassungsgrund";
+  public static final String DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_EXT_URL =
+      "ErsteUndZweiteStelle";
   public static final String DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_SYSTEM =
-    "http://fhir.de/CodeSystem/dkgev/EntlassungsgrundErsteUndZweiteStelle";
+      "http://fhir.de/CodeSystem/dkgev/EntlassungsgrundErsteUndZweiteStelle";
   public static final String DEATH_CODE = "07";
 }

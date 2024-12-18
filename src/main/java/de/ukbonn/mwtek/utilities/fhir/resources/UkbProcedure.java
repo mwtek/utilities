@@ -42,10 +42,11 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Type;
 
 @ResourceDef(name = "Procedure")
-public class UkbProcedure
-  extends Procedure
-  implements
-    UkbPatientProvider, PatientIdentifierValueProvider, UkbContactHealthFacilityProvider, CaseIdentifierValueProvider {
+public class UkbProcedure extends Procedure
+    implements UkbPatientProvider,
+        PatientIdentifierValueProvider,
+        UkbContactHealthFacilityProvider,
+        CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
   protected UkbContactHealthFacility encounter;
@@ -57,7 +58,12 @@ public class UkbProcedure
     super();
   }
 
-  public UkbProcedure(String patientId, String caseId, ProcedureStatus status, CodeableConcept code, Type performed) {
+  public UkbProcedure(
+      String patientId,
+      String caseId,
+      ProcedureStatus status,
+      CodeableConcept code,
+      Type performed) {
     super();
     // validate arguments
     ExceptionTools.checkNullOrEmpty("patientId", patientId);
@@ -72,31 +78,31 @@ public class UkbProcedure
     // set fhir content
     this.setSubject(
         new Reference()
-          .setType("Patient")
-          .setIdentifier(
-            new Identifier().setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT).setValue(patientId)
-          )
-      );
+            .setType("Patient")
+            .setIdentifier(
+                new Identifier()
+                    .setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)
+                    .setValue(patientId)));
 
     this.setEncounter(
         new Reference()
-          .setType("Encounter")
-          .setIdentifier(
-            new Identifier().setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER).setValue(caseId)
-          )
-      );
+            .setType("Encounter")
+            .setIdentifier(
+                new Identifier()
+                    .setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)
+                    .setValue(caseId)));
     this.setStatus(status);
     this.setCode(code);
     this.setPerformed(performed);
   }
 
   public UkbProcedure(
-    UkbPatient patient,
-    UkbContactHealthFacility facilityContact,
-    ProcedureStatus status,
-    CodeableConcept code,
-    Type performed
-  ) throws IllegalArgumentException {
+      UkbPatient patient,
+      UkbContactHealthFacility facilityContact,
+      ProcedureStatus status,
+      CodeableConcept code,
+      Type performed)
+      throws IllegalArgumentException {
     super();
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
@@ -114,22 +120,26 @@ public class UkbProcedure
     // set fhir content
     this.setSubject(
         new Reference()
-          .setIdentifier(
-            FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())
-          )
-      );
+            .setIdentifier(
+                FhirTools.getIdentifierBySystem(
+                    StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())));
     this.setStatus(status);
     this.setCode(code);
     this.setPerformed(performed);
   }
 
-  public UkbProcedure(UkbContactHealthFacility encounter, ProcedureStatus status, CodeableConcept code, Type performed)
-    throws IllegalArgumentException, MandatoryFieldNotInitializedException {
+  public UkbProcedure(
+      UkbContactHealthFacility encounter,
+      ProcedureStatus status,
+      CodeableConcept code,
+      Type performed)
+      throws IllegalArgumentException, MandatoryFieldNotInitializedException {
     super();
     // validate arguments
     ExceptionTools.checkNull("encounter", encounter);
     ExceptionTools.checkNull("encounter.patient", encounter.getUkbPatient());
-    ExceptionTools.checkNullOrEmpty("encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
+    ExceptionTools.checkNullOrEmpty(
+        "encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
     ExceptionTools.checkNull("status", status);
     ExceptionTools.checkNull("code", code);
     ExceptionTools.checkNull("performed", performed);
@@ -158,7 +168,7 @@ public class UkbProcedure
 
   @Override
   public void initializeUkbPatient(UkbPatient patient)
-    throws IllegalArgumentException, FieldAlreadyInitializedException {
+      throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
     ExceptionTools.checkNullOrEmpty("patient.Identifier", patient.getIdentifier());
@@ -175,10 +185,9 @@ public class UkbProcedure
     // assign the patient to the fhir object
     this.setSubject(
         new Reference()
-          .setIdentifier(
-            FhirTools.getIdentifierBySystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())
-          )
-      );
+            .setIdentifier(
+                FhirTools.getIdentifierBySystem(
+                    StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())));
   }
 
   @Override
@@ -197,7 +206,7 @@ public class UkbProcedure
 
   @Override
   public String getCaseIdentifierValue(String system)
-    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)) {
       return this.caseId;
     }
@@ -215,7 +224,8 @@ public class UkbProcedure
   }
 
   @Override
-  public String getPatientIdentifierValue(String system) throws MandatoryFieldNotInitializedException {
+  public String getPatientIdentifierValue(String system)
+      throws MandatoryFieldNotInitializedException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)) {
       return this.patientId;
     }
@@ -225,7 +235,7 @@ public class UkbProcedure
 
   @Override
   public UkbContactHealthFacility getUkbContactHealthFacility()
-    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
     if (this.encounter == null) {
       if (this.caseId == null) {
@@ -238,7 +248,7 @@ public class UkbProcedure
 
   @Override
   public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
-    throws IllegalArgumentException, FieldAlreadyInitializedException {
+      throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("encounter", encounter);
 
@@ -271,17 +281,14 @@ public class UkbProcedure
    * Looking if code is existing in the given terminology system. If the terminology system is
    * unset, the snomed code is taken if existence. Otherwise, the first coding found will be used.
    *
-   * @param codes                         The snomed/ops codes to test against.
+   * @param codes The snomed/ops codes to test against.
    * @param preferredTerminologySystemUrl By default, the value of {@link TerminologySystems#SNOMED}
-   *                                      is used.
-   * @return If the code in the procedure resource was found in the given collection return
-   * <code>true</code>, otherwise return <code>false</code>.
+   *     is used.
+   * @return If the code in the procedure resource was found in the given collection return <code>
+   *     true</code>, otherwise return <code>false</code>.
    */
   public boolean isCodeExistingInValueSet(
-    Collection<String> codes,
-    String preferredTerminologySystemUrl,
-    boolean forceSystemCheck
-  ) {
+      Collection<String> codes, String preferredTerminologySystemUrl, boolean forceSystemCheck) {
     if (preferredTerminologySystemUrl == null && !forceSystemCheck) {
       preferredTerminologySystemUrl = SNOMED;
     }

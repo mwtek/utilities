@@ -31,5 +31,6 @@ public interface PatientIdentifierValueProvider extends PatientIdProvider {
     } // try
   }
 
-  public String getPatientIdentifierValue(String system) throws MandatoryFieldNotInitializedException;
+  public String getPatientIdentifierValue(String system)
+      throws MandatoryFieldNotInitializedException;
 }

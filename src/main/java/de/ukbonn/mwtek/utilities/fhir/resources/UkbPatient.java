@@ -39,12 +39,11 @@ public class UkbPatient extends Patient implements PatientIdentifierValueProvide
   }
 
   public UkbPatient(
-    List<Identifier> identifier,
-    List<HumanName> name,
-    AdministrativeGender gender,
-    Date birthDate,
-    List<Address> address
-  ) {
+      List<Identifier> identifier,
+      List<HumanName> name,
+      AdministrativeGender gender,
+      Date birthDate,
+      List<Address> address) {
     ExceptionTools.checkNullOrEmpty("identifier", identifier);
     ExceptionTools.checkNullOrEmpty("name", name);
     ExceptionTools.checkNull("gender", gender);
@@ -59,11 +58,10 @@ public class UkbPatient extends Patient implements PatientIdentifierValueProvide
   }
 
   public UkbPatient(
-    List<Identifier> identifier,
-    List<HumanName> name,
-    AdministrativeGender gender,
-    List<Address> address
-  ) {
+      List<Identifier> identifier,
+      List<HumanName> name,
+      AdministrativeGender gender,
+      List<Address> address) {
     ExceptionTools.checkNullOrEmpty("identifier", identifier);
     ExceptionTools.checkNullOrEmpty("name", name);
     ExceptionTools.checkNull("gender", gender);

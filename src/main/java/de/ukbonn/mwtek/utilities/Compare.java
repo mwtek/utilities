@@ -23,8 +23,8 @@ public class Compare {
 
   /**
    * Compares two <code>String</code> values and returns <code>true</code> if both are equal.
-   * <p>
-   * Note that this method will return <code>true</code> if both values are <code>null</code>!
+   *
+   * <p>Note that this method will return <code>true</code> if both values are <code>null</code>!
    *
    * @param v1 first string to compare (may be <code>null</code>)
    * @param v2 second string to compare (may be <code>null</code>)

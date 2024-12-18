@@ -25,10 +25,10 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbContactHealthFacility;
 
 public interface UkbContactHealthFacilityProvider extends CaseIdentifierValueProvider {
   public UkbContactHealthFacility getUkbContactHealthFacility()
-    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
   public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
-    throws IllegalArgumentException, FieldAlreadyInitializedException;
+      throws IllegalArgumentException, FieldAlreadyInitializedException;
 
   public boolean isUkbContactHealthFacilityInitialized();
 }

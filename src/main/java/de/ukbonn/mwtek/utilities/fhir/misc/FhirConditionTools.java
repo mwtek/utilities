@@ -23,24 +23,51 @@ import static de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets.KdsD
 
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Extension;
 
 public class FhirConditionTools {
 
-  public static Set<String> getEncounterIdsByIcdCodes(Collection<UkbCondition> ukbConditions, String icdCode) {
+  public static Set<String> getEncounterIdsByIcdCodes(
+      Collection<UkbCondition> ukbConditions, String icdCode) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null) {
-      ukbConditions.forEach(condition -> {
-        if (condition.hasCode() && condition.getCode().hasCoding(ICD, icdCode)) {
-          // Check each code and break if at least 1 got found
-          caseIds.add(condition.getCaseId());
-        }
-      });
+      ukbConditions.forEach(
+          condition -> {
+            if (condition.hasCode() && condition.getCode().hasCoding(ICD, icdCode)) {
+              // Check each code and break if at least 1 got found
+              caseIds.add(condition.getCaseId());
+            }
+          });
     }
     return caseIds;
+  }
+
+  public static Set<UkbCondition> getConditionsByIcdCodes(
+      final Collection<UkbCondition> ukbConditions, final Collection<String> icdCodes) {
+    // Return an empty set if the input collections are null or if icdCodes is empty
+    if (ukbConditions == null || icdCodes == null || icdCodes.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    // Checking matches
+    return ukbConditions.parallelStream()
+        .filter(
+            condition ->
+                condition.hasCode()
+                    && condition.getCode().getCoding().stream()
+                        .anyMatch(
+                            coding ->
+                                ICD.equals(coding.getSystem())
+                                    && icdCodes.contains(coding.getCode())))
+        .collect(Collectors.toSet());
   }
 
   /**
@@ -48,22 +75,22 @@ public class FhirConditionTools {
    * provided set.
    *
    * @param ukbConditions A collection of {@link UkbCondition} objects.
-   * @param icdCodes      A collection of ICD (International Classification of Diseases) codes as
-   *                      strings.
+   * @param icdCodes A collection of ICD (International Classification of Diseases) codes as
+   *     strings.
    * @return A Set of unique case IDs found within the UkbConditions that have matching ICD codes.
    * @throws NullPointerException if either ukbConditions or icdCodes is null.
    */
   public static Set<String> getEncounterIdsByIcdCodes(
-    Collection<UkbCondition> ukbConditions,
-    Collection<String> icdCodes
-  ) {
+      Collection<UkbCondition> ukbConditions, Collection<String> icdCodes) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
       for (UkbCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
-            if (coding.hasSystem() && coding.getSystem().equals(ICD) && icdCodes.contains(coding.getCode())) {
+            if (coding.hasSystem()
+                && coding.getSystem().equals(ICD)
+                && icdCodes.contains(coding.getCode())) {
               caseIds.add(condition.getCaseId());
               break;
             }
@@ -74,26 +101,47 @@ public class FhirConditionTools {
     return caseIds;
   }
 
+  public static Set<String> getPatientIdsByIcdCodes(
+      Collection<UkbCondition> ukbConditions, Collection<String> icdCodes) {
+    Set<String> patientIds = new HashSet<>();
+    if (ukbConditions != null && !icdCodes.isEmpty()) {
+      for (UkbCondition condition : ukbConditions) {
+        if (condition.hasCode()) {
+          for (Coding coding : condition.getCode().getCoding()) {
+            // Check each code and break if at least 1 got found
+            if (coding.hasSystem()
+                && coding.getSystem().equals(ICD)
+                && icdCodes.contains(coding.getCode())) {
+              patientIds.add(condition.getPatientId());
+              break;
+            }
+          } // for
+        } // if
+      } // for
+    }
+    return patientIds;
+  }
+
   public static Set<String> getCaseIdsWithIcdCodeReliability(
-    Collection<UkbCondition> ukbConditions,
-    Collection<String> icdCodes,
-    String reliability
-  ) {
+      Collection<UkbCondition> ukbConditions, Collection<String> icdCodes, String reliability) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
       for (UkbCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
-            if (coding.hasSystem() && coding.getSystem().equals(ICD) && icdCodes.contains(coding.getCode())) {
+            if (coding.hasSystem()
+                && coding.getSystem().equals(ICD)
+                && icdCodes.contains(coding.getCode())) {
               // Detect the diagnosis reliability which is part of an extension
               if (coding.hasExtension(EXTENSION_DIAGNOSIS_RELIABILITY)) {
-                Extension extDiagReliability = coding.getExtensionByUrl(EXTENSION_DIAGNOSIS_RELIABILITY);
+                Extension extDiagReliability =
+                    coding.getExtensionByUrl(EXTENSION_DIAGNOSIS_RELIABILITY);
                 if (extDiagReliability.getValue() instanceof Coding codingExtDiagReliability) {
-                  if (
-                    codingExtDiagReliability.getSystem().equals(EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM) &&
-                    codingExtDiagReliability.hasCode()
-                  ) {
+                  if (codingExtDiagReliability
+                          .getSystem()
+                          .equals(EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM)
+                      && codingExtDiagReliability.hasCode()) {
                     // check if ICD diagnosis reliability code (usually a letter) is available
                     if (reliability.equals(codingExtDiagReliability.getCode())) {
                       caseIds.add(condition.getCaseId());
@@ -108,5 +156,23 @@ public class FhirConditionTools {
       }
     }
     return caseIds;
+  }
+
+  /**
+   * Filters a list of UKB conditions to include only those that have a recorded date after the
+   * specified reference date.
+   *
+   * @param ukbConditions A list of {@link UkbCondition} objects to be filtered.
+   * @param referenceDate The date to compare against; only conditions recorded after this date will
+   *     be included.
+   * @return A list of {@link UkbCondition} objects that have a recorded date after the specified
+   *     reference date. If no conditions meet the criteria, an empty list is returned.
+   */
+  public static List<UkbCondition> filterConditionsByRecordDate(
+      List<UkbCondition> ukbConditions, Date referenceDate) {
+    return ukbConditions.parallelStream()
+        .filter(Condition::hasRecordedDate)
+        .filter(x -> x.getRecordedDate().after(referenceDate))
+        .toList();
   }
 }

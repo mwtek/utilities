@@ -47,7 +47,7 @@ public class TimerTools {
    * Calculation of the time interval between a specified time and the current time
    *
    * @param startTimeInEpochMillis start time (in UnixTime EPOCHMILLI) of the time to be compared
-   * @param scale                  scale of the {@code BigDecimal} value to be returned
+   * @param scale scale of the {@code BigDecimal} value to be returned
    * @return elapsed time in s
    */
   public static BigDecimal calcTimeDifference(long startTimeInEpochMillis, int scale) {
@@ -102,7 +102,7 @@ public class TimerTools {
    * Calculates the difference of a start time and the current time
    *
    * @param startTime starting time in ms
-   * @param taskDesc  puts the task description to the output
+   * @param taskDesc puts the task description to the output
    * @return the time that has passed in ms
    */
   public static long stopTimerAndLog(Instant startTime, String taskDesc) {

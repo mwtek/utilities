@@ -23,8 +23,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,18 +39,18 @@ import lombok.extern.slf4j.Slf4j;
 public class DateTools {
 
   public static final ZoneId timeZoneEuropeBerlin = ZoneId.of("Europe/Berlin");
+  public static final String GMT = "GMT";
 
   /**
-   * Merging a date and a time (necessary because of weird database design where date and time are
-   * )
-   * <p>
-   * Care with using java.util.date to merge dates because its kinda bugged!
+   * Merging a date and a time (necessary because of weird database design where date and time are )
    *
-   * @param date                {@link Date} with date information
-   * @param time                {@link Date} with time information
+   * <p>Care with using java.util.date to merge dates because its kinda bugged!
+   *
+   * @param date {@link Date} with date information
+   * @param time {@link Date} with time information
    * @param nullifyMilliseconds Should the millisecond field be explicitly set to 0?
    * @return A {@link Date} object, initialized with the passed (separated) date and the passed
-   * time.
+   *     time.
    */
   public static Date mergeToDateTime(Date date, Date time, Boolean nullifyMilliseconds) {
     // Set DefaultValues
@@ -85,10 +83,11 @@ public class DateTools {
    * Transformation a unixtime (micros) in a date with truncating of the time data
    *
    * @param unixTimeInMicros UnixTime in microseconds
-   * @param timeZone         Optional: {@link TimeZone} of the date (default: GMT)
+   * @param timeZone Optional: {@link TimeZone} of the date (default: GMT)
    * @return A {@link Date} object without time information
    */
-  public static Date unixTimeMicrosToDateExtinguishedTime(long unixTimeInMicros, TimeZone timeZone) {
+  public static Date unixTimeMicrosToDateExtinguishedTime(
+      long unixTimeInMicros, TimeZone timeZone) {
     if (timeZone == null) {
       timeZone = TimeZone.getTimeZone("GMT");
     }
@@ -106,10 +105,11 @@ public class DateTools {
    * Transformation an unix time (seconds) in a date with truncating of the time data
    *
    * @param unixTimeInSeconds UnixTime in seconds
-   * @param timeZone          Optional: {@link TimeZone} of the date (default: GMT)
+   * @param timeZone Optional: {@link TimeZone} of the date (default: GMT)
    * @return A {@link Date} object without time information
    */
-  public static Date unixTimeSecondsToDateExtinguishedTime(long unixTimeInSeconds, TimeZone timeZone) {
+  public static Date unixTimeSecondsToDateExtinguishedTime(
+      long unixTimeInSeconds, TimeZone timeZone) {
     if (timeZone == null) {
       timeZone = TimeZone.getTimeZone("GMT");
     }
@@ -183,8 +183,8 @@ public class DateTools {
    *
    * @param lowerDate lower date
    * @param upperDate upper date
-   * @param timeUnit  desired output format ({@link TimeUnit} )of the time specification (e.g.
-   *                  seconds) (default: minutes)
+   * @param timeUnit desired output format ({@link TimeUnit} )of the time specification (e.g.
+   *     seconds) (default: minutes)
    * @return difference of the dates in the given timeUnit
    */
   public static double calcDiffBetweenDates(Date lowerDate, Date upperDate, TimeUnit timeUnit) {
@@ -209,6 +209,102 @@ public class DateTools {
     }
 
     return timeUnit.convert(diffInSeconds, TimeUnit.SECONDS);
+  }
+
+  public static int calcYearsBetweenDates(Date lowerDate, Date upperDate) {
+    if (lowerDate == null) {
+      throw new IllegalArgumentException("Date parameters cannot be null");
+    }
+
+    // take the current time if the upperDate is null
+    if (upperDate == null) {
+      upperDate = DateTools.getCurrentDateTime();
+    }
+
+    // Ensure lowerDate is before upperDate
+    if (lowerDate.after(upperDate)) {
+      Date temp = lowerDate;
+      lowerDate = upperDate;
+      upperDate = temp;
+    }
+
+    Calendar startCal = Calendar.getInstance();
+    startCal.setTime(lowerDate);
+    Calendar endCal = Calendar.getInstance();
+    endCal.setTime(upperDate);
+
+    int startYear = startCal.get(Calendar.YEAR);
+    int endYear = endCal.get(Calendar.YEAR);
+
+    int startDayOfYear = startCal.get(Calendar.DAY_OF_YEAR);
+    int endDayOfYear = endCal.get(Calendar.DAY_OF_YEAR);
+
+    int yearDiff = endYear - startYear;
+
+    // If the end date is before the start date in the same year, subtract one year
+    if (endDayOfYear < startDayOfYear) {
+      yearDiff--;
+    }
+
+    return yearDiff;
+  }
+
+  /**
+   * Calculates the number of full months between two dates. If the day of the end date is earlier
+   * than the day of the start date in the same month, one month is subtracted from the total
+   * difference.
+   *
+   * <p>If the provided dates are in the same month and day, the result will be 0. If the end date
+   * is null, the current date will be used as the end date. The method ensures that lowerDate is
+   * always before upperDate by swapping them if needed.
+   *
+   * @param lowerDate the earlier date. Must not be null.
+   * @param upperDate the later date. If null, the current date is used.
+   * @return the number of full months between the two dates.
+   * @throws IllegalArgumentException if the lowerDate is null.
+   */
+  public static int calcMonthsBetweenDates(Date lowerDate, Date upperDate) {
+    if (lowerDate == null) {
+      throw new IllegalArgumentException("Date parameters cannot be null");
+    }
+
+    // Use the current date if upperDate is null
+    if (upperDate == null) {
+      upperDate = new Date(); // You can replace this with DateTools.getCurrentDateTime() if needed
+    }
+
+    // Ensure lowerDate is before upperDate
+    if (lowerDate.after(upperDate)) {
+      Date temp = lowerDate;
+      lowerDate = upperDate;
+      upperDate = temp;
+    }
+
+    // Set up Calendar instances for both dates
+    Calendar startCal = Calendar.getInstance();
+    startCal.setTime(lowerDate);
+    Calendar endCal = Calendar.getInstance();
+    endCal.setTime(upperDate);
+
+    // Extract year, month, and day information from both dates
+    int startYear = startCal.get(Calendar.YEAR);
+    int endYear = endCal.get(Calendar.YEAR);
+
+    int startMonth = startCal.get(Calendar.MONTH);
+    int endMonth = endCal.get(Calendar.MONTH);
+
+    int startDay = startCal.get(Calendar.DAY_OF_MONTH);
+    int endDay = endCal.get(Calendar.DAY_OF_MONTH);
+
+    // Calculate the total month difference considering the year difference
+    int monthDiff = (endYear - startYear) * 12 + (endMonth - startMonth);
+
+    // Subtract one month if the end day is before the start day
+    if (endDay < startDay) {
+      monthDiff--;
+    }
+
+    return monthDiff;
   }
 
   /**
@@ -238,42 +334,74 @@ public class DateTools {
    */
   public static int getAge(Date birthDate) {
     long birthDateInSec = dateToUnixTime(birthDate);
-    LocalDate birthDateLocal = Instant.ofEpochSecond(birthDateInSec).atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate birthDateLocal =
+        Instant.ofEpochSecond(birthDateInSec).atZone(ZoneId.systemDefault()).toLocalDate();
     return Period.between(birthDateLocal, LocalDate.now()).getYears();
   }
 
   /**
-   * Calculating the sum of all intersected calendar days between two dates
+   * Calculates the whole number of calendar days between two dates.
    *
-   * @param lowerDate lower {@link Date}
-   * @param upperDate upper {@link Date}
-   * @return Time difference (in whole days) between two date objects
+   * @param lowerDate the start date (inclusive) must not be null.
+   * @param upperDate the end date (inclusive). If null, the current date is used.
+   * @return the number of whole calendar days between the two dates, or null if an error occurs.
+   * @throws IllegalArgumentException if the lowerDate is null.
    */
   public static Long calcWholeDaysBetweenDates(Date lowerDate, Date upperDate) {
-    // take the current time if the upperDate is null
+    // Validate input
+    if (lowerDate == null) {
+      throw new IllegalArgumentException("lowerDate must not be null");
+    }
+
+    // Take the current date if the upperDate is null
     if (upperDate == null) {
-      upperDate = DateTools.getCurrentDateTime();
+      upperDate = getCurrentDateTime();
     }
-    long daysBetween = 0;
+
+    long daysBetween;
     try {
-      // timezone operations (take the system zone -> case 1530302 (26.03. -> 27.03. 00:40 (GMT))
-      // should be
-      // count as 2 days not 1 day (26.03. -> 26.04. 23:40 in UTC)
-      Instant lowerLocalDate = Instant.ofEpochMilli(lowerDate.getTime()).atZone(ZoneOffset.systemDefault()).toInstant();
-      Instant upperLocalDate = Instant.ofEpochMilli(upperDate.getTime());
+      // Convert Dates to LocalDate
+      ZoneId zoneId = ZoneId.systemDefault();
+      LocalDate lowerLocalDate =
+          Instant.ofEpochMilli(lowerDate.getTime()).atZone(zoneId).toLocalDate();
+      LocalDate upperLocalDate =
+          Instant.ofEpochMilli(upperDate.getTime()).atZone(zoneId).toLocalDate();
 
-      ZonedDateTime lowerZonedDateTime = ZonedDateTime.ofInstant(lowerLocalDate, timeZoneEuropeBerlin);
-      ZonedDateTime upperZonedDateTime = ZonedDateTime.ofInstant(upperLocalDate, timeZoneEuropeBerlin);
-
-      // truncate to days cause we need to sum the calendar days
-      daysBetween = ChronoUnit.DAYS.between(
-        lowerZonedDateTime.truncatedTo(ChronoUnit.DAYS),
-        upperZonedDateTime.truncatedTo(ChronoUnit.DAYS)
-      ) +
-      1;
+      // Calculate the number of days between the two dates
+      daysBetween = ChronoUnit.DAYS.between(lowerLocalDate, upperLocalDate);
     } catch (Exception ex) {
-      log.debug("unable to calculate the differences between dates (lowerDate maybe null) " + ex.getMessage());
+      log.error(
+          "Unable to calculate the difference between dates. lowerDate: {}, upperDate: {}. Error:"
+              + " {}",
+          lowerDate,
+          upperDate,
+          ex.getMessage());
+      return null;
     }
+    return daysBetween;
+  }
+
+  /**
+   * Calculates the length of stay ("Verweildauer") in the hospital between two dates. This method
+   * includes the start and end dates in the calculation, thus adding one more day to the result.
+   * This adjustment handles the "fencepost" error ("Zaunpfahlfehler") in time intervals.
+   *
+   * @param lowerDate the start date of the hospital stay
+   * @param upperDate the end date of the hospital stay
+   * @return the length of stay in days
+   */
+  public static Long calcLengthOfStayBetweenDates(Date lowerDate, Date upperDate) {
+    // Calculate the number of whole days between the two dates
+    long daysBetween = calcWholeDaysBetweenDates(lowerDate, upperDate);
+
+    // If the start and end dates are the same, return 1 (stay of one day)
+    if (daysBetween == 0) {
+      daysBetween = 1;
+    } else {
+      // Include both the start and end dates in the length of stay
+      daysBetween += 1;
+    }
+
     return daysBetween;
   }
 
@@ -299,9 +427,9 @@ public class DateTools {
    * Determines whether the difference between two dates is more than one day.
    *
    * @param youngerDate The date that is younger than the other date
-   * @param olderDate   The date that is older than the other date
-   * @return <code>true</code> if the difference between the two dates is more than one day,
-   * <code>false</code> otherwise
+   * @param olderDate The date that is older than the other date
+   * @return <code>true</code> if the difference between the two dates is more than one day, <code>
+   *     false</code> otherwise
    */
   public static boolean isMoreThanOneDayOlder(Date youngerDate, Date olderDate) {
     return isMoreThanXDaysOlder(youngerDate, olderDate, 1);
@@ -310,14 +438,19 @@ public class DateTools {
   /**
    * Determines whether the difference between two dates is more than a given amount of day(s).
    *
-   * @param youngerDate    The date that is younger than the other date
-   * @param olderDate      The date that is older than the other date
+   * @param youngerDate The date that is younger than the other date
+   * @param olderDate The date that is older than the other date
    * @param daysDifference The number of days that should be at least between the two dates
-   * @return <code>true</code> if the difference between the two dates is more than one day,
-   * <code>false</code> otherwise
+   * @return <code>true</code> if the difference between the two dates is more than one day, <code>
+   *     false</code> otherwise
    */
   public static boolean isMoreThanXDaysOlder(Date youngerDate, Date olderDate, int daysDifference) {
     long timeDifference = youngerDate.getTime() - olderDate.getTime();
     return timeDifference > TimeUnit.DAYS.toMillis(daysDifference);
+  }
+
+  /** Converts year, month, and day into a Date object with GMT time zone. */
+  public static Date toDate(int year, int month, int day) {
+    return Date.from(LocalDate.of(year, month, day).atStartOfDay(ZoneId.of(GMT)).toInstant());
   }
 }

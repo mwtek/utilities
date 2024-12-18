@@ -33,5 +33,5 @@ public interface CaseIdentifierValueProvider extends CaseIdProvider {
   }
 
   public String getCaseIdentifierValue(String system)
-    throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 }

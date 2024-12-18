@@ -23,10 +23,11 @@ import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
 
 public interface UkbPatientProvider {
-  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
+  public UkbPatient getUkbPatient()
+      throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
   public void initializeUkbPatient(UkbPatient patient)
-    throws IllegalArgumentException, FieldAlreadyInitializedException;
+      throws IllegalArgumentException, FieldAlreadyInitializedException;
 
   public boolean isUkbPatientInitialized();
 }

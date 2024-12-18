@@ -33,7 +33,7 @@ public class UkbLocation extends Location {
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
-   * constructors for creating an instance of this resource.
+   *     constructors for creating an instance of this resource.
    */
   @Deprecated
   public UkbLocation() {

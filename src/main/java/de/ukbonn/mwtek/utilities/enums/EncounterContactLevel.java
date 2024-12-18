@@ -22,13 +22,14 @@ import lombok.Getter;
 
 @Getter
 public enum EncounterContactLevel {
-  FACILITY_CONTACT("einrichtungskontakt", "Einrichtungskontakt", "Beschreibt den Kontakt zur Einrichtung."),
-  DEPARTMENT_CONTACT("abteilungskontakt", "Abteilungskontakt", "Beschreibt den Kontakt zur Abteilung."),
+  FACILITY_CONTACT(
+      "einrichtungskontakt", "Einrichtungskontakt", "Beschreibt den Kontakt zur Einrichtung."),
+  DEPARTMENT_CONTACT(
+      "abteilungskontakt", "Abteilungskontakt", "Beschreibt den Kontakt zur Abteilung."),
   SUPPLY_CONTACT(
-    "versorgungsstellenkontakt",
-    "Versorgungsstellenkontakt",
-    "Beschreibt den Kontakt zur Versorgungsstelle."
-  );
+      "versorgungsstellenkontakt",
+      "Versorgungsstellenkontakt",
+      "Beschreibt den Kontakt zur Versorgungsstelle.");
 
   private final String code;
   private final String display;

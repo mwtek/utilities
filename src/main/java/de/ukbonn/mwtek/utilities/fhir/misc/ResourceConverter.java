@@ -27,6 +27,7 @@ import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Encounter;
@@ -38,28 +39,28 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 
+@Slf4j
 public class ResourceConverter {
 
   // can't be instantiated
   private ResourceConverter() {}
 
   // list implementation
-  public static List<? extends DomainResource> convert(List<? extends DomainResource> res, boolean check) {
+  public static List<? extends DomainResource> convert(
+      List<? extends DomainResource> res, boolean check) {
     List<DomainResource> resources = new ArrayList<>();
-    res.forEach(temp -> {
-      try {
-        resources.add(convert(temp, check));
-      } catch (IllegalArgumentException ex) {
-        System.out.println(
-          "Unable to convert ressource with id " +
-          temp.getId() +
-          " from type " +
-          temp.fhirType() +
-          ". Empty mandatory field: " +
-          ex.getMessage()
-        );
-      }
-    });
+    res.forEach(
+        temp -> {
+          try {
+            resources.add(convert(temp, check));
+          } catch (IllegalArgumentException ex) {
+            log.error(
+                "Unable to convert ressource with id {} from type {}. Empty mandatory field: {}",
+                temp.getId(),
+                temp.fhirType(),
+                ex.getMessage());
+          }
+        });
     return resources;
   }
 
@@ -125,11 +126,11 @@ public class ResourceConverter {
     // res.setLocationId();
 
     // store the ID of each location WITHOUT the resource type
-    e
-      .getLocation()
-      .forEach(loc -> {
-        loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
-      });
+    e.getLocation()
+        .forEach(
+            loc -> {
+              loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
+            });
     res.setLocation(e.getLocation());
 
     return res;
@@ -175,7 +176,8 @@ public class ResourceConverter {
     if (check) {
       // CHECK Patient = Subject
       ExceptionTools.checkNull("patient", o.getSubject().getReference());
-      ExceptionTools.checkNullOrEmpty("patient.Identifier", o.getSubject().getIdentifier().toString());
+      ExceptionTools.checkNullOrEmpty(
+          "patient.Identifier", o.getSubject().getIdentifier().toString());
     }
 
     res.setIdentifier(o.getIdentifier());
@@ -342,8 +344,8 @@ public class ResourceConverter {
   /**
    * Determination of the ID of a FHIR reference, i.e. the consequence of the removal of the
    * resource type.
-   * <p>
-   * If the reference object is <code>null</code> the identifier is read.
+   *
+   * <p>If the reference object is <code>null</code> the identifier is read.
    *
    * @param reference FHIR reference as "Encounter/123"
    * @return The plain id of the reference as "123"
@@ -357,33 +359,37 @@ public class ResourceConverter {
   }
 
   /**
-   * Converts a given textual FHIR ResourceType into a FHIR Enumeration (e.g.
-   * {@link ResourceType#Medication}).
+   * Converts a given textual FHIR ResourceType into a FHIR Enumeration (e.g. {@link
+   * ResourceType#Medication}).
    *
    * @param listResourceTypesPrimitive List with plain resource type names (e.g. "Medication").
    * @return List with FHIR {@link ResourceType} entries.
    */
-  public static List<ResourceType> convertResourceTypesInObject(Collection<String> listResourceTypesPrimitive) {
+  public static List<ResourceType> convertResourceTypesInObject(
+      Collection<String> listResourceTypesPrimitive) {
     List<ResourceType> listResourceTypeOutput = new ArrayList<>();
-    listResourceTypesPrimitive.forEach(resourceType -> {
-      switch (resourceType.toLowerCase()) {
-        case "condition" -> listResourceTypeOutput.add(ResourceType.Condition);
-        case "consent" -> listResourceTypeOutput.add(ResourceType.Consent);
-        case "diagnosticreport" -> listResourceTypeOutput.add(ResourceType.DiagnosticReport);
-        case "encounter" -> listResourceTypeOutput.add(ResourceType.Encounter);
-        case "location" -> listResourceTypeOutput.add(ResourceType.Location);
-        case "list" -> listResourceTypeOutput.add(ResourceType.List);
-        case "medication" -> listResourceTypeOutput.add(ResourceType.Medication);
-        case "medicationstatement" -> listResourceTypeOutput.add(ResourceType.MedicationAdministration);
-        case "medicationadministration" -> listResourceTypeOutput.add(ResourceType.MedicationStatement);
-        case "medicationrequest" -> listResourceTypeOutput.add(ResourceType.MedicationRequest);
-        case "observation" -> listResourceTypeOutput.add(ResourceType.Observation);
-        case "patient" -> listResourceTypeOutput.add(ResourceType.Patient);
-        case "procedure" -> listResourceTypeOutput.add(ResourceType.Procedure);
-        case "servicerequest" -> listResourceTypeOutput.add(ResourceType.ServiceRequest);
-        case "specimen" -> listResourceTypeOutput.add(ResourceType.Specimen);
-      }
-    });
+    listResourceTypesPrimitive.forEach(
+        resourceType -> {
+          switch (resourceType.toLowerCase()) {
+            case "condition" -> listResourceTypeOutput.add(ResourceType.Condition);
+            case "consent" -> listResourceTypeOutput.add(ResourceType.Consent);
+            case "diagnosticreport" -> listResourceTypeOutput.add(ResourceType.DiagnosticReport);
+            case "encounter" -> listResourceTypeOutput.add(ResourceType.Encounter);
+            case "location" -> listResourceTypeOutput.add(ResourceType.Location);
+            case "list" -> listResourceTypeOutput.add(ResourceType.List);
+            case "medication" -> listResourceTypeOutput.add(ResourceType.Medication);
+            case "medicationstatement" ->
+                listResourceTypeOutput.add(ResourceType.MedicationAdministration);
+            case "medicationadministration" ->
+                listResourceTypeOutput.add(ResourceType.MedicationStatement);
+            case "medicationrequest" -> listResourceTypeOutput.add(ResourceType.MedicationRequest);
+            case "observation" -> listResourceTypeOutput.add(ResourceType.Observation);
+            case "patient" -> listResourceTypeOutput.add(ResourceType.Patient);
+            case "procedure" -> listResourceTypeOutput.add(ResourceType.Procedure);
+            case "servicerequest" -> listResourceTypeOutput.add(ResourceType.ServiceRequest);
+            case "specimen" -> listResourceTypeOutput.add(ResourceType.Specimen);
+          }
+        });
     return listResourceTypeOutput;
   }
 }
