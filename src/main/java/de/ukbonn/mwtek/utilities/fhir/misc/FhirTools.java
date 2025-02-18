@@ -292,17 +292,16 @@ public class FhirTools {
         ukbEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
     if (encountersWithIdentifier.size() != ukbEncounters.size()) {
       log.warn(
-          "Found: "
-              + ukbEncounters.size()
-              + " encounter resources but only "
-              + encountersWithIdentifier.size()
-              + " are using the 'Aufnahmenummer' slice.");
+          "Found: {} encounter resources but only {} are using the 'Aufnahmenummer' slice.",
+          ukbEncounters.size(),
+          encountersWithIdentifier.size());
     }
     if (!encountersWithIdentifier.isEmpty()) {
       Set<String> encountersVisitNumbers =
           new HashSet<>(
               ukbEncounters.stream()
                   .filter(x -> positiveEncounterIds.contains(x.getId()))
+                  .filter(UkbEncounter::hasVisitNumberIdentifierValue)
                   .map(UkbEncounter::getVisitNumberIdentifierValue)
                   .toList());
       if (encountersVisitNumbers.isEmpty()) {

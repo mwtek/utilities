@@ -63,6 +63,7 @@ public class UkbEncounter extends Encounter
 
   protected UkbPatient patient;
   protected String patientId;
+  private String visitNumberIdentifierValue;
 
   @Setter protected String facilityContactId;
 
@@ -210,14 +211,20 @@ public class UkbEncounter extends Encounter
 
   /** Auxiliary function to return the textual value of the visit number. */
   public String getVisitNumberIdentifierValue() {
-    if (this.hasIdentifier()) {
-      Identifier visitNumberIdentifier =
-          FhirTools.getVisitNumberIdentifier(this.getIdentifier(), false);
-      if (visitNumberIdentifier != null && visitNumberIdentifier.hasValue()) {
-        return visitNumberIdentifier.getValue();
+    if (visitNumberIdentifierValue == null) {
+      if (this.hasIdentifier()) {
+        Identifier visitNumberIdentifier =
+            FhirTools.getVisitNumberIdentifier(this.getIdentifier(), false);
+        if (visitNumberIdentifier != null && visitNumberIdentifier.hasValue()) {
+          visitNumberIdentifierValue = visitNumberIdentifier.getValue();
+        }
       }
     }
-    return null;
+    return visitNumberIdentifierValue;
+  }
+
+  public boolean hasVisitNumberIdentifierValue() {
+    return this.getVisitNumberIdentifierValue() != null;
   }
 
   public boolean isIcuCase(Collection<String> icuLocationIds, boolean checkActiveOnly) {
