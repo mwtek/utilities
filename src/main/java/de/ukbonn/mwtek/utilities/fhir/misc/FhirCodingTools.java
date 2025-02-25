@@ -158,18 +158,18 @@ public class FhirCodingTools {
   }
 
   /**
-   * This method checks whether a given set of {@link CodeableConcept} contains any of the {@link
-   * Coding#getCode() codes} without checking the {@link Coding#getSystem()} entry.
+   * Checks whether any of the given {@link Coding} entries contains a code that matches any of the
+   * provided reference codes, without considering the {@link Coding#getSystem()} entry.
+   *
+   * @return {@code true} if at least one coding has a code that exists in {@code referenceCodes},
+   *     otherwise {@code false}
    */
   public static boolean isCodeInAnyCoding(List<Coding> codings, Collection<String> referenceCodes) {
-    if (codings != null) {
-      for (Coding coding : codings) {
-        if (coding.hasCode()) {
-          return referenceCodes.contains(coding.getCode());
-        }
-      }
-    }
-    return false;
+    return codings != null
+        && codings.stream()
+            .filter(Coding::hasCode)
+            .map(Coding::getCode)
+            .anyMatch(referenceCodes::contains);
   }
 
   public static boolean isCodeInAnyCodeableConcepts(
