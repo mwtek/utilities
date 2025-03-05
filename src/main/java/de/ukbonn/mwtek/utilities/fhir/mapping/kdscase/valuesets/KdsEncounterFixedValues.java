@@ -67,4 +67,5 @@ public class KdsEncounterFixedValues {
   public static final String DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_SYSTEM =
       "http://fhir.de/CodeSystem/dkgev/EntlassungsgrundErsteUndZweiteStelle";
   public static final String DEATH_CODE = "07";
+  public static final String DEATH_CODE_DISPLAY = "Tod";
 }

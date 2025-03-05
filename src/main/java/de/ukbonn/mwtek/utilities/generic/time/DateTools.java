@@ -453,4 +453,31 @@ public class DateTools {
   public static Date toDate(int year, int month, int day) {
     return Date.from(LocalDate.of(year, month, day).atStartOfDay(ZoneId.of(GMT)).toInstant());
   }
+
+  /**
+   * Checks whether a given {@link Date} is within the specified {@link Period}, including the start
+   * and end dates.
+   *
+   * <p>This method ensures that the target date is:
+   *
+   * <ul>
+   *   <li>On or after the start date
+   *   <li>On or before the end date
+   * </ul>
+   *
+   * <p>If the period or any required values are missing, the method returns {@code false}.
+   *
+   * @param target The {@link Date} to check.
+   * @param period The {@link Period} within which the target date should fall.
+   * @return {@code true} if the target date is within the period (inclusive), otherwise {@code
+   *     false}.
+   */
+  public static boolean isWithinPeriod(Date target, org.hl7.fhir.r4.model.Period period) {
+    if (target == null || period == null || !period.hasStart() || !period.hasEnd()) {
+      return false; // Return false if any required values are missing
+    }
+    Date start = period.getStart();
+    Date end = period.getEnd();
+    return start.compareTo(target) <= 0 && end.compareTo(target) >= 0;
+  }
 }

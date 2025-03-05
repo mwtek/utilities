@@ -55,6 +55,25 @@ public class FhirCodingTools {
   }
 
   /**
+   * Checks if any of the given {@link Coding}s contains a value that is part of at least one of the
+   * specified code systems.
+   *
+   * @param codings A list of FHIR {@link Coding} codings to check.
+   * @param codeSystemEntries A collection of valid codes to check against.
+   * @param systems A collection of code systems to search within.
+   * @return {@code true} if at least one code from {@code codings} exists in any of the given
+   *     {@code systems} and is present in {@code codeSystemEntries}, otherwise {@code false}.
+   */
+  public static boolean isCodeInCodesystem(
+      List<Coding> codings, Collection<String> codeSystemEntries, Collection<String> systems) {
+    return systems.stream()
+        .anyMatch(
+            system ->
+                hasCodeBySystem(codings, system)
+                    && codeSystemEntries.contains(getCodeBySystem(codings, system)));
+  }
+
+  /**
    * Does the given fhir {@link Coding} contain a value that is part of the given code system.
    *
    * @return <code>True</code> is the code is not <code>null</code> and also part of the given code
