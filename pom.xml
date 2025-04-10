@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ukbonn.mwtek</groupId>
   <artifactId>utilities</artifactId>
-  <version>0.5.4+update.7</version>
+  <version>0.5.4+update.8</version>
   <name>utilities</name>
   <description>Utilities</description>
   <properties>
