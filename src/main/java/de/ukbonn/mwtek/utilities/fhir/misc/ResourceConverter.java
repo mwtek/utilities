@@ -19,6 +19,7 @@ package de.ukbonn.mwtek.utilities.fhir.misc;
 
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
+import de.ukbonn.mwtek.utilities.fhir.resources.UkbConsent;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbContactHealthFacility;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Consent;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Location;
@@ -75,6 +77,7 @@ public class ResourceConverter {
       case "Patient" -> convertPatient((Patient) res, check);
       case "Observation" -> convertObservation((Observation) res, check);
       case "Procedure" -> convertProcedure((Procedure) res, check);
+      case "Consent" -> convertConsent((Consent) res, check);
       case "Condition" -> convertCondition((Condition) res, check);
       case "Location" -> convertLocation((Location) res, check);
       default -> res;
@@ -128,9 +131,9 @@ public class ResourceConverter {
     // store the ID of each location WITHOUT the resource type
     e.getLocation()
         .forEach(
-            loc -> {
-              loc.getLocation().setIdElement(new StringType(extractReferenceId(loc.getLocation())));
-            });
+            loc ->
+                loc.getLocation()
+                    .setIdElement(new StringType(extractReferenceId(loc.getLocation()))));
     res.setLocation(e.getLocation());
 
     return res;
@@ -356,6 +359,34 @@ public class ResourceConverter {
     } else {
       return reference.getIdentifier().getValue();
     }
+  }
+
+  private static UkbConsent convertConsent(Consent consent, boolean check) {
+    UkbConsent res = new UkbConsent();
+
+    if (check) {
+      //   ExceptionTools.checkNullOrEmpty("Identifier", consent.getIdentifier());
+      ExceptionTools.checkNull("patient", consent.getPatient());
+      ExceptionTools.checkNullOrEmpty("policy", consent.getPolicy());
+    }
+    res.setPatient(consent.getPatient());
+    res.setId(consent.getId());
+    res.setMeta(consent.getMeta());
+    res.setExtension(consent.getExtension());
+    res.setScope(consent.getScope());
+    res.setCategory(consent.getCategory());
+    res.setDateTime(consent.getDateTime());
+    res.setOrganization(consent.getOrganization());
+    res.setIdentifier(consent.getIdentifier());
+    res.setStatus(consent.getStatus());
+    res.setPerformer(consent.getPerformer());
+    res.setProvision(consent.getProvision());
+    res.setPolicy(consent.getPolicy());
+    res.setPolicyRule(consent.getPolicyRule());
+
+    res.setPatientId(extractReferenceId(consent.getPatient()));
+
+    return res;
   }
 
   /**
