@@ -17,9 +17,14 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets;
 
+import java.util.List;
+
 public class LocationFixedValues {
 
   // PhysicalType(s)
   public static final String WARD = "wa";
   public static final String ICU = "ICU";
+  public static final String PED_ICU = "PEDICU";
+  public static final String PED_NICU = "PEDNICU";
+  public static final List<String> ICU_TYPES = List.of(ICU, PED_ICU, PED_NICU);
 }

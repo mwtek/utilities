@@ -40,6 +40,7 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import lombok.Getter;
@@ -319,8 +320,7 @@ public class UkbConsent extends Consent
    * @return true if the form is an Acribis form; false otherwise.
    */
   private boolean isAcribisForm() {
-    return this.getPolicyFirstRep().hasUri()
-        && getPolicyFirstRepUriWithoutPrefix().equals(VERSION_OID_Z_MODULE_ACRIBIS);
+    return this.hasPolicyUriWithoutPrefix(VERSION_OID_Z_MODULE_ACRIBIS);
   }
 
   /**
@@ -329,8 +329,7 @@ public class UkbConsent extends Consent
    * @return true if the form is a main consent form; false otherwise.
    */
   private boolean isMainConsentForm() {
-    return this.getPolicyFirstRep().hasUri()
-        && VERSIONS_MAIN_FORM.contains(getPolicyFirstRepUriWithoutPrefix());
+    return this.hasAnyPolicyUriWithoutPrefix(VERSIONS_MAIN_FORM);
   }
 
   /**
@@ -340,6 +339,30 @@ public class UkbConsent extends Consent
    */
   private String getPolicyFirstRepUriWithoutPrefix() {
     return this.getPolicyFirstRep().getUri().replaceAll(URN_OID, "");
+  }
+
+  /**
+   * Checks whether there is any policy URI matching one of the given OIDs (without the URN_OID
+   * prefix).
+   *
+   * @param oids The list of OIDs to check for (without URN prefix).
+   * @return true if a matching policy URI exists for any of the given OIDs, false otherwise.
+   */
+  private boolean hasAnyPolicyUriWithoutPrefix(List<String> oids) {
+    return this.getPolicy().stream()
+        .filter(ConsentPolicyComponent::hasUri)
+        .map(x -> x.getUri().replaceFirst(URN_OID, ""))
+        .anyMatch(oids::contains);
+  }
+
+  /**
+   * Checks whether there is any policy URI matching the given OID (without the URN_OID prefix).
+   *
+   * @param oid The OID to check for (without URN prefix).
+   * @return true if a matching policy URI exists, false otherwise.
+   */
+  private boolean hasPolicyUriWithoutPrefix(String oid) {
+    return hasAnyPolicyUriWithoutPrefix(Collections.singletonList(oid));
   }
 
   private boolean hasPermitWithCode(String code) {

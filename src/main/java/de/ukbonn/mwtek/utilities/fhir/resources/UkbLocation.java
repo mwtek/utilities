@@ -17,7 +17,7 @@
  */
 package de.ukbonn.mwtek.utilities.fhir.resources;
 
-import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.ICU;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.ICU_TYPES;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.WARD;
 import static de.ukbonn.mwtek.utilities.fhir.misc.FhirCodingTools.isCodeInAnyCodeableConcepts;
 
@@ -55,7 +55,7 @@ public class UkbLocation extends Location {
    */
   public boolean isLocationIcu() {
     if (this.hasType()) {
-      return isCodeInAnyCodeableConcepts(this.getType(), List.of(ICU));
+      return isCodeInAnyCodeableConcepts(this.getType(), ICU_TYPES);
     } else {
       return false;
     }

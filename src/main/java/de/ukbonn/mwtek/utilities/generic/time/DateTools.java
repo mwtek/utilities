@@ -19,6 +19,7 @@
 package de.ukbonn.mwtek.utilities.generic.time;
 
 import de.ukbonn.mwtek.utilities.ExceptionTools;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -176,6 +177,22 @@ public class DateTools {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Converts a {@link Date} object into FHIR-compatible search syntax (yyyy-MM-dd).
+   *
+   * <p>Leading zeros are added if needed (e.g., 2025-03-01).
+   *
+   * @param date A {@link Date} object
+   * @return A string in FHIR search date format or {@code null} if input is null
+   */
+  public static String dateToFhirSearchSyntax(Date date) {
+    if (date == null) {
+      return null;
+    }
+    SimpleDateFormat fhirFormat = new SimpleDateFormat("yyyy-MM-dd");
+    return fhirFormat.format(date);
   }
 
   /**

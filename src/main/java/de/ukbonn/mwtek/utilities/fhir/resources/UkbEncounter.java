@@ -32,6 +32,7 @@ import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncoun
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_INPATIENT_CODES;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_OUTPATIENT_CODES;
 import static de.ukbonn.mwtek.utilities.fhir.misc.FhirCodingTools.isCodeInCodesystem;
+import static de.ukbonn.mwtek.utilities.fhir.misc.ResourceConverter.extractReferenceId;
 
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.Compare;
@@ -45,7 +46,9 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -62,7 +65,7 @@ public class UkbEncounter extends Encounter
     implements UkbPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
 
   protected UkbPatient patient;
-  protected String patientId;
+  @Setter protected String patientId;
   private String visitNumberIdentifierValue;
 
   @Setter protected String facilityContactId;
@@ -171,10 +174,6 @@ public class UkbEncounter extends Encounter
   @Override
   public String getPatientId() {
     return this.patientId;
-  }
-
-  public void setPatientId(String patientId) {
-    this.patientId = patientId;
   }
 
   @Override
@@ -378,11 +377,10 @@ public class UkbEncounter extends Encounter
    *     "teilstationär"
    */
   public boolean isSemiStationary() {
-    return this.getType().stream()
-            .filter(x -> x.hasCoding(CASETYPE_CONTACT_ART_SYSTEM, CASETYPE_PARTSTATIONARY))
-            .toList()
-            .size()
-        > 0;
+    return !this.getType().stream()
+        .filter(x -> x.hasCoding(CASETYPE_CONTACT_ART_SYSTEM, CASETYPE_PARTSTATIONARY))
+        .toList()
+        .isEmpty();
   }
 
   /**
@@ -462,14 +460,41 @@ public class UkbEncounter extends Encounter
           }
         } catch (ClassCastException cce) {
           log.error(
-              "Encounter.hospitalization.dischargeDisposition"
-                  + ".EntlassungsgrundErsteUndZweiteStelle.value must be from type Coding but "
-                  + "found: "
-                  + extPosFirstAndSec.getValue().getClass());
+              "Encounter.hospitalization.dischargeDisposition.EntlassungsgrundErsteUndZweiteStelle.value"
+                  + " must be from type Coding but found: {}",
+              extPosFirstAndSec.getValue().getClass());
         }
       }
     }
 
     return false;
+  }
+
+  /**
+   * Returns a list of reference IDs for discharge diagnoses from the patient's diagnosis list.
+   *
+   * <p>A discharge diagnosis is identified by a {@code use} coding with the system {@code
+   * "http://terminology.hl7.org/CodeSystem/diagnosis-role"} and the code {@code "DD"}.
+   *
+   * @return a list of reference strings to the condition resources marked as discharge diagnoses;
+   *     returns an empty list if no such diagnoses are found or if no diagnosis is present.
+   */
+  public List<String> getDischargeDiagnosisReferenceIds() {
+    if (!this.hasDiagnosis()) {
+      return Collections.emptyList();
+    }
+
+    final String DIAGNOSIS_ROLE_SYSTEM = "http://terminology.hl7.org/CodeSystem/diagnosis-role";
+    final String DISCHARGE_DIAGNOSIS_CODE = "DD";
+
+    return this.getDiagnosis().stream()
+        .filter(
+            dc ->
+                dc.hasUse()
+                    && dc.hasCondition()
+                    && !dc.getCondition().isEmpty()
+                    && dc.getUse().hasCoding(DIAGNOSIS_ROLE_SYSTEM, DISCHARGE_DIAGNOSIS_CODE))
+        .map(dc -> extractReferenceId(dc.getCondition()))
+        .collect(Collectors.toList());
   }
 }

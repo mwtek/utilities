@@ -30,25 +30,31 @@ import java.util.List;
 public class ListTools {
 
   /**
-   * Splitting a list of any type into different batches.
+   * Splits a given list into sublists of a specified maximum size.
    *
-   * @param listInput List to be split into several lists.
-   * @param maxPartSize Maximum size of a batch.
-   * @param <E> Any datatype allowed.
-   * @return Sublists of the given list.
+   * <p>If the list cannot be evenly divided, the last sublist will contain the remaining elements.
+   * This method is safe against {@code IndexOutOfBoundsException} and does not use {@code
+   * Math.ceil} or hardcoded sublist counts.
+   *
+   * @param listInput the list to split; must not be {@code null}
+   * @param maxPartSize the maximum number of elements in each sublist; must be greater than 0
+   * @param <E> the type of elements in the list
+   * @return a list of sublists, each containing up to {@code maxPartSize} elements
+   * @throws IllegalArgumentException if {@code listInput} is {@code null} or {@code maxPartSize <=
+   *     0}
    */
   public static <E> List<List<E>> splitList(List<E> listInput, int maxPartSize) {
+    if (listInput == null) {
+      throw new IllegalArgumentException("listInput must not be null");
+    }
+    if (maxPartSize <= 0) {
+      throw new IllegalArgumentException("maxPartSize must be greater than 0");
+    }
 
     List<List<E>> listOutput = new ArrayList<>();
-
-    // Divide the size of the list by the maximum size of a list and round up.
-    int numSubLists = (int) Math.ceil((double) listInput.size() / maxPartSize);
-
-    for (int i = 0; i < numSubLists; i++) {
-      List<E> tempSubList =
-          listInput.subList(
-              i * maxPartSize, Math.min((i * maxPartSize) + maxPartSize, listInput.size()));
-      listOutput.add(tempSubList);
+    for (int start = 0; start < listInput.size(); start += maxPartSize) {
+      int end = Math.min(start + maxPartSize, listInput.size());
+      listOutput.add(listInput.subList(start, end));
     }
     return listOutput;
   }

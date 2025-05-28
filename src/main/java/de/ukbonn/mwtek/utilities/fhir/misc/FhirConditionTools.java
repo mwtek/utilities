@@ -18,17 +18,21 @@
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
 import static de.ukbonn.mwtek.utilities.enums.TerminologySystems.ICD;
+import static de.ukbonn.mwtek.utilities.enums.TerminologySystems.OPS;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets.KdsDiagnosisFixedValues.EXTENSION_DIAGNOSIS_RELIABILITY;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets.KdsDiagnosisFixedValues.EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM;
 
 import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
+import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Extension;
@@ -68,6 +72,101 @@ public class FhirConditionTools {
                                 ICD.equals(coding.getSystem())
                                     && icdCodes.contains(coding.getCode())))
         .collect(Collectors.toSet());
+  }
+
+  public static boolean isIcdCodeInCondition(
+      UkbCondition condition, final Collection<String> icdCodes) {
+    // Return an empty set if the input collections are null or if icdCodes is empty
+    if (condition == null) {
+      return false;
+    }
+    // Checking matches
+    return condition.hasCode()
+        && condition.getCode().getCoding().stream()
+            .anyMatch(
+                coding -> ICD.equals(coding.getSystem()) && icdCodes.contains(coding.getCode()));
+  }
+
+  public static boolean isOpsCodeInProcedure(
+      UkbProcedure procedure, final Collection<String> opsCodes) {
+    // Return an empty set if the input collections are null or if opsCodes is empty
+    if (procedure == null) {
+      return false;
+    }
+    // Checking matches
+    return procedure.hasCode()
+        && procedure.getCode().getCoding().stream()
+            .anyMatch(
+                coding -> OPS.equals(coding.getSystem()) && opsCodes.contains(coding.getCode()));
+  }
+
+  /**
+   * Checks if the given {@link UkbCondition} contains any ICD code that is subsumed by one of the
+   * provided ICD codes via prefix matching (e.g., {@code I48} matches {@code I48.2}).
+   *
+   * <p>This enables broader matching based on ICD code categories.
+   *
+   * <p>Example: If {@code icdCodes} contains {@code "I48"}, it matches condition codes such as
+   * {@code "I48.0"}, {@code "I48.1"}, {@code "I48.2"} etc.
+   *
+   * @param condition the condition to check
+   * @param icdCodes the collection of ICD code prefixes to match against
+   * @return {@code true} if any coding in the condition starts with any of the provided ICD codes,
+   *     {@code false} otherwise or if the condition is null
+   */
+  public static boolean isIcdCodeInConditionWithPrefixWildcardCheck(
+      UkbCondition condition, Collection<String> icdCodes) {
+    return hasMatchingPrefixCode(condition, ICD, icdCodes, UkbCondition::getCode);
+  }
+
+  /**
+   * Checks if the given {@link UkbProcedure} contains any OPS code that is subsumed by one of the
+   * provided OPS codes via prefix matching (e.g., {@code 5-480} matches {@code 5-480.2}).
+   *
+   * <p>This enables broader matching based on OPS code categories.
+   *
+   * <p>Example: If {@code icdCodes} contains {@code "5-480"}, it matches procedure codes such as
+   * {@code "5-480.0"}, {@code "5-480.1"}, {@code "5-480.2"} etc.
+   *
+   * @param procedure the procedure to check
+   * @param icdCodes the collection of OPS code prefixes to match against
+   * @return {@code true} if any coding in the procedure starts with any of the provided OPS codes,
+   *     {@code false} otherwise or if the procedure is null
+   */
+  public static boolean isOpsCodeInProcedureWithPrefixWildcardCheck(
+      UkbProcedure procedure, Collection<String> icdCodes) {
+    return hasMatchingPrefixCode(procedure, OPS, icdCodes, UkbProcedure::getCode);
+  }
+
+  /**
+   * Checks whether the coding of a FHIR resource contains any code starting with one of the given
+   * prefixes and belonging to the expected coding system.
+   *
+   * @param resource the resource (e.g., condition or procedure) to check
+   * @param expectedSystem the expected coding system (e.g., {@code ICD} or {@code OPS})
+   * @param icdCodes the collection of code prefixes to match against
+   * @param codeExtractor function to extract the {@link CodeableConcept} from the resource
+   * @return {@code true} if any code in the resource starts with a prefix in {@code icdCodes} and
+   *     belongs to {@code expectedSystem}; {@code false} otherwise
+   */
+  private static <T> boolean hasMatchingPrefixCode(
+      T resource,
+      String expectedSystem,
+      Collection<String> icdCodes,
+      Function<T, CodeableConcept> codeExtractor) {
+
+    if (resource == null || icdCodes == null || icdCodes.isEmpty()) {
+      return false;
+    }
+
+    CodeableConcept codeableConcept = codeExtractor.apply(resource);
+    return codeableConcept != null
+        && codeableConcept.getCoding().stream()
+            .anyMatch(
+                coding ->
+                    expectedSystem.equals(coding.getSystem())
+                        && coding.getCode() != null
+                        && icdCodes.stream().anyMatch(code -> coding.getCode().startsWith(code)));
   }
 
   /**
