@@ -24,9 +24,12 @@ import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.CONSENT_CATEGOR
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSIONS_MAIN_FORM;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSION_OID_Z_MODULE_ACRIBIS;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_COLLECTION;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.PATDAT_RETRIEVAL_SAVING_USING;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.PROVISION_CODE_SYSTEM;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_FURTHER_SURVEY;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_ADDITIONS;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_FURTHER_COLLECTION;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.Z2_PAT_DATA;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.Z2_PAT_DATA_LVL_2;
 import static org.hl7.fhir.r4.model.Consent.ConsentProvisionType.PERMIT;
 
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
@@ -259,8 +262,11 @@ public class UkbConsent extends Consent
             .anyMatch(
                 pc ->
                     pc.hasCode()
-                        && pc.getCodeFirstRep()
-                            .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA.getCode()));
+                        // Checking level 1 and 2
+                        && (pc.getCodeFirstRep()
+                                .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA.getCode())
+                            || pc.getCodeFirstRep()
+                                .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA_LVL_2.getCode())));
   }
 
   /**
@@ -282,8 +288,11 @@ public class UkbConsent extends Consent
           .filter(
               pc ->
                   pc.hasCode()
-                      && pc.getCodeFirstRep()
-                          .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA.getCode()))
+                          // Checking level 1 and 2
+                          && (pc.getCodeFirstRep()
+                              .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA.getCode()))
+                      || pc.getCodeFirstRep()
+                          .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA_LVL_2.getCode()))
           .map(pc -> pc.getPeriod().getStart())
           .findFirst()
           .orElse(null);
@@ -300,7 +309,9 @@ public class UkbConsent extends Consent
   public boolean isPatDataUsageAllowed() {
     return isMainConsentForm()
         && isPrivacyPolicyDocumentAndMiiConsentCategory()
-        && hasPermitWithCode(MDAT_COLLECTION.getCode());
+        // Check level 1 and level 2 code;
+        && (hasPermitWithCode(PATDAT_RETRIEVAL_SAVING_USING.getCode())
+            || hasPermitWithCode(MDAT_COLLECTION.getCode()));
   }
 
   /**
@@ -311,7 +322,9 @@ public class UkbConsent extends Consent
   public boolean isRecontactingAllowed() {
     return isMainConsentForm()
         && isPrivacyPolicyDocumentAndMiiConsentCategory()
-        && hasPermitWithCode(RECONTACTING_FURTHER_SURVEY.getCode());
+        // Check level 1 and level 2 code;
+        && (hasPermitWithCode(RECONTACTING_ADDITIONS.getCode())
+            || hasPermitWithCode(RECONTACTING_FURTHER_COLLECTION.getCode()));
   }
 
   /**

@@ -36,6 +36,8 @@ public class KdsEncounterFixedValues {
   public static final String CASETYPE_PRESTATIONARY = "vorstationaer";
   public static final String CASETYPE_POSTSTATIONARY = "nachstationaer";
   public static final String CASETYPE_PARTSTATIONARY = "teilstationaer";
+  public static final String CASETYPE_PARTSTATIONARY_DAY_CLINIC = "tagesklinik";
+  public static final String CASETYPE_PARTSTATIONARY_NIGHT_CLINIC = "nachtklinik";
   public static final String CASETYPE_NORMALSTATIONARY = "normalstationaer";
   public static final String CASETYPE_INTENSIVESTATIONARY = "intensivstationaer";
   public static final String CASETYPE_CONTACT_ART_SYSTEM =
@@ -58,6 +60,15 @@ public class KdsEncounterFixedValues {
    */
   public static final ImmutableList<String> ENCOUNTER_CLASS_OUTPATIENT_CODES =
       ImmutableList.of("AMB", "ambulant");
+
+  /**
+   * List of valid {@link UkbEncounter#getClass_() encounter.class.code} codes for inpatient
+   * encounters. Both the value set from the case module version 1.0 and 2.0 are checked. <a
+   * href="https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397957">The value set of
+   * version 2.0 can be found here.</a>.
+   */
+  public static final ImmutableList<String> ENCOUNTER_CLASS_SHORT_STAY_CODES =
+      ImmutableList.of("SS");
 
   // dischargeCoding [FHIR Value Set]
   public static final String DISCHARGE_DISPOSITION_EXT_URL =

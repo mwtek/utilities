@@ -23,6 +23,8 @@ import static de.ukbonn.mwtek.utilities.enums.EncounterContactLevel.SUPPLY_CONTA
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_CONTACT_ART_SYSTEM;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_INTENSIVESTATIONARY;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_PARTSTATIONARY;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_PARTSTATIONARY_DAY_CLINIC;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_PARTSTATIONARY_NIGHT_CLINIC;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_POSTSTATIONARY;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.CASETYPE_PRESTATIONARY;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.DEATH_CODE;
@@ -31,6 +33,7 @@ import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncoun
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.DISCHARGE_DISPOSITION_FIRST_AND_SECOND_POS_SYSTEM;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_INPATIENT_CODES;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_OUTPATIENT_CODES;
+import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncounterFixedValues.ENCOUNTER_CLASS_SHORT_STAY_CODES;
 import static de.ukbonn.mwtek.utilities.fhir.misc.FhirCodingTools.isCodeInCodesystem;
 import static de.ukbonn.mwtek.utilities.fhir.misc.ResourceConverter.extractReferenceId;
 
@@ -359,6 +362,27 @@ public class UkbEncounter extends Encounter
   }
 
   /**
+   * Is the case class counted as "inpatient" regarding the json data specification (without
+   * pre-stationary and post-stationary cases)?
+   *
+   * @return <code>True</code>, if the case class of the encounter is "inpatient"
+   */
+  public boolean isCaseClassShortStay() {
+    return this.hasClass_()
+        && isCodeInCodesystem(this.getClass_().getCode(), ENCOUNTER_CLASS_SHORT_STAY_CODES);
+  }
+
+  /**
+   * Is the case class counted as "inpatient" regarding the json data specification (without
+   * pre-stationary and post-stationary cases)?
+   *
+   * @return <code>True</code>, if the case class of the encounter is "inpatient"
+   */
+  public boolean isCaseClassInpatientOrShortStay() {
+    return this.isCaseClassInpatient() || this.isCaseClassShortStay();
+  }
+
+  /**
    * is the case class counted as "outpatient" regarding the json data specification (plus
    * pre-stationary + post-stationary cases that are counted as "outpatient" logic-wise in the
    * workflow aswell)
@@ -378,7 +402,12 @@ public class UkbEncounter extends Encounter
    */
   public boolean isSemiStationary() {
     return !this.getType().stream()
-        .filter(x -> x.hasCoding(CASETYPE_CONTACT_ART_SYSTEM, CASETYPE_PARTSTATIONARY))
+        .filter(
+            x ->
+                x.hasCoding(CASETYPE_CONTACT_ART_SYSTEM, CASETYPE_PARTSTATIONARY)
+                    || x.hasCoding(CASETYPE_CONTACT_ART_SYSTEM, CASETYPE_PARTSTATIONARY_DAY_CLINIC)
+                    || x.hasCoding(
+                        CASETYPE_CONTACT_ART_SYSTEM, CASETYPE_PARTSTATIONARY_NIGHT_CLINIC))
         .toList()
         .isEmpty();
   }
@@ -496,5 +525,20 @@ public class UkbEncounter extends Encounter
                     && dc.getUse().hasCoding(DIAGNOSIS_ROLE_SYSTEM, DISCHARGE_DIAGNOSIS_CODE))
         .map(dc -> extractReferenceId(dc.getCondition()))
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Filtering of non-usable encounters, for example, if they got canceled or entered in error.
+   *
+   * <p>Since many data items rely explicit on {@link EncounterStatus#INPROGRESS) oder {@link
+   * EncounterStatus#FINISHED}} we filter already to the corresponding values.
+   */
+  public boolean isEncounterStatusValid() {
+    if (!this.hasStatus()) return false;
+    else {
+      var encounterStatus = this.getStatus();
+      return (encounterStatus == EncounterStatus.INPROGRESS
+          || encounterStatus == EncounterStatus.FINISHED);
+    }
   }
 }
