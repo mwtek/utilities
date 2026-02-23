@@ -382,6 +382,6 @@ public class UkbConsent extends Consent
     return this.getProvision().getProvision().stream()
         .filter(pc -> pc.hasType() && pc.getType().equals(PERMIT))
         .anyMatch(
-            pc -> pc.hasCode() && pc.getCodeFirstRep().hasCoding(PROVISION_CODE_SYSTEM, code));
+            pc -> pc.hasCode() && pc.getCode().stream().anyMatch(c -> c.hasCoding(PROVISION_CODE_SYSTEM, code)));
   }
 }
