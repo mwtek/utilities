@@ -27,7 +27,7 @@
   <properties>
     <java.version>25</java.version>
     <hapi.version>8.8.1</hapi.version>
-    <hapi.utilities.version>6.9.4</hapi.utilities.version>
+    <hapi.utilities.version>6.9.7</hapi.utilities.version>
     <lombok.version>1.18.42</lombok.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
