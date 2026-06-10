@@ -22,7 +22,7 @@ import static de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets.KdsEncoun
 
 import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbEncounter;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiEncounter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -256,13 +256,13 @@ public class FhirTools {
   }
 
   public static Set<String> getOfficialIdentifiers(
-      Set<String> positiveEncounterIds, List<UkbEncounter> ukbEncounters) {
-    Set<UkbEncounter> encountersWithIdentifier =
-        ukbEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
-    if (encountersWithIdentifier.size() != ukbEncounters.size()) {
+      Set<String> positiveEncounterIds, List<MiiEncounter> miiEncounters) {
+    Set<MiiEncounter> encountersWithIdentifier =
+        miiEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
+    if (encountersWithIdentifier.size() != miiEncounters.size()) {
       log.warn(
           "Found: "
-              + ukbEncounters.size()
+              + miiEncounters.size()
               + " encounter resources but only "
               + encountersWithIdentifier.size()
               + " got an identifier!");
@@ -270,9 +270,9 @@ public class FhirTools {
     if (!encountersWithIdentifier.isEmpty()) {
       Set<String> ukbEncounterWithOfficialIdentifier =
           new HashSet<>(
-              ukbEncounters.stream()
+              miiEncounters.stream()
                   .filter(x -> positiveEncounterIds.contains(x.getId()))
-                  .map(UkbEncounter::getOfficialIdentifierValue)
+                  .map(MiiEncounter::getOfficialIdentifierValue)
                   .toList());
       if (ukbEncounterWithOfficialIdentifier.isEmpty()) {
         log.error(
@@ -287,22 +287,22 @@ public class FhirTools {
   }
 
   public static Set<String> getVisitNumberIdentifiers(
-      Set<String> positiveEncounterIds, List<UkbEncounter> ukbEncounters) {
-    Set<UkbEncounter> encountersWithIdentifier =
-        ukbEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
-    if (encountersWithIdentifier.size() != ukbEncounters.size()) {
+      Set<String> positiveEncounterIds, List<MiiEncounter> miiEncounters) {
+    Set<MiiEncounter> encountersWithIdentifier =
+        miiEncounters.parallelStream().filter(Encounter::hasIdentifier).collect(Collectors.toSet());
+    if (encountersWithIdentifier.size() != miiEncounters.size()) {
       log.warn(
           "Found: {} encounter resources but only {} are using the 'Aufnahmenummer' slice.",
-          ukbEncounters.size(),
+          miiEncounters.size(),
           encountersWithIdentifier.size());
     }
     if (!encountersWithIdentifier.isEmpty()) {
       Set<String> encountersVisitNumbers =
           new HashSet<>(
-              ukbEncounters.stream()
+              miiEncounters.stream()
                   .filter(x -> positiveEncounterIds.contains(x.getId()))
-                  .filter(UkbEncounter::hasVisitNumberIdentifierValue)
-                  .map(UkbEncounter::getVisitNumberIdentifierValue)
+                  .filter(MiiEncounter::hasVisitNumberIdentifierValue)
+                  .map(MiiEncounter::getVisitNumberIdentifierValue)
                   .toList());
       if (encountersVisitNumbers.isEmpty()) {
         log.error(
@@ -322,14 +322,14 @@ public class FhirTools {
    *
    * @param visitNumberIdentifierValues A set of official identifier values to filter the
    *     UkbEncounter objects independent fr
-   * @param ukbEncounters A list of UkbEncounter objects to be filtered.
+   * @param miiEncounters A list of UkbEncounter objects to be filtered.
    * @param flag The extension to be added to the filtered UkbEncounter objects.
    * @return A set of UkbEncounter objects filtered by the official identifier values with the
    *     specified extension added.
    */
-  public static Set<UkbEncounter> flagEncountersByIdentifierValue(
-      Set<String> visitNumberIdentifierValues, List<UkbEncounter> ukbEncounters, Extension flag) {
-    return ukbEncounters.stream()
+  public static Set<MiiEncounter> flagEncountersByIdentifierValue(
+      Set<String> visitNumberIdentifierValues, List<MiiEncounter> miiEncounters, Extension flag) {
+    return miiEncounters.stream()
         .filter(x -> visitNumberIdentifierValues.contains(x.getVisitNumberIdentifierValue()))
         .peek(x -> x.addExtension(flag))
         .collect(Collectors.toSet());

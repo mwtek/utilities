@@ -30,13 +30,13 @@ https://simplifier.net/medizininformatikinitiative-modulfall/kontaktgesundheitse
 'Kontakt mit einer Gesundheitseinrichtung' profile}.
  */
 @ResourceDef(name = "Encounter")
-public class UkbContactHealthFacility extends UkbEncounter {
+public class MiiContactHealthFacility extends MiiEncounter {
 
-  public UkbContactHealthFacility() {
+  public MiiContactHealthFacility() {
     super();
   }
 
-  public UkbContactHealthFacility(
+  public MiiContactHealthFacility(
       String patientId,
       Enumeration<EncounterStatus> encounterStatus,
       Coding class_,
@@ -47,15 +47,15 @@ public class UkbContactHealthFacility extends UkbEncounter {
     this.setPeriod(period);
   }
 
-  public UkbContactHealthFacility(
-      UkbPatient patient, Enumeration<EncounterStatus> status, Coding class_, Period period) {
+  public MiiContactHealthFacility(
+      MiiPatient patient, Enumeration<EncounterStatus> status, Coding class_, Period period) {
     super(patient, status, class_);
     ExceptionTools.checkNull("Period", period);
 
     this.setPeriod(period);
   }
 
-  public UkbContactHealthFacility(
+  public MiiContactHealthFacility(
       String patientId, Enumeration<EncounterStatus> encounterStatus, Coding class_) {
     super(patientId, encounterStatus, class_);
   }

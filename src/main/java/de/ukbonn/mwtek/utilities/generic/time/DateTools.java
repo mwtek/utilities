@@ -103,7 +103,7 @@ public class DateTools {
   }
 
   /**
-   * Transformation an unix time (seconds) in a date with truncating of the time data
+   * Transformation a unix time (seconds) in a date with truncating of the time data
    *
    * @param unixTimeInSeconds UnixTime in seconds
    * @param timeZone Optional: {@link TimeZone} of the date (default: GMT)
@@ -112,9 +112,10 @@ public class DateTools {
   public static Date unixTimeSecondsToDateExtinguishedTime(
       long unixTimeInSeconds, TimeZone timeZone) {
     if (timeZone == null) {
-      timeZone = TimeZone.getTimeZone("GMT");
+      timeZone = TimeZone.getTimeZone(GMT);
     }
-    return unixTimeMicrosToDateExtinguishedTime(unixTimeInSeconds * 1000, timeZone);
+    // seconds -> microseconds (correct factor: 1_000_000)
+    return unixTimeMicrosToDateExtinguishedTime(unixTimeInSeconds * 1_000_000L, timeZone);
   }
 
   /**

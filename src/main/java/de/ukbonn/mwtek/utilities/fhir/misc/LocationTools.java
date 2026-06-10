@@ -19,8 +19,8 @@
 import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.ICU;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.location.valuesets.LocationFixedValues.WARD;
 
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbEncounter;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiEncounter;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiLocation;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Reference;
@@ -32,11 +32,11 @@ public class LocationTools {
   public static final String ICU_DUMMY_REF = "Location/" + ICU_DUMMY_ID;
 
   // Static variable for the dummy ICU location
-  private static UkbLocation dummyIcuLocation;
+  private static MiiLocation dummyIcuLocation;
 
   /**
    * Creates a dummy ICU location that can be used to simulate ICU encounters if {@link
-   * UkbEncounter#getServiceProvider()} is used by a provider to flag stays in ICU wards.
+   * MiiEncounter#getServiceProvider()} is used by a provider to flag stays in ICU wards.
    *
    * <p>The location is created only once and reused on subsequent calls.
    *
@@ -44,11 +44,11 @@ public class LocationTools {
    *
    * @return The dummy ICU location.
    */
-  public static UkbLocation createDummyIcuWardLocation() {
+  public static MiiLocation createDummyIcuWardLocation() {
     // Check if the dummy ICU location is already initialized
     if (dummyIcuLocation == null) {
       // Initialize the dummy ICU location
-      dummyIcuLocation = new UkbLocation();
+      dummyIcuLocation = new MiiLocation();
       dummyIcuLocation.setId(ICU_DUMMY_ID);
       dummyIcuLocation.setPhysicalType(
           new CodeableConcept(

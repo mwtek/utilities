@@ -21,29 +21,30 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.MiiContactHealthFacilityProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.MiiPatientProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbContactHealthFacilityProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
+import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Enumeration;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Reference;
 
-@ResourceDef(name = "Observation")
-public class UkbObservation extends Observation
-    implements UkbPatientProvider,
+@Slf4j
+@ResourceDef(name = "Condition")
+public class MiiCondition extends Condition
+    implements MiiPatientProvider,
         PatientIdentifierValueProvider,
-        UkbContactHealthFacilityProvider,
+        MiiContactHealthFacilityProvider,
         CaseIdentifierValueProvider {
 
-  protected UkbPatient patient;
-  protected UkbContactHealthFacility encounter;
+  protected MiiPatient patient;
+  protected MiiContactHealthFacility encounter;
   protected String patientId;
   protected String caseId;
 
@@ -52,65 +53,61 @@ public class UkbObservation extends Observation
    *     constructors for creating an instance of this resource.
    */
   @Deprecated
-  public UkbObservation() {
+  public MiiCondition() {
     super();
   }
 
-  public UkbObservation(
-      String patientId, String caseId, Enumeration<ObservationStatus> status, CodeableConcept code)
-      throws IllegalArgumentException {
-    super(status, code);
+  /**
+   * Creates a new condition object without defined {@link MiiPatient} and {@link
+   * MiiContactHealthFacility} objects, these objects may be assigned later using {@link
+   * #initializeMiiPatient(MiiPatient)} or {@link
+   * #initializeMiiContactHealthFacility(MiiContactHealthFacility)}. The patient is mandatory,
+   * therefore the <code>patientId</code> must be specified, the case is optional.
+   *
+   * @param patientId the default system id of the patient
+   * @param caseId the default system id of the case (effectively "encounter", may be <code>null
+   *     </code>)
+   * @param clinicalStatus
+   * @param code
+   * @param recordedDate
+   */
+  public MiiCondition(
+      String patientId,
+      String caseId,
+      CodeableConcept clinicalStatus,
+      CodeableConcept code,
+      Date recordedDate) {
     // validate arguments
+    if (patientId == null) {
+      log.warn("pid is null -> the patient might be canceled");
+    }
     ExceptionTools.checkNullOrEmpty("patientId", patientId);
+    ExceptionTools.checkNull("clinicalStatus", clinicalStatus);
+    ExceptionTools.checkNull("code", code);
+    ExceptionTools.checkNull("recordedDate", recordedDate);
 
     // set local variables
     this.patientId = patientId;
     this.caseId = caseId;
 
     // set fhir content
-    this.setSubject(
-        new Reference()
-            .setIdentifier(
-                new Identifier()
-                    .setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT)
-                    .setValue(patientId)));
-    if (caseId != null) {
-      // case id is optional
-      this.setEncounter(
-          new Reference()
-              .setIdentifier(
-                  new Identifier()
-                      .setSystem(StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)
-                      .setValue(caseId)));
-    } // if
+    this.setClinicalStatus(clinicalStatus);
+    this.setCode(code);
+    this.setRecordedDate(recordedDate);
   }
 
-  @Override
-  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
-      throws IllegalArgumentException, FieldAlreadyInitializedException {
-    // validate arguments
-    ExceptionTools.checkNull("encounter", encounter);
-
-    // must not be initialized more than once!
-    if (this.encounter != null) {
-      throw new FieldAlreadyInitializedException();
-    } // if
-
-    // assign the patient to the local fields (only, no fhir assignment)
-    this.encounter = encounter;
-    this.caseId = encounter.getCaseId();
-  }
-
-  public UkbObservation(
-      UkbPatient patient,
-      UkbContactHealthFacility encounter,
-      Enumeration<ObservationStatus> status,
-      CodeableConcept code)
-      throws IllegalArgumentException {
-    super(status, code);
+  public MiiCondition(
+      MiiPatient patient,
+      MiiContactHealthFacility encounter,
+      CodeableConcept clinicalStatus,
+      CodeableConcept code,
+      Date recordedDate) {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
-    ExceptionTools.checkNullOrEmpty("patient.Identifier", patient.getIdentifier());
+    ExceptionTools.checkNullOrEmpty("patient.identifier", patient.getIdentifier());
+    ExceptionTools.checkNull("clinicalStatus", clinicalStatus);
+    ExceptionTools.checkNull("code", code);
+    ExceptionTools.checkNull("recordedDate", recordedDate);
 
     // set local variables
     this.patient = patient;
@@ -124,23 +121,29 @@ public class UkbObservation extends Observation
             .setIdentifier(
                 FhirTools.getIdentifierBySystem(
                     StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT, patient.getIdentifier())));
+    this.setClinicalStatus(clinicalStatus);
+    this.setCode(code);
+    this.setRecordedDate(recordedDate);
   }
 
-  public UkbObservation(
-      UkbContactHealthFacility encounter,
-      Enumeration<ObservationStatus> status,
-      CodeableConcept code)
-      throws IllegalArgumentException, MandatoryFieldNotInitializedException {
-    super(status, code);
+  public MiiCondition(
+      MiiContactHealthFacility encounter,
+      CodeableConcept clinicalStatus,
+      CodeableConcept code,
+      Date recordedDate)
+      throws MandatoryFieldNotInitializedException {
     // validate arguments
     ExceptionTools.checkNull("encounter", encounter);
-    ExceptionTools.checkNull("encounter.patient", encounter.getUkbPatient());
+    ExceptionTools.checkNull("encounter.patient", encounter.getMiiPatient());
     ExceptionTools.checkNullOrEmpty(
-        "encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
+        "encounter.patient.identifier", encounter.getMiiPatient().getIdentifier());
+    ExceptionTools.checkNull("clinicalStatus", clinicalStatus);
+    ExceptionTools.checkNull("code", code);
+    ExceptionTools.checkNull("recordedDate", recordedDate);
 
     // set local variables
-    this.patient = encounter.getUkbPatient();
-    this.patientId = encounter.getUkbPatient().getPatientId();
+    this.patient = encounter.getMiiPatient();
+    this.patientId = encounter.getMiiPatient().getPatientId();
     this.encounter = encounter;
     this.caseId = encounter.getCaseId();
 
@@ -150,12 +153,19 @@ public class UkbObservation extends Observation
             .setIdentifier(
                 FhirTools.getIdentifierBySystem(
                     StaticValueProvider.SYSTEM_WITH_IDENTIFIER_PATIENT,
-                    encounter.getUkbPatient().getIdentifier())));
+                    encounter.getMiiPatient().getIdentifier())));
+    this.setClinicalStatus(clinicalStatus);
+    this.setCode(code);
+    this.setRecordedDate(recordedDate);
   }
 
   @Override
   public String getCaseId() {
     return this.caseId;
+  }
+
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
   }
 
   @Override
@@ -165,12 +175,16 @@ public class UkbObservation extends Observation
       return this.caseId;
     } // if
 
-    return this.getUkbContactHealthFacility().getCaseIdentifierValue(system);
+    return this.getMiiContactHealthFacility().getCaseIdentifierValue(system);
   }
 
   @Override
   public String getPatientId() {
     return this.patientId;
+  }
+
+  public void setPatientId(String patientId) {
+    this.patientId = patientId;
   }
 
   @Override
@@ -180,11 +194,11 @@ public class UkbObservation extends Observation
       return this.patientId;
     } // if
 
-    return this.getUkbPatient().getPatientIdentifierValue(system);
+    return this.getMiiPatient().getPatientIdentifierValue(system);
   }
 
   @Override
-  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
+  public MiiPatient getMiiPatient() throws MandatoryFieldNotInitializedException {
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
@@ -193,7 +207,7 @@ public class UkbObservation extends Observation
   }
 
   @Override
-  public UkbContactHealthFacility getUkbContactHealthFacility()
+  public MiiContactHealthFacility getMiiContactHealthFacility()
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
     if (this.encounter == null) {
@@ -206,16 +220,16 @@ public class UkbObservation extends Observation
   }
 
   @Override
-  public void initializeUkbPatient(UkbPatient patient)
+  public void initializeMiiPatient(MiiPatient patient)
       throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
-    ExceptionTools.checkNullOrEmpty("patient.Identifier", patient.getIdentifier());
+    ExceptionTools.checkNullOrEmpty("patient.identifier", patient.getIdentifier());
 
     // must not be initialized more than once!
     if (this.patient != null) {
       throw new FieldAlreadyInitializedException();
-    }
+    } // if
 
     // assign the patient to the local fields
     this.patient = patient;
@@ -230,20 +244,28 @@ public class UkbObservation extends Observation
   }
 
   @Override
-  public boolean isUkbPatientInitialized() {
+  public void initializeMiiContactHealthFacility(MiiContactHealthFacility encounter)
+      throws IllegalArgumentException, FieldAlreadyInitializedException {
+    // validate arguments
+    ExceptionTools.checkNull("encounter", encounter);
+
+    // must not be initialized more than once!
+    if (this.encounter != null) {
+      throw new FieldAlreadyInitializedException();
+    } // if
+
+    // assign the patient to the local fields (only, no fhir assignment)
+    this.encounter = encounter;
+    this.caseId = encounter.getCaseId();
+  }
+
+  @Override
+  public boolean isMiiPatientInitialized() {
     return (this.patient != null);
   }
 
   @Override
-  public boolean isUkbContactHealthFacilityInitialized() {
+  public boolean isMiiContactHealthFacilityInitialized() {
     return (this.encounter != null);
-  }
-
-  public void setCaseId(String caseId) {
-    this.caseId = caseId;
-  }
-
-  public void setPatientId(String patientId) {
-    this.patientId = patientId;
   }
 }

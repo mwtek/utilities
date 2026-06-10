@@ -22,8 +22,8 @@ import static de.ukbonn.mwtek.utilities.enums.TerminologySystems.OPS;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets.KdsDiagnosisFixedValues.EXTENSION_DIAGNOSIS_RELIABILITY;
 import static de.ukbonn.mwtek.utilities.fhir.mapping.kdsdiagnosis.valuesets.KdsDiagnosisFixedValues.EXTENSION_DIAGNOSIS_RELIABILITY_SYSTEM;
 
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiCondition;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiProcedure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -40,7 +40,7 @@ import org.hl7.fhir.r4.model.Extension;
 public class FhirConditionTools {
 
   public static Set<String> getEncounterIdsByIcdCodes(
-      Collection<UkbCondition> ukbConditions, String icdCode) {
+      Collection<MiiCondition> ukbConditions, String icdCode) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null) {
       ukbConditions.forEach(
@@ -54,8 +54,8 @@ public class FhirConditionTools {
     return caseIds;
   }
 
-  public static Set<UkbCondition> getConditionsByIcdCodes(
-      final Collection<UkbCondition> ukbConditions, final Collection<String> icdCodes) {
+  public static Set<MiiCondition> getConditionsByIcdCodes(
+      final Collection<MiiCondition> ukbConditions, final Collection<String> icdCodes) {
     // Return an empty set if the input collections are null or if icdCodes is empty
     if (ukbConditions == null || icdCodes == null || icdCodes.isEmpty()) {
       return Collections.emptySet();
@@ -75,7 +75,7 @@ public class FhirConditionTools {
   }
 
   public static boolean isIcdCodeInCondition(
-      UkbCondition condition, final Collection<String> icdCodes) {
+      MiiCondition condition, final Collection<String> icdCodes) {
     // Return an empty set if the input collections are null or if icdCodes is empty
     if (condition == null) {
       return false;
@@ -87,21 +87,8 @@ public class FhirConditionTools {
                 coding -> ICD.equals(coding.getSystem()) && icdCodes.contains(coding.getCode()));
   }
 
-  public static boolean isOpsCodeInProcedure(
-      UkbProcedure procedure, final Collection<String> opsCodes) {
-    // Return an empty set if the input collections are null or if opsCodes is empty
-    if (procedure == null) {
-      return false;
-    }
-    // Checking matches
-    return procedure.hasCode()
-        && procedure.getCode().getCoding().stream()
-            .anyMatch(
-                coding -> OPS.equals(coding.getSystem()) && opsCodes.contains(coding.getCode()));
-  }
-
   /**
-   * Checks if the given {@link UkbCondition} contains any ICD code that is subsumed by one of the
+   * Checks if the given {@link MiiCondition} contains any ICD code that is subsumed by one of the
    * provided ICD codes via prefix matching (e.g., {@code I48} matches {@code I48.2}).
    *
    * <p>This enables broader matching based on ICD code categories.
@@ -115,12 +102,12 @@ public class FhirConditionTools {
    *     {@code false} otherwise or if the condition is null
    */
   public static boolean isIcdCodeInConditionWithPrefixWildcardCheck(
-      UkbCondition condition, Collection<String> icdCodes) {
-    return hasMatchingPrefixCode(condition, ICD, icdCodes, UkbCondition::getCode);
+      MiiCondition condition, Collection<String> icdCodes) {
+    return hasMatchingPrefixCode(condition, ICD, icdCodes, MiiCondition::getCode);
   }
 
   /**
-   * Checks if the given {@link UkbProcedure} contains any OPS code that is subsumed by one of the
+   * Checks if the given {@link MiiProcedure} contains any OPS code that is subsumed by one of the
    * provided OPS codes via prefix matching (e.g., {@code 5-480} matches {@code 5-480.2}).
    *
    * <p>This enables broader matching based on OPS code categories.
@@ -134,8 +121,8 @@ public class FhirConditionTools {
    *     {@code false} otherwise or if the procedure is null
    */
   public static boolean isOpsCodeInProcedureWithPrefixWildcardCheck(
-      UkbProcedure procedure, Collection<String> icdCodes) {
-    return hasMatchingPrefixCode(procedure, OPS, icdCodes, UkbProcedure::getCode);
+      MiiProcedure procedure, Collection<String> icdCodes) {
+    return hasMatchingPrefixCode(procedure, OPS, icdCodes, MiiProcedure::getCode);
   }
 
   /**
@@ -173,17 +160,17 @@ public class FhirConditionTools {
    * Finds case IDs from a collection of UkbConditions that contain at least one ICD code from the
    * provided set.
    *
-   * @param ukbConditions A collection of {@link UkbCondition} objects.
+   * @param ukbConditions A collection of {@link MiiCondition} objects.
    * @param icdCodes A collection of ICD (International Classification of Diseases) codes as
    *     strings.
    * @return A Set of unique case IDs found within the UkbConditions that have matching ICD codes.
    * @throws NullPointerException if either ukbConditions or icdCodes is null.
    */
   public static Set<String> getEncounterIdsByIcdCodes(
-      Collection<UkbCondition> ukbConditions, Collection<String> icdCodes) {
+      Collection<MiiCondition> ukbConditions, Collection<String> icdCodes) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
-      for (UkbCondition condition : ukbConditions) {
+      for (MiiCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
@@ -201,10 +188,10 @@ public class FhirConditionTools {
   }
 
   public static Set<String> getPatientIdsByIcdCodes(
-      Collection<UkbCondition> ukbConditions, Collection<String> icdCodes) {
+      Collection<MiiCondition> ukbConditions, Collection<String> icdCodes) {
     Set<String> patientIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
-      for (UkbCondition condition : ukbConditions) {
+      for (MiiCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
@@ -222,10 +209,10 @@ public class FhirConditionTools {
   }
 
   public static Set<String> getCaseIdsWithIcdCodeReliability(
-      Collection<UkbCondition> ukbConditions, Collection<String> icdCodes, String reliability) {
+      Collection<MiiCondition> ukbConditions, Collection<String> icdCodes, String reliability) {
     Set<String> caseIds = new HashSet<>();
     if (ukbConditions != null && !icdCodes.isEmpty()) {
-      for (UkbCondition condition : ukbConditions) {
+      for (MiiCondition condition : ukbConditions) {
         if (condition.hasCode()) {
           for (Coding coding : condition.getCode().getCoding()) {
             // Check each code and break if at least 1 got found
@@ -261,14 +248,14 @@ public class FhirConditionTools {
    * Filters a list of UKB conditions to include only those that have a recorded date after the
    * specified reference date.
    *
-   * @param ukbConditions A list of {@link UkbCondition} objects to be filtered.
+   * @param ukbConditions A list of {@link MiiCondition} objects to be filtered.
    * @param referenceDate The date to compare against; only conditions recorded after this date will
    *     be included.
-   * @return A list of {@link UkbCondition} objects that have a recorded date after the specified
+   * @return A list of {@link MiiCondition} objects that have a recorded date after the specified
    *     reference date. If no conditions meet the criteria, an empty list is returned.
    */
-  public static List<UkbCondition> filterConditionsByRecordDate(
-      List<UkbCondition> ukbConditions, Date referenceDate) {
+  public static List<MiiCondition> filterConditionsByRecordDate(
+      List<MiiCondition> ukbConditions, Date referenceDate) {
     return ukbConditions.parallelStream()
         .filter(Condition::hasRecordedDate)
         .filter(x -> x.getRecordedDate().after(referenceDate))

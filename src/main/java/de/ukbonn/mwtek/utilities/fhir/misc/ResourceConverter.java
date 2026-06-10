@@ -18,13 +18,14 @@
 package de.ukbonn.mwtek.utilities.fhir.misc;
 
 import de.ukbonn.mwtek.utilities.ExceptionTools;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbCondition;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbConsent;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbContactHealthFacility;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbLocation;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbObservation;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbProcedure;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiCondition;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiConsent;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiContactHealthFacility;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiLocation;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiObservation;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiPatient;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiProcedure;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiQuestionnaireResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
@@ -80,6 +82,8 @@ public class ResourceConverter {
       case "Consent" -> convertConsent((Consent) res, check);
       case "Condition" -> convertCondition((Condition) res, check);
       case "Location" -> convertLocation((Location) res, check);
+      case "QuestionnaireResponse" ->
+          convertQuestionnaireResponse((QuestionnaireResponse) res, check);
       default -> res;
     };
   }
@@ -88,8 +92,8 @@ public class ResourceConverter {
     return convert(res, false);
   }
 
-  private static UkbContactHealthFacility convertEncounter(Encounter e, boolean check) {
-    UkbContactHealthFacility res = new UkbContactHealthFacility();
+  private static MiiContactHealthFacility convertEncounter(Encounter e, boolean check) {
+    MiiContactHealthFacility res = new MiiContactHealthFacility();
 
     if (check) {
       // e.getClass_() and e.getPeriod() got an auto create mechanism by default if class is empty.
@@ -139,8 +143,8 @@ public class ResourceConverter {
     return res;
   }
 
-  private static UkbPatient convertPatient(Patient p, boolean check) {
-    UkbPatient res = new UkbPatient();
+  private static MiiPatient convertPatient(Patient p, boolean check) {
+    MiiPatient res = new MiiPatient();
 
     if (check) {
       ExceptionTools.checkNullOrEmpty("identifier", p.getIdentifier());
@@ -154,7 +158,7 @@ public class ResourceConverter {
     res.setActive(p.getActive());
     res.setName(p.getName());
     res.setTelecom(p.getTelecom());
-    res.setGender(p.getGender());
+    res.setGenderElement(p.getGenderElement());
     res.setBirthDate(p.getBirthDate());
     res.setDeceased(p.getDeceased());
     res.setAddress(p.getAddress());
@@ -166,15 +170,15 @@ public class ResourceConverter {
     res.setGeneralPractitioner(p.getGeneralPractitioner());
     res.setManagingOrganization(p.getManagingOrganization());
 
-    // Extra
+    // Additional resource fields
     res.setMeta(p.getMeta());
     res.setId(p.getIdElement().getIdPart());
 
     return res;
   }
 
-  private static UkbObservation convertObservation(Observation o, boolean check) {
-    UkbObservation res = new UkbObservation();
+  private static MiiObservation convertObservation(Observation o, boolean check) {
+    MiiObservation res = new MiiObservation();
 
     if (check) {
       // CHECK Patient = Subject
@@ -217,8 +221,8 @@ public class ResourceConverter {
     return res;
   }
 
-  private static UkbProcedure convertProcedure(Procedure p, boolean check) {
-    UkbProcedure res = new UkbProcedure();
+  private static MiiProcedure convertProcedure(Procedure p, boolean check) {
+    MiiProcedure res = new MiiProcedure();
 
     if (check) {
       // CHECK Ref = ID
@@ -267,12 +271,12 @@ public class ResourceConverter {
     return res;
   }
 
-  private static UkbCondition convertCondition(Condition c, boolean check) {
-    UkbCondition res = new UkbCondition();
+  private static MiiCondition convertCondition(Condition c, boolean check) {
+    MiiCondition res = new MiiCondition();
 
     if (check) {
       // CHECK Ref = ID
-      ExceptionTools.checkNullOrEmpty("patientId", c.getSubject().getReference());
+      // ExceptionTools.checkNullOrEmpty("patientId", c.getSubject().getReference());
       ExceptionTools.checkNull("clinicalStatus", c.getClinicalStatus());
       ExceptionTools.checkNull("code", c.getCode());
       ExceptionTools.checkNull("recordedDate", c.getRecordedDate());
@@ -306,8 +310,8 @@ public class ResourceConverter {
     return res;
   }
 
-  private static UkbLocation convertLocation(Location l, boolean check) {
-    UkbLocation res = new UkbLocation();
+  private static MiiLocation convertLocation(Location l, boolean check) {
+    MiiLocation res = new MiiLocation();
 
     if (check) {
       ExceptionTools.checkNullOrEmpty("Identifier", l.getIdentifier());
@@ -339,9 +343,20 @@ public class ResourceConverter {
     return res;
   }
 
-  private static String split(String s) {
-    String[] parts = s.split("/");
-    return parts[parts.length - 1];
+  private static String splitReference(String s) {
+    if (s == null || s.isBlank()) {
+      return null;
+    }
+    int lastSlash = s.lastIndexOf('/');
+    // No "/" found  ->  return whole string
+    if (lastSlash == -1) {
+      return s;
+    }
+    // "/" is last character -> avoid empty ID
+    if (lastSlash == s.length() - 1) {
+      return null;
+    }
+    return s.substring(lastSlash + 1);
   }
 
   /**
@@ -355,14 +370,14 @@ public class ResourceConverter {
    */
   public static String extractReferenceId(Reference reference) {
     if (reference.hasReference()) {
-      return split(reference.getReference());
+      return splitReference(reference.getReference());
     } else {
       return reference.getIdentifier().getValue();
     }
   }
 
-  private static UkbConsent convertConsent(Consent consent, boolean check) {
-    UkbConsent res = new UkbConsent();
+  private static MiiConsent convertConsent(Consent consent, boolean check) {
+    MiiConsent res = new MiiConsent();
 
     if (check) {
       //   ExceptionTools.checkNullOrEmpty("Identifier", consent.getIdentifier());
@@ -385,6 +400,25 @@ public class ResourceConverter {
     res.setPolicyRule(consent.getPolicyRule());
 
     res.setPatientId(extractReferenceId(consent.getPatient()));
+
+    return res;
+  }
+
+  private static MiiQuestionnaireResponse convertQuestionnaireResponse(
+      QuestionnaireResponse qrResource, boolean check) {
+    MiiQuestionnaireResponse res = new MiiQuestionnaireResponse();
+
+    res.setSubject(qrResource.getSubject());
+    res.setEncounter(qrResource.getEncounter());
+    res.setItem(qrResource.getItem());
+    res.setAuthored(qrResource.getAuthored());
+    res.setId(qrResource.getId());
+    res.setMeta(qrResource.getMeta());
+    res.setExtension(qrResource.getExtension());
+    res.setIdentifier(qrResource.getIdentifier());
+    res.setStatus(qrResource.getStatus());
+    res.setPatientId(extractReferenceId(qrResource.getSubject()));
+    res.setCaseId(extractReferenceId(qrResource.getEncounter()));
 
     return res;
   }
@@ -415,6 +449,8 @@ public class ResourceConverter {
                 listResourceTypeOutput.add(ResourceType.MedicationStatement);
             case "medicationrequest" -> listResourceTypeOutput.add(ResourceType.MedicationRequest);
             case "observation" -> listResourceTypeOutput.add(ResourceType.Observation);
+            case "questionnaireresponse" ->
+                listResourceTypeOutput.add(ResourceType.QuestionnaireResponse);
             case "patient" -> listResourceTypeOutput.add(ResourceType.Patient);
             case "procedure" -> listResourceTypeOutput.add(ResourceType.Procedure);
             case "servicerequest" -> listResourceTypeOutput.add(ResourceType.ServiceRequest);

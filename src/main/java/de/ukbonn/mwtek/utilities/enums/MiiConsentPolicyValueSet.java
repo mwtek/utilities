@@ -108,9 +108,9 @@ public enum MiiConsentPolicyValueSet {
       "2.16.840.1.113883.3.1937.777.24.5.3.28", "Rekontaktierung weitere Erhebung"),
   RECONTACTING_FURTHER_STUDIES(
       "2.16.840.1.113883.3.1937.777.24.5.3.29", "Rekontaktierung weitere Studien"),
-  RECONTACTING_ADDTIONAL_FINDING(
+  RECONTACTING_ADDITIONAL_FINDING(
       "2.16.840.1.113883.3.1937.777.24.5.3.30", "Rekontaktierung Zusatzbefund"),
-  RECONTACTING_ADDTIONAL_FINDING_LVL_2(
+  RECONTACTING_ADDITIONAL_FINDING_LVL_2(
       "2.16.840.1.113883.3.1937.777.24.5.3.31", "Rekontaktierung Zusatzbefund"),
   Z1_GECCO83_USAGE_NUM_CODEX(
       "2.16.840.1.113883.3.1937.777.24.5.3.32", "Z1 GECCO83 Nutzung NUM/CODEX"),
@@ -143,7 +143,7 @@ public enum MiiConsentPolicyValueSet {
       "2.16.840.1.113883.3.1937.777.24.5.3.61",
       "Z2 MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt"),
   Z2_MDAT_LVL_2(
-      "2.16.840.1.113883.3.1937.777.24.5.3.61",
+      "2.16.840.1.113883.3.1937.777.24.5.3.62",
       "MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt");
 
   public static final String PROVISION_CODE_SYSTEM = "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3";

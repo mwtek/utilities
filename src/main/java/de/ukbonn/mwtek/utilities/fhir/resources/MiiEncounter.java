@@ -42,8 +42,8 @@ import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.enums.EncounterContactLevel;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.MiiPatientProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
@@ -64,10 +64,10 @@ import org.hl7.fhir.r4.model.Reference;
 
 @ResourceDef(name = "Encounter")
 @Slf4j
-public class UkbEncounter extends Encounter
-    implements UkbPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
+public class MiiEncounter extends Encounter
+    implements MiiPatientProvider, PatientIdentifierValueProvider, CaseIdentifierValueProvider {
 
-  protected UkbPatient patient;
+  protected MiiPatient patient;
   @Setter protected String patientId;
   private String visitNumberIdentifierValue;
 
@@ -78,20 +78,20 @@ public class UkbEncounter extends Encounter
    *     constructors for creating an instance of this resource.
    */
   @Deprecated
-  public UkbEncounter() {
+  public MiiEncounter() {
     super();
   }
 
   /**
-   * Creates a new UkbEncounter object without defined {@link UkbPatient}. This object may be
-   * assigned later using {@link #initializeUkbPatient(UkbPatient)}. The patient is mandatory,
+   * Creates a new UkbEncounter object without defined {@link MiiPatient}. This object may be
+   * assigned later using {@link #initializeMiiPatient(MiiPatient)}. The patient is mandatory,
    * therefore the <code>patientId</code> must be specified
    *
    * @param patientId the default system id of the patient
    * @param encounterStatus {@link EncounterStatus} e.g. {@link EncounterStatus#INPROGRESS}
    * @param encounterClass The EncounterClass e.g. "pre-stationary"
    */
-  public UkbEncounter(
+  public MiiEncounter(
       String patientId, Enumeration<EncounterStatus> encounterStatus, Coding encounterClass) {
     super(encounterStatus, encounterClass);
     // validate arguments
@@ -102,8 +102,8 @@ public class UkbEncounter extends Encounter
   }
 
   @Deprecated
-  public UkbEncounter(
-      UkbPatient patient, Enumeration<EncounterStatus> status, Coding encounterClass)
+  public MiiEncounter(
+      MiiPatient patient, Enumeration<EncounterStatus> status, Coding encounterClass)
       throws IllegalArgumentException {
     super(status, encounterClass);
     // INFO: this constructor seems deprecated and isnt handling the parameters
@@ -132,7 +132,7 @@ public class UkbEncounter extends Encounter
   }
 
   @Override
-  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
+  public MiiPatient getMiiPatient() throws MandatoryFieldNotInitializedException {
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
@@ -141,7 +141,7 @@ public class UkbEncounter extends Encounter
   }
 
   @Override
-  public void initializeUkbPatient(UkbPatient patient)
+  public void initializeMiiPatient(MiiPatient patient)
       throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
@@ -170,7 +170,7 @@ public class UkbEncounter extends Encounter
   }
 
   @Override
-  public boolean isUkbPatientInitialized() {
+  public boolean isMiiPatientInitialized() {
     return (this.patient != null);
   }
 
@@ -186,7 +186,7 @@ public class UkbEncounter extends Encounter
       return this.patientId;
     } // if
 
-    return this.getUkbPatient().getPatientIdentifierValue(system);
+    return this.getMiiPatient().getPatientIdentifierValue(system);
   }
 
   @Override
@@ -245,9 +245,30 @@ public class UkbEncounter extends Encounter
   }
 
   /**
+   * Returns the list of ICU {@link EncounterLocationComponent}s for this encounter whose referenced
+   * {@code Location} IDs are contained in {@code icuLocationIds}. Optionally restricts the result
+   * to locations that are currently active.
+   *
+   * @param icuLocationIds collection of ICU {@code Location} IDs (as returned by {@code
+   *     getIdBase()}) to include
+   * @param checkActiveOnly if {@code true}, only return components whose period has no end
+   * @return a list of matching {@link EncounterLocationComponent}s; never {@code null}
+   */
+  public List<EncounterLocationComponent> getIcuLocationComponents(
+      Collection<String> icuLocationIds, boolean checkActiveOnly) {
+    return this.getLocation().stream()
+        .filter(
+            location ->
+                icuLocationIds.contains(location.getLocation().getIdBase())
+                    && (!checkActiveOnly
+                        || (location.hasPeriod() && !location.getPeriod().hasEnd())))
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Encounter.period.start is a mandatory field in the kds profile.
    *
-   * @return True if {@link UkbEncounter#getPeriod() Encounter.period.start} is not null
+   * @return True if {@link MiiEncounter#getPeriod() Encounter.period.start} is not null
    */
   public boolean isPeriodStartExistent() {
     return this.getPeriod() != null && this.getPeriod().getStart() != null;
@@ -305,7 +326,7 @@ public class UkbEncounter extends Encounter
    * @param contactLevelCode The contact level code to match.
    * @return True if the encounter matches the specified contact level code, otherwise false.
    */
-  public static boolean isContactType(UkbEncounter encounter, String contactLevelCode) {
+  public static boolean isContactType(MiiEncounter encounter, String contactLevelCode) {
     // If there is no type specified in the encounter, it's considered as the specified contact
     // type.
     if (!encounter.hasType()) {
@@ -456,11 +477,11 @@ public class UkbEncounter extends Encounter
 
   /**
    * Determine via the discharge disposition which is part of {@link
-   * UkbEncounter#getHospitalization()} whether the patient is deceased within the scope of the case
+   * MiiEncounter#getHospitalization()} whether the patient is deceased within the scope of the case
    * under review.
    *
    * @return <code>false</code>, if no valid discharge disposition can be found in the {@link
-   *     UkbEncounter#getHospitalization()} instance and <code>true</code> if the discharge code
+   *     MiiEncounter#getHospitalization()} instance and <code>true</code> if the discharge code
    *     ("07") was found
    */
   public boolean isPatientDeceased() {
@@ -530,8 +551,8 @@ public class UkbEncounter extends Encounter
   /**
    * Filtering of non-usable encounters, for example, if they got canceled or entered in error.
    *
-   * <p>Since many data items rely explicit on {@link EncounterStatus#INPROGRESS) oder {@link
-   * EncounterStatus#FINISHED}} we filter already to the corresponding values.
+   * <p>Since many data items rely explicit on {@link EncounterStatus#INPROGRESS} or {@link
+   * EncounterStatus#FINISHED} we filter already to the corresponding values.
    */
   public boolean isEncounterStatusValid() {
     if (!this.hasStatus()) return false;

@@ -18,14 +18,14 @@
 package de.ukbonn.mwtek.utilities.fhir.mapping.kdscase.valuesets;
 
 import com.google.common.collect.ImmutableList;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbEncounter;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiEncounter;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 
 public class KdsEncounterFixedValues {
 
   public static final String IDENTIFIER_VN_TYPE_SYSTEM =
-      "http://terminology.hl7" + ".org/CodeSystem/v2-0203";
+      "http://terminology.hl7.org/CodeSystem/v2-0203";
   public static final String IDENTIFIER_VN_TYPE_CODE = "VN";
   public static final CodeableConcept IDENTIFIER_TYPE_VISIT_NUMBER_CC =
       new CodeableConcept()
@@ -44,7 +44,7 @@ public class KdsEncounterFixedValues {
       "http://fhir.de/CodeSystem/kontaktart-de";
 
   /**
-   * List of valid {@link UkbEncounter#getClass_() encounter.class.code} codes for inpatient
+   * List of valid {@link MiiEncounter#getClass_() encounter.class.code} codes for inpatient
    * encounters. Both the value set from the case module version 1.0 and 2.0 are checked. <a
    * href="https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397957">The value set of
    * version 2.0 can be found here.</a>.
@@ -53,7 +53,7 @@ public class KdsEncounterFixedValues {
       ImmutableList.of("IMP", "stationaer");
 
   /**
-   * List of valid {@link UkbEncounter#getClass_() encounter.class.code} codes for outpatient
+   * List of valid {@link MiiEncounter#getClass_() encounter.class.code} codes for outpatient
    * encounters. Both the value set from the case module version 1.0 and 2.0 are checked. <a
    * href="https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397957">The value set of
    * version 2.0 can be found here.</a>.
@@ -62,7 +62,7 @@ public class KdsEncounterFixedValues {
       ImmutableList.of("AMB", "ambulant");
 
   /**
-   * List of valid {@link UkbEncounter#getClass_() encounter.class.code} codes for inpatient
+   * List of valid {@link MiiEncounter#getClass_() encounter.class.code} codes for inpatient
    * encounters. Both the value set from the case module version 1.0 and 2.0 are checked. <a
    * href="https://simplifier.net/packages/de.basisprofil.r4/1.0.0/files/397957">The value set of
    * version 2.0 can be found here.</a>.

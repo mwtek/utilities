@@ -20,7 +20,9 @@ package de.ukbonn.mwtek.utilities.generic.collections;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class with auxiliary methods for list operations.
@@ -60,6 +62,25 @@ public class ListTools {
   }
 
   /**
+   * Safely splits a concurrent set into smaller sublists by creating a defensive copy first.
+   *
+   * <p>This method avoids concurrency-related issues such as {@link ArrayIndexOutOfBoundsException}
+   * by copying the input {@code Set} into a regular {@link HashSet} before converting it to a
+   * {@link List}.
+   *
+   * @param <T> the type of elements in the set
+   * @param concurrentSet the concurrent set to be split; typically from {@code
+   *     ConcurrentHashMap.newKeySet()}
+   * @param batchSize the maximum size of each sublist; must be greater than 0
+   * @return a list of sublists, each of size at most {@code batchSize}
+   * @throws IllegalArgumentException if {@code concurrentSet} is {@code null} or {@code batchSize}
+   *     is less than or equal to 0
+   */
+  public static <T> List<List<T>> safeSplit(Set<T> concurrentSet, int batchSize) {
+    return splitList(new ArrayList<>(new HashSet<>(concurrentSet)), batchSize);
+  }
+
+  /**
    * Transformation of a comma separated string (e.g. "U07.1, U07.2") into a list with an entry for
    * each item
    *
@@ -77,6 +98,20 @@ public class ListTools {
         x -> {
           result.addAll(commaSeparatedStringIntoList(x));
         });
+    return result;
+  }
+
+  /**
+   * Converts a primitive long array into a List of Long values.
+   *
+   * @param values Primitive long array
+   * @return List containing all array values
+   */
+  public static List<Long> toList(long[] values) {
+    List<Long> result = new ArrayList<>(values.length);
+    for (long value : values) {
+      result.add(value);
+    }
     return result;
   }
 }

@@ -20,14 +20,14 @@ package de.ukbonn.mwtek.utilities.fhir.interfaces;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbPatient;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiPatient;
 
-public interface UkbPatientProvider {
-  public UkbPatient getUkbPatient()
+public interface MiiPatientProvider {
+  public MiiPatient getMiiPatient()
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
-  public void initializeUkbPatient(UkbPatient patient)
+  public void initializeMiiPatient(MiiPatient patient)
       throws IllegalArgumentException, FieldAlreadyInitializedException;
 
-  public boolean isUkbPatientInitialized();
+  public boolean isMiiPatientInitialized();
 }

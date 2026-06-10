@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/google-java-format-1.23.0-all-deps.jar
+/google-java-format-1.33.0-all-deps.jar

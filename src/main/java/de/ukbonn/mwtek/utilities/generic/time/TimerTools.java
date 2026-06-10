@@ -61,18 +61,25 @@ public class TimerTools {
   }
 
   /**
-   * A comfortable way to log the execution time of a method
+   * Wraps a {@link java.util.function.Consumer} and logs the execution time of its {@code accept}
+   * call at DEBUG level.
    *
-   * @param <T>
-   * @param block
-   * @return
+   * <p>Usage example:
+   *
+   * <pre>{@code
+   * list.forEach(MeasureUtils.measureTime(item -> heavyWork(item)));
+   * }</pre>
+   *
+   * @param <T> the input type consumed by the block
+   * @param block the operation to execute and measure; must not be {@code null}
+   * @return a Consumer that, when invoked, runs {@code block.accept(t)} and logs its duration
    */
   public static <T> Consumer<T> measureTime(Consumer<T> block) {
     return t -> {
       long start = System.nanoTime();
       block.accept(t);
       long duration = System.nanoTime() - start;
-      log.debug("Elapsed time: " + duration + " ns ");
+      log.debug("Elapsed time: {} ns ", duration);
     };
   }
 
@@ -94,7 +101,7 @@ public class TimerTools {
   public static long stopTimer(Instant startTime) {
     Instant endTime = Instant.now();
     Duration timeElapsed = Duration.between(startTime, endTime);
-    log.debug("Time elapsed: " + timeElapsed.toMillis() + " milliseconds");
+    log.debug("Time elapsed: {} milliseconds", timeElapsed.toMillis());
     return timeElapsed.toMillis();
   }
 
@@ -108,7 +115,7 @@ public class TimerTools {
   public static long stopTimerAndLog(Instant startTime, String taskDesc) {
     Instant endTime = Instant.now();
     Duration timeElapsed = Duration.between(startTime, endTime);
-    log.debug(taskDesc + " [took " + timeElapsed.toMillis() + " ms]");
+    log.debug("{} [took {} ms]", taskDesc, timeElapsed.toMillis());
     return timeElapsed.toMillis();
   }
 }

@@ -29,18 +29,18 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Location;
 
 @ResourceDef(name = "Location")
-public class UkbLocation extends Location {
+public class MiiLocation extends Location {
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
    *     constructors for creating an instance of this resource.
    */
   @Deprecated
-  public UkbLocation() {
+  public MiiLocation() {
     super();
   }
 
-  public UkbLocation(List<Identifier> identifier, CodeableConcept physicalType) {
+  public MiiLocation(List<Identifier> identifier, CodeableConcept physicalType) {
     ExceptionTools.checkNullOrEmpty("Identifier", identifier);
     ExceptionTools.checkNull("PhysicalType", physicalType);
 
@@ -49,7 +49,7 @@ public class UkbLocation extends Location {
   }
 
   /**
-   * Is the given {@link UkbLocation location} of ICU type?
+   * Is the given {@link MiiLocation location} of ICU type?
    *
    * @return <code>True</code> if the given location describes an intensive care unit.
    */
@@ -62,7 +62,7 @@ public class UkbLocation extends Location {
   }
 
   /**
-   * Does the passed {@link UkbLocation location} resource describe a ward/station?
+   * Does the passed {@link MiiLocation location} resource describe a ward/station?
    *
    * @return <code>True</code> if the given location describes a ward.
    */

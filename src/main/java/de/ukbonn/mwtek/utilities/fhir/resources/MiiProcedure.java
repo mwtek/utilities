@@ -26,9 +26,9 @@ import de.ukbonn.mwtek.utilities.Compare;
 import de.ukbonn.mwtek.utilities.ExceptionTools;
 import de.ukbonn.mwtek.utilities.enums.TerminologySystems;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.CaseIdentifierValueProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.MiiContactHealthFacilityProvider;
+import de.ukbonn.mwtek.utilities.fhir.interfaces.MiiPatientProvider;
 import de.ukbonn.mwtek.utilities.fhir.interfaces.PatientIdentifierValueProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbContactHealthFacilityProvider;
-import de.ukbonn.mwtek.utilities.fhir.interfaces.UkbPatientProvider;
 import de.ukbonn.mwtek.utilities.fhir.misc.FhirTools;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
@@ -42,23 +42,23 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Type;
 
 @ResourceDef(name = "Procedure")
-public class UkbProcedure extends Procedure
-    implements UkbPatientProvider,
+public class MiiProcedure extends Procedure
+    implements MiiPatientProvider,
         PatientIdentifierValueProvider,
-        UkbContactHealthFacilityProvider,
+        MiiContactHealthFacilityProvider,
         CaseIdentifierValueProvider {
 
-  protected UkbPatient patient;
-  protected UkbContactHealthFacility encounter;
+  protected MiiPatient patient;
+  protected MiiContactHealthFacility encounter;
   protected String patientId;
   protected String caseId;
 
   @Deprecated
-  public UkbProcedure() {
+  public MiiProcedure() {
     super();
   }
 
-  public UkbProcedure(
+  public MiiProcedure(
       String patientId,
       String caseId,
       ProcedureStatus status,
@@ -96,9 +96,9 @@ public class UkbProcedure extends Procedure
     this.setPerformed(performed);
   }
 
-  public UkbProcedure(
-      UkbPatient patient,
-      UkbContactHealthFacility facilityContact,
+  public MiiProcedure(
+      MiiPatient patient,
+      MiiContactHealthFacility facilityContact,
       ProcedureStatus status,
       CodeableConcept code,
       Type performed)
@@ -128,8 +128,8 @@ public class UkbProcedure extends Procedure
     this.setPerformed(performed);
   }
 
-  public UkbProcedure(
-      UkbContactHealthFacility encounter,
+  public MiiProcedure(
+      MiiContactHealthFacility encounter,
       ProcedureStatus status,
       CodeableConcept code,
       Type performed)
@@ -137,16 +137,16 @@ public class UkbProcedure extends Procedure
     super();
     // validate arguments
     ExceptionTools.checkNull("encounter", encounter);
-    ExceptionTools.checkNull("encounter.patient", encounter.getUkbPatient());
+    ExceptionTools.checkNull("encounter.patient", encounter.getMiiPatient());
     ExceptionTools.checkNullOrEmpty(
-        "encounter.patient.identifier", encounter.getUkbPatient().getIdentifier());
+        "encounter.patient.identifier", encounter.getMiiPatient().getIdentifier());
     ExceptionTools.checkNull("status", status);
     ExceptionTools.checkNull("code", code);
     ExceptionTools.checkNull("performed", performed);
 
     // set local variables
-    this.patient = encounter.getUkbPatient();
-    this.patientId = encounter.getUkbPatient().getPatientId();
+    this.patient = encounter.getMiiPatient();
+    this.patientId = encounter.getMiiPatient().getPatientId();
     this.encounter = encounter;
     this.caseId = encounter.getCaseId();
 
@@ -158,7 +158,7 @@ public class UkbProcedure extends Procedure
   }
 
   @Override
-  public UkbPatient getUkbPatient() throws MandatoryFieldNotInitializedException {
+  public MiiPatient getMiiPatient() throws MandatoryFieldNotInitializedException {
     // the patient field is mandatory!
     if (this.patient == null) {
       throw new MandatoryFieldNotInitializedException();
@@ -167,7 +167,7 @@ public class UkbProcedure extends Procedure
   }
 
   @Override
-  public void initializeUkbPatient(UkbPatient patient)
+  public void initializeMiiPatient(MiiPatient patient)
       throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("patient", patient);
@@ -191,7 +191,7 @@ public class UkbProcedure extends Procedure
   }
 
   @Override
-  public boolean isUkbPatientInitialized() {
+  public boolean isMiiPatientInitialized() {
     return (this.patient != null);
   }
 
@@ -211,7 +211,7 @@ public class UkbProcedure extends Procedure
       return this.caseId;
     }
 
-    return this.getUkbContactHealthFacility().getCaseIdentifierValue(system);
+    return this.getMiiContactHealthFacility().getCaseIdentifierValue(system);
   }
 
   @Override
@@ -230,11 +230,11 @@ public class UkbProcedure extends Procedure
       return this.patientId;
     }
 
-    return this.getUkbPatient().getPatientIdentifierValue(system);
+    return this.getMiiPatient().getPatientIdentifierValue(system);
   }
 
   @Override
-  public UkbContactHealthFacility getUkbContactHealthFacility()
+  public MiiContactHealthFacility getMiiContactHealthFacility()
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     // the case is optional
     if (this.encounter == null) {
@@ -247,7 +247,7 @@ public class UkbProcedure extends Procedure
   }
 
   @Override
-  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
+  public void initializeMiiContactHealthFacility(MiiContactHealthFacility encounter)
       throws IllegalArgumentException, FieldAlreadyInitializedException {
     // validate arguments
     ExceptionTools.checkNull("encounter", encounter);
@@ -262,7 +262,7 @@ public class UkbProcedure extends Procedure
   }
 
   @Override
-  public boolean isUkbContactHealthFacilityInitialized() {
+  public boolean isMiiContactHealthFacilityInitialized() {
     return (this.encounter != null);
   }
 

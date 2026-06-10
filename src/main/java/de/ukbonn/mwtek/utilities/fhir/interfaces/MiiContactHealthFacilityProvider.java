@@ -21,14 +21,14 @@ package de.ukbonn.mwtek.utilities.fhir.interfaces;
 import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
-import de.ukbonn.mwtek.utilities.fhir.resources.UkbContactHealthFacility;
+import de.ukbonn.mwtek.utilities.fhir.resources.MiiContactHealthFacility;
 
-public interface UkbContactHealthFacilityProvider extends CaseIdentifierValueProvider {
-  public UkbContactHealthFacility getUkbContactHealthFacility()
+public interface MiiContactHealthFacilityProvider extends CaseIdentifierValueProvider {
+  public MiiContactHealthFacility getMiiContactHealthFacility()
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException;
 
-  public void initializeUkbContactHealthFacility(UkbContactHealthFacility encounter)
+  public void initializeMiiContactHealthFacility(MiiContactHealthFacility encounter)
       throws IllegalArgumentException, FieldAlreadyInitializedException;
 
-  public boolean isUkbContactHealthFacilityInitialized();
+  public boolean isMiiContactHealthFacilityInitialized();
 }

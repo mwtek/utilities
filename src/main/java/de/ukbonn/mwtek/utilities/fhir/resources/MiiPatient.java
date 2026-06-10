@@ -31,14 +31,14 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 
 @ResourceDef(name = "Patient")
-public class UkbPatient extends Patient implements PatientIdentifierValueProvider {
+public class MiiPatient extends Patient implements PatientIdentifierValueProvider {
 
   @Deprecated
-  public UkbPatient() {
+  public MiiPatient() {
     super();
   }
 
-  public UkbPatient(
+  public MiiPatient(
       List<Identifier> identifier,
       List<HumanName> name,
       AdministrativeGender gender,
@@ -57,7 +57,7 @@ public class UkbPatient extends Patient implements PatientIdentifierValueProvide
     this.setAddress(address);
   }
 
-  public UkbPatient(
+  public MiiPatient(
       List<Identifier> identifier,
       List<HumanName> name,
       AdministrativeGender gender,
