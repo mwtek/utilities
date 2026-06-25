@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DateTools {
 
-  public static final ZoneId timeZoneEuropeBerlin = ZoneId.of("Europe/Berlin");
+  public static final ZoneId TIME_ZONE_EUROPE_BERLIN = ZoneId.of("Europe/Berlin");
   public static final String GMT = "GMT";
 
   /**
@@ -436,8 +436,8 @@ public class DateTools {
   }
 
   public static boolean isSameCalendarDay(Date date1, Date date2) {
-    LocalDate localDate1 = date1.toInstant().atZone(timeZoneEuropeBerlin).toLocalDate();
-    LocalDate localDate2 = date2.toInstant().atZone(timeZoneEuropeBerlin).toLocalDate();
+    LocalDate localDate1 = date1.toInstant().atZone(TIME_ZONE_EUROPE_BERLIN).toLocalDate();
+    LocalDate localDate2 = date2.toInstant().atZone(TIME_ZONE_EUROPE_BERLIN).toLocalDate();
     return localDate1.isEqual(localDate2);
   }
 

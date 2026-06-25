@@ -27,7 +27,7 @@ import lombok.Getter;
  */
 @Getter
 public enum MiiConsentPolicyValueSet {
-  PATDAT_RETRIEVAL_SAVING_USING(
+  MOD_PATDAT_RETRIEVAL_SAVING_USING(
       "2.16.840.1.113883.3.1937.777.24.5.3.1", "Patientendaten erheben, speichern, nutzen"),
   IDAT_COLLECT("2.16.840.1.113883.3.1937.777.24.5.3.2", "IDAT erheben"),
   IDAT_SAVE_PROCESS("2.16.840.1.113883.3.1937.777.24.5.3.3", "IDAT speichern, verarbeiten"),
@@ -40,20 +40,22 @@ public enum MiiConsentPolicyValueSet {
   MDAT_MERGE_THIRD_PARTIES("2.16.840.1.113883.3.1937.777.24.5.3.9", "MDAT zusammenfuehren Dritte"),
   RECONTACTING_ON_EVENTS(
       "2.16.840.1.113883.3.1937.777.24.5.3.37", "Rekontaktierung Ergebnisse erheblicher Bedeutung"),
-  PATDAT_RETROSPECTIVE_USAGE(
+  MOD_PATDAT_RETROSPECTIVE_USAGE(
       "2.16.840.1.113883.3.1937.777.24.5.3.44", "Patientendaten retrospektiv verarbeiten, nutzen"),
   MDAT_RETRO_SAVE_PROCESS(
       "2.16.840.1.113883.3.1937.777.24.5.3.45", "MDAT retrospektiv speichern verarbeiten"),
-  MDAT_RETRO_SCIENTIFIC_USAGE_DSGVO(
-      "2.16.840.1.113883.3.1937.777.24.5.3.46",
-      "MDAT retrospektiv wissenschaftlich nutzen EU DSGVO NIVEAU"),
-  MDAT_RETRO_MERGE_THIRD_PARTIES(
-      "2.16.840.1.113883.3.1937.777.24.5.3.47", "MDAT retrospektiv zusammenfuehren Dritte"),
-  PATDAT_APPROVAL_FORWARDING_NON_DSGVO(
+  // Deprecated
+  // MDAT_RETRO_SCIENTIFIC_USAGE_DSGVO(
+  //     "2.16.840.1.113883.3.1937.777.24.5.3.46",
+  //    "MDAT retrospektiv wissenschaftlich nutzen EU DSGVO NIVEAU"),
+  // Deprecated
+  // MDAT_RETRO_MERGE_THIRD_PARTIES(
+  //   "2.16.840.1.113883.3.1937.777.24.5.3.47", "MDAT retrospektiv zusammenfuehren Dritte"),
+  MOD_PATDAT_APPROVAL_FORWARDING_NON_DSGVO(
       "2.16.840.1.113883.3.1937.777.24.5.3.48", "Patientendaten Weitergabe non DSGVO NIVEAU"),
   MDAT_OFFER_NON_DSGVO(
       "2.16.840.1.113883.3.1937.777.24.5.3.49", "MDAT bereitstellen non EU DSGVO NIVEAU"),
-  KKDAT_RETRO_TRANSFER_SAVE_USAGE(
+  MOD_KKDAT_RETRO_TRANSFER_SAVE_USAGE(
       "2.16.840.1.113883.3.1937.777.24.5.3.10",
       "Krankenkassendaten retrospektiv uebertragen, speichern, nutzen"),
   KKDAT_5_YEARS_RETRO_TRANSFER(
@@ -64,17 +66,18 @@ public enum MiiConsentPolicyValueSet {
       "2.16.840.1.113883.3.1937.777.24.5.3.13", "KKDAT 5J retrospektiv wissenschaftlich nutzen"),
   KKDAT_5_YEARS_RETRO_TRANSFER_KVNR(
       "2.16.840.1.113883.3.1937.777.24.5.3.38", "KKDAT 5J retrospektiv uebertragen KVNR"),
-  KKDAT_PROSPECTIVE_TRANSFER_SAVE_USAGE(
+  MOD_KKDAT_PROSPECTIVE_TRANSFER_SAVE_USAGE(
       "2.16.840.1.113883.3.1937.777.24.5.3.14", "KKDAT prospektiv uebertragen speichern nutzen"),
   KKDAT_5_YEARS_PROSPECTIVE_TRANSFER(
       "2.16.840.1.113883.3.1937.777.24.5.3.15", "KKDAT 5J prospektiv uebertragen"),
-  KKDAT_5_YEARS_PROSPECTIVE_SAVE_USAGE(
-      "2.16.840.1.113883.3.1937.777.24.5.3.16", "KKDAT 5J prospektiv speichern verarbeiten"),
-  KKDAT_5_YEARS_PROSPECTIVE_SCIENTIFIC_USAGE(
-      "2.16.840.1.113883.3.1937.777.24.5.3.17", "KKDAT 5J prospektiv wissenschaftlich nutzen"),
+  // Deprecated
+  // KKDAT_5_YEARS_PROSPECTIVE_SAVE_USAGE(
+  //    "2.16.840.1.113883.3.1937.777.24.5.3.16", "KKDAT 5J prospektiv speichern verarbeiten"),
+  // KKDAT_5_YEARS_PROSPECTIVE_SCIENTIFIC_USAGE(
+  //    "2.16.840.1.113883.3.1937.777.24.5.3.17", "KKDAT 5J prospektiv wissenschaftlich nutzen"),
   KKDAT_5_YEARS_PROSPECTIVE_TRANSFER_KVNR(
       "2.16.840.1.113883.3.1937.777.24.5.3.39", "KKDAT 5J prospektiv uebertragen KVNR"),
-  BIOMAT_COLLECT_STORE_USE(
+  MOD_BIOMAT_COLLECT_STORE_USE(
       "2.16.840.1.113883.3.1937.777.24.5.3.18", "Biomaterial erheben, lagern, nutzen"),
   BIOMAT_COLLECT("2.16.840.1.113883.3.1937.777.24.5.3.19", "BIOMAT erheben"),
   BIOMAT_STORE_TRANSFER("2.16.840.1.113883.3.1937.777.24.5.3.20", "BIOMAT lagern verarbeiten"),
@@ -83,11 +86,11 @@ public enum MiiConsentPolicyValueSet {
       "2.16.840.1.113883.3.1937.777.24.5.3.22", "BIOMAT wissenschaftlich nutzen EU DSGVO NIVEAU"),
   BIOMAT_MERGE_ANALYSIS_DATA_THIRD_PARTIES(
       "2.16.840.1.113883.3.1937.777.24.5.3.23", "BIOMAT Analysedaten zusammenfuehren Dritte"),
-  BIOMAT_ADDITIONAL_SAMPLING(
+  MOD_BIOMAT_ADDITIONAL_SAMPLING(
       "2.16.840.1.113883.3.1937.777.24.5.3.24", "Biomaterial Zusatzentnahme"),
   BIOMAT_ADDITIONAL_QUANTITIES(
       "2.16.840.1.113883.3.1937.777.24.5.3.25", "BIOMAT Zusatzmengen entnehmen"),
-  BIOMAT_RETRO_STORING_USAGE(
+  MOD_BIOMAT_RETRO_STORING_USAGE(
       "2.16.840.1.113883.3.1937.777.24.5.3.50", "Biomaterial retrospektiv speichern, nutzen"),
   BIOMAT_RETRO_STORAGE_PROCESS(
       "2.16.840.1.113883.3.1937.777.24.5.3.51", "BIOMAT retrospektiv lagern verarbeiten"),
@@ -97,18 +100,19 @@ public enum MiiConsentPolicyValueSet {
   BIOMAT_RETRO_MERGE_ANALYSIS_DATA_THIRD_PARTIES(
       "2.16.840.1.113883.3.1937.777.24.5.3.53",
       "BIOMAT retrospektiv Analysedaten zusammenfuehren Dritte"),
-  BIOMAT_FORWARDING_NON_DSGVO(
+  MOD_BIOMAT_FORWARDING_NON_DSGVO(
       "2.16.840.1.113883.3.1937.777.24.5.3.54", "Biomaterial Weitergabe non EU DSGVO NIVEAU"),
   BIOMAT_OFFERING_NON_DSGVO(
       "2.16.840.1.113883.3.1937.777.24.5.3.55", "BIOMAT bereitstellen ohne EU DSGVO NIVEAU"),
-  RECONTACTING_ADDITIONS("2.16.840.1.113883.3.1937.777.24.5.3.26", "Rekontaktierung Ergänzungen"),
+  MOD_RECONTACTING_ADDITIONS(
+      "2.16.840.1.113883.3.1937.777.24.5.3.26", "Rekontaktierung Ergänzungen"),
   RECONTACTING_MERGING_DBS(
       "2.16.840.1.113883.3.1937.777.24.5.3.27", "Rekontaktierung Verknüpfung Datenbanken"),
   RECONTACTING_FURTHER_COLLECTION(
       "2.16.840.1.113883.3.1937.777.24.5.3.28", "Rekontaktierung weitere Erhebung"),
   RECONTACTING_FURTHER_STUDIES(
       "2.16.840.1.113883.3.1937.777.24.5.3.29", "Rekontaktierung weitere Studien"),
-  RECONTACTING_ADDITIONAL_FINDING(
+  MOD_RECONTACTING_ADDITIONAL_FINDING(
       "2.16.840.1.113883.3.1937.777.24.5.3.30", "Rekontaktierung Zusatzbefund"),
   RECONTACTING_ADDITIONAL_FINDING_LVL_2(
       "2.16.840.1.113883.3.1937.777.24.5.3.31", "Rekontaktierung Zusatzbefund"),
@@ -143,7 +147,7 @@ public enum MiiConsentPolicyValueSet {
       "2.16.840.1.113883.3.1937.777.24.5.3.61",
       "Z2 MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt"),
   Z2_MDAT_LVL_2(
-      "2.16.840.1.113883.3.1937.777.24.5.3.62",
+      "2.16.840.1.113883.3.1937.777.24.5.3.61",
       "MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt");
 
   public static final String PROVISION_CODE_SYSTEM = "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3";

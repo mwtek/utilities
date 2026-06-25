@@ -25,10 +25,12 @@ public class ConsentFixedValues {
   // Consent
   public static final String META_PROFILE =
       "https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung";
+  // Legacy category used in kds consent profile before 2026
   public static final String CONSENT_CATEGORY_SYSTEM =
       "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category";
+  public static final String CONSENT_CATEGORY_SYSTEM_2026 =
+      "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-version-modules";
   public static final String CONSENT_CATEGORY_CODE = "2.16.840.1.113883.3.1937.777.24.2.184";
-
   // POLICY_RULE("https://www.medizininformatik-initiative.de/sites/default/files/2020-04/MII_AG-Consent_Einheitlicher-Mustertext_v1.6d.pdf"),
   public static final String CONSENT_CATEGORY_CODES_URL =
       "http://terminology.hl7.org/CodeSystem/consentcategorycodes";

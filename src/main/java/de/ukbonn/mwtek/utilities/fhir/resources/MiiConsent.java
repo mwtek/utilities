@@ -21,45 +21,42 @@ package de.ukbonn.mwtek.utilities.fhir.resources;
 import static de.ukbonn.mwtek.utilities.enums.ConsentCategory.C570168;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.CONSENT_CATEGORY_CODE;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.CONSENT_CATEGORY_SYSTEM;
+import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.CONSENT_CATEGORY_SYSTEM_2026;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSIONS_MAIN_FORM;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSION_OID_Z_MODULE_ACRIBIS;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_ADDITIONAL_QUANTITIES;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_ADDITIONAL_SAMPLING;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_COLLECT;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_COLLECT_STORE_USE;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_MERGE_ANALYSIS_DATA_THIRD_PARTIES;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_RETRO_MERGE_ANALYSIS_DATA_THIRD_PARTIES;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_RETRO_SCIENTIFIC_USAGE_DSGVO;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_RETRO_STORAGE_PROCESS;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_RETRO_STORING_USAGE;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_SCIENTIFIC_USAGE_DSGVO;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_STORE_TRANSFER;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_TRANSFER_OWNERSHIP;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.IDAT_COLLECT;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.IDAT_SAVE_PROCESS;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_PROSPECTIVE_SAVE_USAGE;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_PROSPECTIVE_SCIENTIFIC_USAGE;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_PROSPECTIVE_TRANSFER;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_PROSPECTIVE_TRANSFER_KVNR;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_RETRO_SCIENTIFIC_USAGE;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_RETRO_TRANSFER;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_RETRO_TRANSFER_KVNR;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_5_YEARS_RETRO_TRANSFER_SAVE_USAGE;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_PROSPECTIVE_TRANSFER_SAVE_USAGE;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.KKDAT_RETRO_TRANSFER_SAVE_USAGE;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_COLLECTION;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_MERGE_THIRD_PARTIES;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_RETRO_MERGE_THIRD_PARTIES;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_RETRO_SAVE_PROCESS;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_RETRO_SCIENTIFIC_USAGE_DSGVO;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_SAVE_PROCESS;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MDAT_SCIENTIFIC_USAGE_DSGVO;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.PATDAT_RETRIEVAL_SAVING_USING;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.PATDAT_RETROSPECTIVE_USAGE;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_BIOMAT_ADDITIONAL_SAMPLING;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_BIOMAT_COLLECT_STORE_USE;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_BIOMAT_RETRO_STORING_USAGE;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_KKDAT_PROSPECTIVE_TRANSFER_SAVE_USAGE;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_KKDAT_RETRO_TRANSFER_SAVE_USAGE;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_PATDAT_RETRIEVAL_SAVING_USING;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_PATDAT_RETROSPECTIVE_USAGE;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_RECONTACTING_ADDITIONAL_FINDING;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.MOD_RECONTACTING_ADDITIONS;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.PROVISION_CODE_SYSTEM;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_ADDITIONAL_FINDING;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_ADDITIONAL_FINDING_LVL_2;
-import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_ADDITIONS;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_FURTHER_COLLECTION;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_FURTHER_STUDIES;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_MERGING_DBS;
@@ -283,7 +280,10 @@ public class MiiConsent extends Consent
   protected boolean isMiiConsentCategory() {
     // Check mii coding
     return this.getCategory().stream()
-        .anyMatch(x -> x.hasCoding(CONSENT_CATEGORY_SYSTEM, CONSENT_CATEGORY_CODE));
+        .anyMatch(
+            x ->
+                x.hasCoding(CONSENT_CATEGORY_SYSTEM, CONSENT_CATEGORY_CODE)
+                    || x.hasCoding(CONSENT_CATEGORY_SYSTEM_2026, CONSENT_CATEGORY_CODE));
   }
 
   protected boolean isLoincCategoryPrivacyPolicy() {
@@ -360,7 +360,8 @@ public class MiiConsent extends Consent
                           // Checking level 1 and 2
                           && (pc.getCodeFirstRep()
                               .hasCoding(
-                                  PROVISION_CODE_SYSTEM, PATDAT_RETRIEVAL_SAVING_USING.getCode()))
+                                  PROVISION_CODE_SYSTEM,
+                                  MOD_PATDAT_RETRIEVAL_SAVING_USING.getCode()))
                       || pc.getCodeFirstRep()
                           .hasCoding(PROVISION_CODE_SYSTEM, IDAT_COLLECT.getCode()))
           .map(pc -> pc.getPeriod().getStart())
@@ -398,7 +399,7 @@ public class MiiConsent extends Consent
    * @return {@code true} if patient data usage is permitted, otherwise {@code false}
    */
   public boolean isPatDataUsage(Date validationDate) {
-    return hasPermitWithCode(PATDAT_RETRIEVAL_SAVING_USING.getCode(), validationDate)
+    return hasPermitWithCode(MOD_PATDAT_RETRIEVAL_SAVING_USING.getCode(), validationDate)
         || (hasPermitWithCode(MDAT_COLLECTION.getCode(), validationDate)
             && hasPermitWithCode(MDAT_SAVE_PROCESS.getCode(), validationDate)
             && hasPermitWithCode(MDAT_SCIENTIFIC_USAGE_DSGVO.getCode(), validationDate)
@@ -428,7 +429,7 @@ public class MiiConsent extends Consent
    * @return {@code true} if the mdata save and usage process is permitted, otherwise {@code false}
    */
   public boolean isMDataSaveUsage(Date validationDate) {
-    return hasPermitWithCode(PATDAT_RETRIEVAL_SAVING_USING.getCode(), validationDate)
+    return hasPermitWithCode(MOD_PATDAT_RETRIEVAL_SAVING_USING.getCode(), validationDate)
         || (hasPermitWithCode(IDAT_SAVE_PROCESS.getCode(), validationDate)
             && hasPermitWithCode(MDAT_SAVE_PROCESS.getCode(), validationDate)
             && hasPermitWithCode(MDAT_SCIENTIFIC_USAGE_DSGVO.getCode(), validationDate));
@@ -439,10 +440,8 @@ public class MiiConsent extends Consent
    * all L2 codes).
    */
   public boolean isPatDataRetroUsage(Date validationDate) {
-    return hasPermitWithCode(PATDAT_RETROSPECTIVE_USAGE.getCode(), validationDate)
-        || (hasPermitWithCode(MDAT_RETRO_SAVE_PROCESS.getCode(), validationDate)
-            && hasPermitWithCode(MDAT_RETRO_SCIENTIFIC_USAGE_DSGVO.getCode(), validationDate)
-            && hasPermitWithCode(MDAT_RETRO_MERGE_THIRD_PARTIES.getCode(), validationDate));
+    return hasPermitWithCode(MOD_PATDAT_RETROSPECTIVE_USAGE.getCode(), validationDate)
+        || (hasPermitWithCode(MDAT_RETRO_SAVE_PROCESS.getCode(), validationDate));
   }
 
   /**
@@ -450,7 +449,7 @@ public class MiiConsent extends Consent
    * single L1 code or all L2 codes).
    */
   public boolean isHealthInsuranceRetroUsage(Date validationDate) {
-    return hasPermitWithCode(KKDAT_RETRO_TRANSFER_SAVE_USAGE.getCode(), validationDate)
+    return hasPermitWithCode(MOD_KKDAT_RETRO_TRANSFER_SAVE_USAGE.getCode(), validationDate)
         || (hasPermitWithCode(KKDAT_5_YEARS_RETRO_TRANSFER.getCode(), validationDate)
             && hasPermitWithCode(KKDAT_5_YEARS_RETRO_TRANSFER_SAVE_USAGE.getCode(), validationDate)
             && hasPermitWithCode(KKDAT_5_YEARS_RETRO_SCIENTIFIC_USAGE.getCode(), validationDate)
@@ -462,11 +461,8 @@ public class MiiConsent extends Consent
    * single L1 code or all L2 codes).
    */
   public boolean isHealthInsuranceProspectiveUsage(Date validationDate) {
-    return hasPermitWithCode(KKDAT_PROSPECTIVE_TRANSFER_SAVE_USAGE.getCode(), validationDate)
+    return hasPermitWithCode(MOD_KKDAT_PROSPECTIVE_TRANSFER_SAVE_USAGE.getCode(), validationDate)
         || (hasPermitWithCode(KKDAT_5_YEARS_PROSPECTIVE_TRANSFER.getCode(), validationDate)
-            && hasPermitWithCode(KKDAT_5_YEARS_PROSPECTIVE_SAVE_USAGE.getCode(), validationDate)
-            && hasPermitWithCode(
-                KKDAT_5_YEARS_PROSPECTIVE_SCIENTIFIC_USAGE.getCode(), validationDate)
             && hasPermitWithCode(
                 KKDAT_5_YEARS_PROSPECTIVE_TRANSFER_KVNR.getCode(), validationDate));
   }
@@ -476,7 +472,7 @@ public class MiiConsent extends Consent
    * codes).
    */
   public boolean isBioMatDataUsage(Date validationDate) {
-    return hasPermitWithCode(BIOMAT_COLLECT_STORE_USE.getCode(), validationDate)
+    return hasPermitWithCode(MOD_BIOMAT_COLLECT_STORE_USE.getCode(), validationDate)
         || (hasPermitWithCode(BIOMAT_COLLECT.getCode(), validationDate)
             && hasPermitWithCode(BIOMAT_STORE_TRANSFER.getCode(), validationDate)
             && hasPermitWithCode(BIOMAT_TRANSFER_OWNERSHIP.getCode(), validationDate)
@@ -487,7 +483,7 @@ public class MiiConsent extends Consent
 
   /** Checks if "Biomaterial Zusatzentnahme" is permitted (via single L1 code or all L2 codes). */
   public boolean isBioMatAdditionalCollection(Date validationDate) {
-    return hasPermitWithCode(BIOMAT_ADDITIONAL_SAMPLING.getCode(), validationDate)
+    return hasPermitWithCode(MOD_BIOMAT_ADDITIONAL_SAMPLING.getCode(), validationDate)
         || (hasPermitWithCode(BIOMAT_ADDITIONAL_QUANTITIES.getCode(), validationDate));
   }
 
@@ -496,7 +492,7 @@ public class MiiConsent extends Consent
    * L2 codes).
    */
   public boolean isBioMatRetroUsage(Date validationDate) {
-    return hasPermitWithCode(BIOMAT_RETRO_STORING_USAGE.getCode(), validationDate)
+    return hasPermitWithCode(MOD_BIOMAT_RETRO_STORING_USAGE.getCode(), validationDate)
         || (hasPermitWithCode(BIOMAT_RETRO_STORAGE_PROCESS.getCode(), validationDate)
             && hasPermitWithCode(BIOMAT_RETRO_SCIENTIFIC_USAGE_DSGVO.getCode(), validationDate)
             && hasPermitWithCode(
@@ -505,7 +501,7 @@ public class MiiConsent extends Consent
 
   /** Checks if "Rekontaktierung Ergänzungen" is permitted (via single L1 code or all L2 codes). */
   public boolean isRecontactingAdditions(Date validationDate) {
-    return hasPermitWithCode(RECONTACTING_ADDITIONS.getCode(), validationDate)
+    return hasPermitWithCode(MOD_RECONTACTING_ADDITIONS.getCode(), validationDate)
         || (hasPermitWithCode(RECONTACTING_MERGING_DBS.getCode(), validationDate)
             && hasPermitWithCode(RECONTACTING_FURTHER_COLLECTION.getCode(), validationDate)
             && hasPermitWithCode(RECONTACTING_FURTHER_STUDIES.getCode(), validationDate));
@@ -513,7 +509,7 @@ public class MiiConsent extends Consent
 
   /** Checks if "Rekontaktierung Zusatzbefund" is permitted (via single L1 code or all L2 codes). */
   public boolean isRecontactingAdditionalFindings(Date validationDate) {
-    return hasPermitWithCode(RECONTACTING_ADDITIONAL_FINDING.getCode(), validationDate)
+    return hasPermitWithCode(MOD_RECONTACTING_ADDITIONAL_FINDING.getCode(), validationDate)
         || (hasPermitWithCode(RECONTACTING_ADDITIONAL_FINDING_LVL_2.getCode(), validationDate));
   }
 
@@ -526,7 +522,7 @@ public class MiiConsent extends Consent
     return isMainConsentForm()
         && isPrivacyPolicyDocumentAndMiiConsentCategory()
         // Check level 1 and level 2 code;
-        && (hasPermitWithCode(RECONTACTING_ADDITIONS.getCode(), validationDate)
+        && (hasPermitWithCode(MOD_RECONTACTING_ADDITIONS.getCode(), validationDate)
             || hasPermitWithCode(RECONTACTING_FURTHER_COLLECTION.getCode(), validationDate));
   }
 
