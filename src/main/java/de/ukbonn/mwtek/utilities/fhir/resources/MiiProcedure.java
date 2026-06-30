@@ -35,6 +35,7 @@ import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import java.util.Collection;
+import lombok.Setter;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Procedure;
@@ -50,8 +51,8 @@ public class MiiProcedure extends Procedure
 
   protected MiiPatient patient;
   protected MiiContactHealthFacility encounter;
-  protected String patientId;
-  protected String caseId;
+  @Setter protected String patientId;
+  @Setter protected String caseId;
 
   @Deprecated
   public MiiProcedure() {
@@ -200,10 +201,6 @@ public class MiiProcedure extends Procedure
     return this.caseId;
   }
 
-  public void setCaseId(String caseId) {
-    this.caseId = caseId;
-  }
-
   @Override
   public String getCaseIdentifierValue(String system)
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
@@ -217,10 +214,6 @@ public class MiiProcedure extends Procedure
   @Override
   public String getPatientId() {
     return this.patientId;
-  }
-
-  public void setPatientId(String patientId) {
-    this.patientId = patientId;
   }
 
   @Override
@@ -310,5 +303,23 @@ public class MiiProcedure extends Procedure
 
   public boolean isInProgress() {
     return this.hasStatus() && this.getStatus() == ProcedureStatus.INPROGRESS;
+  }
+
+  /**
+   * Returns the logical ID of the referenced Encounter resource.
+   *
+   * <p>If the encounter reference is {@code "Encounter/12345"}, this method returns {@code
+   * "12345"}.
+   *
+   * @return the referenced Encounter resource ID, or {@code null} if no encounter reference is
+   *     present
+   */
+  public String getEncounterReferenceValue() {
+    if (this.hasEncounter()
+        && this.getEncounter().hasReference()
+        && this.getEncounter().getReference() == null) {
+      return null;
+    }
+    return getEncounter().getReferenceElement().getIdPart();
   }
 }
