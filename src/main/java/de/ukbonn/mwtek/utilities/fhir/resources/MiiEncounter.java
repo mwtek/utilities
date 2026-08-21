@@ -562,4 +562,7 @@ public class MiiEncounter extends Encounter
           || encounterStatus == EncounterStatus.FINISHED);
     }
   }
+
+  @Override
+  public void setCaseId(String caseId) {}
 }

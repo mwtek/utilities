@@ -185,6 +185,11 @@ public class MiiConsent extends Consent
   }
 
   @Override
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
+  }
+
+  @Override
   public String getCaseIdentifierValue(String system)
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
     if (Compare.isEqual(system, StaticValueProvider.SYSTEM_WITH_IDENTIFIER_ENCOUNTER)) {

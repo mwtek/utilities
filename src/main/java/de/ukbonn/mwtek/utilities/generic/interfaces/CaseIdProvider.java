@@ -19,5 +19,7 @@
 package de.ukbonn.mwtek.utilities.generic.interfaces;
 
 public interface CaseIdProvider {
-  public String getCaseId();
+  String getCaseId();
+
+  void setCaseId(String caseId);
 }

@@ -30,6 +30,7 @@ import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import java.util.Date;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
@@ -45,8 +46,8 @@ public class MiiCondition extends Condition
 
   protected MiiPatient patient;
   protected MiiContactHealthFacility encounter;
-  protected String patientId;
-  protected String caseId;
+  @Setter protected String patientId;
+  @Setter protected String caseId;
 
   /**
    * @deprecated This constructor is only used for Fhir resource validation purpose. Use other
@@ -164,10 +165,6 @@ public class MiiCondition extends Condition
     return this.caseId;
   }
 
-  public void setCaseId(String caseId) {
-    this.caseId = caseId;
-  }
-
   @Override
   public String getCaseIdentifierValue(String system)
       throws MandatoryFieldNotInitializedException, OptionalFieldNotAvailableException {
@@ -181,10 +178,6 @@ public class MiiCondition extends Condition
   @Override
   public String getPatientId() {
     return this.patientId;
-  }
-
-  public void setPatientId(String patientId) {
-    this.patientId = patientId;
   }
 
   @Override
