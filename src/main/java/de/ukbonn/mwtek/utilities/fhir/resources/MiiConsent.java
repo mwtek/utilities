@@ -24,6 +24,7 @@ import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.CONSENT_CATEGOR
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.CONSENT_CATEGORY_SYSTEM_2026;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSIONS_MAIN_FORM;
 import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSION_OID_Z_MODULE_ACRIBIS;
+import static de.ukbonn.mwtek.utilities.enums.ConsentFixedValues.VERSION_OID_Z_MODULE_SNID;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_ADDITIONAL_QUANTITIES;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_COLLECT;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.BIOMAT_MERGE_ANALYSIS_DATA_THIRD_PARTIES;
@@ -63,6 +64,8 @@ import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACT
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.RECONTACTING_ON_EVENTS;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.Z2_PAT_DATA;
 import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.Z2_PAT_DATA_LVL_2;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.Z4_PAT_DATA;
+import static de.ukbonn.mwtek.utilities.enums.MiiConsentPolicyValueSet.Z4_PAT_DATA_LVL_2;
 import static de.ukbonn.mwtek.utilities.generic.time.DateTools.getCurrentDateTime;
 import static org.hl7.fhir.r4.model.Consent.ConsentProvisionType.PERMIT;
 
@@ -78,6 +81,7 @@ import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
 import de.ukbonn.mwtek.utilities.generic.time.DateTools;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -297,83 +301,89 @@ public class MiiConsent extends Consent
         .anyMatch(x -> x.hasCoding(C570168.getSystem(), C570168.getCode()));
   }
 
+  /**
+   * Checks whether patient data usage is allowed based on an ACRIBiS consent.
+   *
+   * <p>The consent must match the ACRIBiS form and the required consent category. At least one
+   * permit provision must contain one of the relevant level 1 or level 2 provision codes.
+   *
+   * @return {@code true} if patient data usage is permitted; otherwise {@code false}
+   */
   public boolean isAcribisConsentAllowed() {
-    return isAcribisForm()
+    return isConsentAllowed(isAcribisForm(), Z2_PAT_DATA.getCode(), Z2_PAT_DATA_LVL_2.getCode());
+  }
+
+  /**
+   * Checks whether patient data usage is allowed based on an SNID consent.
+   *
+   * <p>The consent must match the SNID form and the required consent category. At least one permit
+   * provision must contain one of the relevant level 1 or level 2 provision codes.
+   *
+   * @return {@code true} if patient data usage is permitted; otherwise {@code false}
+   */
+  public boolean isSnidConsentAllowed() {
+    return isConsentAllowed(isSnidForm(), Z4_PAT_DATA.getCode(), Z4_PAT_DATA_LVL_2.getCode());
+  }
+
+  /**
+   * Checks whether a consent allows patient data usage for any of the specified provision codes.
+   *
+   * @param matchesForm whether the consent matches the expected form (e.g. snid / acribis)
+   * @param provisionCodes provision codes accepted for patient data usage
+   * @return {@code true} if a matching permit provision exists; otherwise {@code false}
+   */
+  private boolean isConsentAllowed(boolean matchesForm, String... provisionCodes) {
+    return matchesForm
         && isPrivacyPolicyDocumentAndMiiConsentCategory()
         && this.getProvision().getProvision().stream()
             .filter(pc -> pc.hasType() && pc.getType().equals(PERMIT))
+            .filter(ProvisionComponent::hasCode)
             .anyMatch(
                 pc ->
-                    pc.hasCode()
-                        // Checking level 1 and 2
-                        && (pc.getCodeFirstRep()
-                                .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA.getCode())
-                            || pc.getCodeFirstRep()
-                                .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA_LVL_2.getCode())));
+                    Arrays.stream(provisionCodes)
+                        .anyMatch(
+                            code -> pc.getCodeFirstRep().hasCoding(PROVISION_CODE_SYSTEM, code)));
   }
 
-  /**
-   * Retrieves the start date of the first permit provision that matches the Acribis criteria.
-   *
-   * <p>This method checks if the current context is an Acribis form and if the document is both a
-   * privacy policy and falls under the MII consent category. If so, it filters the provision list
-   * to find the first provision that:
-   *
-   * <p>It returns the start date of the matching provision's period.
-   *
-   * @return the start date of the first matching provision, or {@code null} if no match is found
-   */
   public Date getAcribisPermitStartDate() {
-    if (isAcribisForm() && isPrivacyPolicyDocumentAndMiiConsentCategory()) {
-      return this.getProvision().getProvision().stream()
-          .filter(pc -> pc.hasType() && pc.getType().equals(PERMIT))
-          .filter(pc -> pc.hasPeriod() && pc.getPeriod().hasStart())
-          .filter(
-              pc ->
-                  pc.hasCode()
-                          // Checking level 1 and 2
-                          && (pc.getCodeFirstRep()
-                              .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA.getCode()))
-                      || pc.getCodeFirstRep()
-                          .hasCoding(PROVISION_CODE_SYSTEM, Z2_PAT_DATA_LVL_2.getCode()))
-          .map(pc -> pc.getPeriod().getStart())
-          .findFirst()
-          .orElse(null);
-    }
-    return null;
+    return getPermitStartDate(isAcribisForm(), Z2_PAT_DATA.getCode(), Z2_PAT_DATA_LVL_2.getCode());
+  }
+
+  public Date getSnidPermitStartDate() {
+    return getPermitStartDate(isSnidForm(), Z4_PAT_DATA.getCode(), Z4_PAT_DATA_LVL_2.getCode());
+  }
+
+  public Date getMainConsentPermitStartDate() {
+    return getPermitStartDate(
+        isMainConsentForm(), MOD_PATDAT_RETRIEVAL_SAVING_USING.getCode(), IDAT_COLLECT.getCode());
   }
 
   /**
-   * Retrieves the start date of the first permit provision that matches the Acribis criteria.
+   * Retrieves the start date of the first permit provision matching one of the given provision
+   * codes.
    *
-   * <p>This method checks if the current context is an Acribis form and if the document is both a
-   * privacy policy and falls under the MII consent category. If so, it filters the provision list
-   * to find the first provision that:
-   *
-   * <p>It returns the start date of the matching provision's period.
-   *
-   * @return the start date of the first matching provision, or {@code null} if no match is found
+   * @param matchesForm whether the consent matches the expected form
+   * @param provisionCodes provision codes accepted for the consent
+   * @return the start date of the first matching permit provision, or {@code null} if no match is
+   *     found
    */
-  public Date getMainConsentPermitStartDate() {
-    if (isMainConsentForm() && isPrivacyPolicyDocumentAndMiiConsentCategory()) {
-      return this.getProvision().getProvision().stream()
-          .filter(pc -> pc.hasType() && pc.getType().equals(PERMIT))
-          .filter(pc -> pc.hasPeriod() && pc.getPeriod().hasStart())
-          .filter(
-              pc ->
-                  pc.hasCode()
-                          // Checking level 1 and 2
-                          && (pc.getCodeFirstRep()
-                              .hasCoding(
-                                  PROVISION_CODE_SYSTEM,
-                                  MOD_PATDAT_RETRIEVAL_SAVING_USING.getCode()))
-                      || pc.getCodeFirstRep()
-                          .hasCoding(PROVISION_CODE_SYSTEM, IDAT_COLLECT.getCode()))
-          .map(pc -> pc.getPeriod().getStart())
-          .findFirst()
-          .orElse(null);
+  private Date getPermitStartDate(boolean matchesForm, String... provisionCodes) {
+    if (!matchesForm || !isPrivacyPolicyDocumentAndMiiConsentCategory()) {
+      return null;
     }
-    return null;
+
+    return this.getProvision().getProvision().stream()
+        .filter(pc -> pc.hasType() && pc.getType().equals(PERMIT))
+        .filter(pc -> pc.hasPeriod() && pc.getPeriod().hasStart())
+        .filter(
+            pc ->
+                pc.hasCode()
+                    && Arrays.stream(provisionCodes)
+                        .anyMatch(
+                            code -> pc.getCodeFirstRep().hasCoding(PROVISION_CODE_SYSTEM, code)))
+        .map(pc -> pc.getPeriod().getStart())
+        .findFirst()
+        .orElse(null);
   }
 
   /**
@@ -538,6 +548,15 @@ public class MiiConsent extends Consent
    */
   private boolean isAcribisForm() {
     return this.hasPolicyUriWithoutPrefix(VERSION_OID_Z_MODULE_ACRIBIS);
+  }
+
+  /**
+   * Checks if the consent form is the Acribis-specific form.
+   *
+   * @return true if the form is an Acribis form; false otherwise.
+   */
+  private boolean isSnidForm() {
+    return this.hasPolicyUriWithoutPrefix(VERSION_OID_Z_MODULE_SNID);
   }
 
   /**

@@ -148,7 +148,11 @@ public enum MiiConsentPolicyValueSet {
       "Z2 MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt"),
   Z2_MDAT_LVL_2(
       "2.16.840.1.113883.3.1937.777.24.5.3.61",
-      "MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt");
+      "MDAT Hausarzt erheben, speichern, verarbeiten, nutzen im acribis-Projekt"),
+
+  // SNID
+  Z4_PAT_DATA("2.16.840.1.113883.3.1937.777.24.5.3.67", "Z4 Datenschutzerklärung"),
+  Z4_PAT_DATA_LVL_2("2.16.840.1.113883.3.1937.777.24.5.3.71", "MDAT erheben (SNID)");
 
   public static final String PROVISION_CODE_SYSTEM = "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3";
   @Getter private final String code;

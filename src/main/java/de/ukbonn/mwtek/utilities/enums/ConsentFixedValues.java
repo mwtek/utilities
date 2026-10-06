@@ -66,6 +66,8 @@ public class ConsentFixedValues {
   public static final String VERSION_OID_Z_MODULE_ACRIBIS =
       "2.16.840.1.113883.3.1937.777.24.2.4031";
 
+  public static final String VERSION_OID_Z_MODULE_SNID = "2.16.840.1.113883.3.1937.777.24.2.4037";
+
   public static final List<String> VERSIONS_MAIN_FORM =
       List.of(VERSION_OID_1_6_D, VERSION_OID_1_6_F, VERSION_OID_1_7_2);
 }
