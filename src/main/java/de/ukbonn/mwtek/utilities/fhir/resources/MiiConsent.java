@@ -80,7 +80,6 @@ import de.ukbonn.mwtek.utilities.fhir.misc.FieldAlreadyInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.MandatoryFieldNotInitializedException;
 import de.ukbonn.mwtek.utilities.fhir.misc.OptionalFieldNotAvailableException;
 import de.ukbonn.mwtek.utilities.fhir.misc.StaticValueProvider;
-import de.ukbonn.mwtek.utilities.generic.time.DateTools;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -91,6 +90,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Consent;
 import org.hl7.fhir.r4.model.Enumeration;
+import org.hl7.fhir.r4.model.Period;
 
 @Slf4j
 @ResourceDef(name = "Consent")
@@ -595,8 +595,9 @@ public class MiiConsent extends Consent
   /**
    * Checks whether a permit with the given code exists.
    *
-   * <p>If {@code validationDate} is not {@code null}, only permits that are valid at the given
-   * point in time based on their period are considered.
+   * <p>If {@code validationDate} is not {@code null}, only permits that are valid at the given point
+   * in time are considered. A permit period without {@link Period#getEnd()} is open-ended and stays
+   * valid from its start onwards, which matches the semantics the consent timelines use.
    *
    * @param code the permit code to search for
    * @param validationDate the date used to validate the permit period; if {@code null}, the
@@ -606,14 +607,33 @@ public class MiiConsent extends Consent
   public boolean hasPermitWithCode(String code, Date validationDate) {
     return this.getProvision().getProvision().stream()
         .filter(pc -> pc.hasType() && pc.getType().equals(PERMIT))
-        .filter(
-            pc ->
-                validationDate == null || DateTools.isWithinPeriod(validationDate, pc.getPeriod()))
+        .filter(pc -> validationDate == null || isPermitValidAt(pc.getPeriod(), validationDate))
         .anyMatch(
             pc ->
                 pc.hasCode()
                     && pc.getCode().stream()
                         .anyMatch(c -> c.hasCoding(PROVISION_CODE_SYSTEM, code)));
+  }
+
+  /**
+   * Checks whether a permit period covers the given point in time.
+   *
+   * <p>A period without {@link Period#getStart()} cannot be validated and is treated as not valid. A
+   * period without {@link Period#getEnd()} is open-ended and therefore valid from its start
+   * onwards.
+   *
+   * @param period the period of the permit provision; may be {@code null}
+   * @param validationDate the point in time the permit is validated against
+   * @return {@code true} if the permit is valid at {@code validationDate}
+   */
+  private static boolean isPermitValidAt(Period period, Date validationDate) {
+    if (period == null || !period.hasStart()) {
+      return false;
+    }
+    if (period.getStart().after(validationDate)) {
+      return false;
+    }
+    return !period.hasEnd() || !period.getEnd().before(validationDate);
   }
 
   // Filter rejected/canceled consents
